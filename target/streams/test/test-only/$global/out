@@ -1,0 +1,4 @@
+[0m[[0mdebug[0m] [0mRunning Test brando.BrandoTest : subclass(false, org.scalatest.Suite) with arguments [0m
+[0m[[0minfo[0m] [0mPassed: : Total 8, Failed 0, Errors 0, Passed 8, Skipped 0[0m
+[0m[[0mdebug[0m] [0mPassed tests:[0m
+[0m[[0mdebug[0m] [0m	brando.BrandoTest[0m

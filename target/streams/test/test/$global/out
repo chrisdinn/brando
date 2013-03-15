@@ -1,0 +1,8 @@
+[0m[[0mdebug[0m] [0mRunning Test brando.RequestTest : subclass(false, org.scalatest.Suite) with arguments [0m
+[0m[[0mdebug[0m] [0mRunning Test brando.ReplyTest : subclass(false, org.scalatest.Suite) with arguments [0m
+[0m[[0mdebug[0m] [0mRunning Test brando.BrandoTest : subclass(false, org.scalatest.Suite) with arguments [0m
+[0m[[0minfo[0m] [0mPassed: : Total 18, Failed 0, Errors 0, Passed 17, Skipped 1[0m
+[0m[[0mdebug[0m] [0mPassed tests:[0m
+[0m[[0mdebug[0m] [0m	brando.RequestTest[0m
+[0m[[0mdebug[0m] [0m	brando.BrandoTest[0m
+[0m[[0mdebug[0m] [0m	brando.ReplyTest[0m

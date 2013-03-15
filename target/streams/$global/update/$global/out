@@ -1,0 +1,850 @@
+[0m[[0minfo[0m] [0mUpdating {file:/Users/cdinn/projects/brando/}default-3efdae...[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m:: resolving dependencies :: ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT[0m
+[0m[[0mdebug[0m] [0m	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom][0m
+[0m[[0mdebug[0m] [0m	validate = true[0m
+[0m[[0mdebug[0m] [0m	refresh = false[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'compile'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve org.scala-lang#scala-library;2.10.0[0m
+[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.10.0 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.scala-lang#scala-library;2.10.0 {compile=[default(compile)]}[0m
+[0m[[0mdebug[0m] [0msbt-chain: no namespace defined: using system[0m
+[0m[[0mdebug[0m] [0mNo entry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scala-lang/scala-library/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scala-lang#scala-library;2.10.0 (resolved by sbt-chain): /Users/cdinn/.ivy2/cache/org.scala-lang/scala-library/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0msbt-chain: no latest strategy defined: using default[0m
+[0m[[0mdebug[0m] [0mlocal: no namespace defined: using system[0m
+[0m[[0mdebug[0m] [0mEntry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scala-lang/scala-library/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scala-lang#scala-library;2.10.0 (resolved by sbt-chain): /Users/cdinn/.ivy2/cache/org.scala-lang/scala-library/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0m	local: revision in cache: org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0m	checking org.scala-lang#scala-library;2.10.0 from sbt-chain against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: org.scala-lang#scala-library;2.10.0 from sbt-chain[0m
+[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.10.0 in sbt-chain[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0minfo[0m] [0mResolving com.typesafe.akka#akka-actor_2.10;2.2-M1 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: com.typesafe.akka#akka-actor_2.10;2.2-M1 {compile=[default(compile)]}[0m
+[0m[[0mdebug[0m] [0m	no ivy file in cache for com.typesafe.akka#akka-actor_2.10;2.2-M1: tried /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/ivy-2.2-M1.xml[0m
+[0m[[0mdebug[0m] [0m	no ivy file in cache for com.typesafe.akka#akka-actor_2.10;2.2-M1: tried /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/ivy-2.2-M1.xml[0m
+[0m[[0mdebug[0m] [0m	 trying /Users/cdinn/.ivy2/local/com.typesafe.akka/akka-actor_2.10/2.2-M1/ivys/ivy.xml[0m
+[0m[[0mdebug[0m] [0m		tried /Users/cdinn/.ivy2/local/com.typesafe.akka/akka-actor_2.10/2.2-M1/ivys/ivy.xml[0m
+[0m[[0mdebug[0m] [0m	local: resource not reachable for com.typesafe.akka#akka-actor_2.10;2.2-M1: res=/Users/cdinn/.ivy2/local/com.typesafe.akka/akka-actor_2.10/2.2-M1/ivys/ivy.xml[0m
+[0m[[0mdebug[0m] [0m	local: no ivy file found for com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mTypesafe Repository: no namespace defined: using system[0m
+[0m[[0mdebug[0m] [0m	no ivy file in cache for com.typesafe.akka#akka-actor_2.10;2.2-M1: tried /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/ivy-2.2-M1.xml[0m
+[0m[[0mdebug[0m] [0m	 trying http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0mHTTP response status: 404 url=http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m	Typesafe Repository: resource not reachable for com/typesafe/akka#akka-actor_2.10;2.2-M1: res=http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m	Typesafe Repository: no ivy file found for com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mpublic: no namespace defined: using system[0m
+[0m[[0mdebug[0m] [0m	no ivy file in cache for com.typesafe.akka#akka-actor_2.10;2.2-M1: tried /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/ivy-2.2-M1.xml[0m
+[0m[[0mdebug[0m] [0m	 trying http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m		tried http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m	public: found md file for com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0m		=> http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom (2.2-M1)[0m
+[0m[[0mdebug[0m] [0m	parser = sbt.CustomPomParser@1c455c33[0m
+[0m[[0mdebug[0m] [0m	no ivy file in cache for com.typesafe.akka#akka-actor_2.10;2.2-M1: tried /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/ivy-2.2-M1.xml[0m
+[0m[[0mdebug[0m] [0mdownloading http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom ...[0m
+[0m[[0mdebug[0m] [0m	public: downloading http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m		to /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/ivy-2.2-M1.xml.original.part[0m
+[0m[[0mdebug[0m] [0msha1 file found for http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom: checking...[0m
+[0m[[0mdebug[0m] [0m	public: downloading http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom.sha1[0m
+[0m[[0mdebug[0m] [0m		to /var/folders/nr/2rrvh79s3dx9kgdg2jc7tcyw0000gn/T/ivytmp6817232685572846103sha1[0m
+[0m[[0mdebug[0m] [0msha1 OK for http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.pom[0m
+[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] com.typesafe.akka#akka-actor_2.10;2.2-M1!akka-actor_2.10.pom(pom.original) (113ms)[0m
+[0m[[0mdebug[0m] [0m	 trying /Users/cdinn/.ivy2/local/com.typesafe.akka/akka-actor_2.10/2.2-M1/jars/akka-actor_2.10.jar[0m
+[0m[[0mdebug[0m] [0m		tried /Users/cdinn/.ivy2/local/com.typesafe.akka/akka-actor_2.10/2.2-M1/jars/akka-actor_2.10.jar[0m
+[0m[[0mdebug[0m] [0m	local: resource not reachable for com.typesafe.akka#akka-actor_2.10;2.2-M1: res=/Users/cdinn/.ivy2/local/com.typesafe.akka/akka-actor_2.10/2.2-M1/jars/akka-actor_2.10.jar[0m
+[0m[[0mdebug[0m] [0m	 trying http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0mHTTP response status: 404 url=http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0m	Typesafe Repository: resource not reachable for com/typesafe/akka#akka-actor_2.10;2.2-M1: res=http://repo.typesafe.com/typesafe/releases/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0m	 trying http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0m		tried http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0mno source artifact found for com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mno javadoc artifact found for com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0m	default-cache: parsed downloaded md file for com.typesafe.akka#akka-actor_2.10;2.2-M1; parsed=com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0m	checking com.typesafe.akka#akka-actor_2.10;2.2-M1 from public against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: com.typesafe.akka#akka-actor_2.10;2.2-M1 from public[0m
+[0m[[0mdebug[0m] [0m	found com.typesafe.akka#akka-actor_2.10;2.2-M1 in public[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve com.typesafe#config;1.0.0[0m
+[0m[[0minfo[0m] [0mResolving com.typesafe#config;1.0.0 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: com.typesafe#config;1.0.0 {compile=[compile(*), master(*)], runtime=[runtime(*)]}[0m
+[0m[[0mdebug[0m] [0mNo entry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/com.typesafe/config/ivy-1.0.0.xml[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for com.typesafe#config;1.0.0 (resolved by Typesafe Repository): /Users/cdinn/.ivy2/cache/com.typesafe/config/ivy-1.0.0.xml[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mEntry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/com.typesafe/config/ivy-1.0.0.xml[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for com.typesafe#config;1.0.0 (resolved by Typesafe Repository): /Users/cdinn/.ivy2/cache/com.typesafe/config/ivy-1.0.0.xml[0m
+[0m[[0mdebug[0m] [0m	local: revision in cache: com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0m	checking com.typesafe#config;1.0.0 from Typesafe Repository against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: com.typesafe#config;1.0.0 from Typesafe Repository[0m
+[0m[[0mdebug[0m] [0m	found com.typesafe#config;1.0.0 in Typesafe Repository[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0mcompile is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'runtime'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [runtime][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime[0m
+[0m[[0mdebug[0m] [0mruntime is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'test'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [test][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [runtime][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0minfo[0m] [0mResolving org.scalatest#scalatest_2.10;1.9.1 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.scalatest#scalatest_2.10;1.9.1 {test=[default(compile)]}[0m
+[0m[[0mdebug[0m] [0mNo entry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scalatest/scalatest_2.10/ivy-1.9.1.xml[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scalatest#scalatest_2.10;1.9.1 (resolved by public): /Users/cdinn/.ivy2/cache/org.scalatest/scalatest_2.10/ivy-1.9.1.xml[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mEntry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scalatest/scalatest_2.10/ivy-1.9.1.xml[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scalatest#scalatest_2.10;1.9.1 (resolved by public): /Users/cdinn/.ivy2/cache/org.scalatest/scalatest_2.10/ivy-1.9.1.xml[0m
+[0m[[0mdebug[0m] [0m	local: revision in cache: org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0m	checking org.scalatest#scalatest_2.10;1.9.1 from public against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: org.scalatest#scalatest_2.10;1.9.1 from public[0m
+[0m[[0mdebug[0m] [0m	found org.scalatest#scalatest_2.10;1.9.1 in public[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-actors;2.10.0 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.scala-lang#scala-actors;2.10.0 {compile=[compile(*), master(*)], runtime=[runtime(*)]}[0m
+[0m[[0mdebug[0m] [0mNo entry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scala-lang/scala-actors/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scala-lang#scala-actors;2.10.0 (resolved by public): /Users/cdinn/.ivy2/cache/org.scala-lang/scala-actors/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mEntry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scala-lang/scala-actors/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scala-lang#scala-actors;2.10.0 (resolved by public): /Users/cdinn/.ivy2/cache/org.scala-lang/scala-actors/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0m	local: revision in cache: org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0m	checking org.scala-lang#scala-actors;2.10.0 from public against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: org.scala-lang#scala-actors;2.10.0 from public[0m
+[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-actors;2.10.0 in public[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-reflect;2.10.0 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.scala-lang#scala-reflect;2.10.0 {compile=[compile(*), master(*)], runtime=[runtime(*)]}[0m
+[0m[[0mdebug[0m] [0mNo entry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scala-lang#scala-reflect;2.10.0 (resolved by sbt-chain): /Users/cdinn/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0mEntry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for org.scala-lang#scala-reflect;2.10.0 (resolved by sbt-chain): /Users/cdinn/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.10.0.xml[0m
+[0m[[0mdebug[0m] [0m	local: revision in cache: org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0m	checking org.scala-lang#scala-reflect;2.10.0 from sbt-chain against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: org.scala-lang#scala-reflect;2.10.0 from sbt-chain[0m
+[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-reflect;2.10.0 in sbt-chain[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m	using sbt-chain to resolve com.typesafe.akka#akka-testkit_2.10;2.1.1[0m
+[0m[[0minfo[0m] [0mResolving com.typesafe.akka#akka-testkit_2.10;2.1.1 ...[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: com.typesafe.akka#akka-testkit_2.10;2.1.1 {test=[default(compile)]}[0m
+[0m[[0mdebug[0m] [0mNo entry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-testkit_2.10/ivy-2.1.1.xml[0m
+[0m[[0mdebug[0m] [0mpost 1.3 ivy file: using exact as default matcher[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for com.typesafe.akka#akka-testkit_2.10;2.1.1 (resolved by public): /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-testkit_2.10/ivy-2.1.1.xml[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: com.typesafe.akka#akka-testkit_2.10;2.1.1[0m
+[0m[[0mdebug[0m] [0mEntry is found in the ModuleDescriptorCache : /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-testkit_2.10/ivy-2.1.1.xml[0m
+[0m[[0mdebug[0m] [0m	found ivy file in cache for com.typesafe.akka#akka-testkit_2.10;2.1.1 (resolved by public): /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-testkit_2.10/ivy-2.1.1.xml[0m
+[0m[[0mdebug[0m] [0m	local: revision in cache: com.typesafe.akka#akka-testkit_2.10;2.1.1[0m
+[0m[[0mdebug[0m] [0m	checking com.typesafe.akka#akka-testkit_2.10;2.1.1 from public against [none][0m
+[0m[[0mdebug[0m] [0m	module revision kept as first found: com.typesafe.akka#akka-testkit_2.10;2.1.1 from public[0m
+[0m[[0mdebug[0m] [0m	found com.typesafe.akka#akka-testkit_2.10;2.1.1 in public[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.1.1 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is evicted.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.1.1 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is evicted.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.1.1 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is evicted.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mtest is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'provided'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [provided][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=provided[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'optional'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [optional][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=optional[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'compile-internal'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile-internal][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [optional][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [provided][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=compile-internal[0m
+[0m[[0mdebug[0m] [0mcompile-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'runtime-internal'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [runtime-internal][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [runtime][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [optional][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=runtime-internal[0m
+[0m[[0mdebug[0m] [0mruntime-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'test-internal'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [test-internal][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [test][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [runtime][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [compile][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scala-lang#scala-library;2.10.0 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.10;2.2-M1->com.typesafe#config;1.0.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe#config;1.0.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-actors;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-actors;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-actors;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scalatest#scalatest_2.10;1.9.1->org.scala-lang#scala-reflect;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-reflect;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-reflect;2.10.0->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->org.scalatest#scalatest_2.10;1.9.1 [test->master][0m
+[0m[[0mdebug[0m] [0mloadData of org.scalatest#scalatest_2.10;1.9.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->default(compile)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->runtime][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.1.1 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is evicted.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.1.1 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is evicted.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [compile->master(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [compile->compile(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.1.1 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is evicted.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->com.typesafe.akka#akka-actor_2.10;2.2-M1 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-actor_2.10;2.2-M1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [runtime->runtime(*)][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-testkit_2.10;2.1.1->org.scala-lang#scala-library;2.10.0 [runtime->compile][0m
+[0m[[0mdebug[0m] [0mloadData of org.scala-lang#scala-library;2.10.0 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT->com.typesafe.akka#akka-testkit_2.10;2.1.1 [test->master][0m
+[0m[[0mdebug[0m] [0mloadData of com.typesafe.akka#akka-testkit_2.10;2.1.1 of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [optional][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [provided][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=test-internal[0m
+[0m[[0mdebug[0m] [0mtest-internal is loaded and no conf to load.  Skip loading[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'plugin'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [plugin][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=plugin[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'sources'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [sources][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=sources[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'docs'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [docs][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=docs[0m
+[0m[[0mdebug[0m] [0mresolving dependencies for configuration 'pom'[0m
+[0m[[0mdebug[0m] [0m== resolving dependencies for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT [pom][0m
+[0m[[0mdebug[0m] [0mloadData of ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT of rootConf=pom[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 7[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scalatest#scalatest_2.10;1.9.1 / Number of dependencies = 15[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-actors;2.10.0 / Number of dependencies = 1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-reflect;2.10.0 / Number of dependencies = 1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-testkit_2.10;2.1.1 / Number of dependencies = 4[0m
+[0m[[0mdebug[0m] [0mNon matching revision detected when sorting.  com.typesafe.akka#akka-testkit_2.10 depends on com.typesafe.akka#akka-actor_2.10;2.1.1, doesn't match com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-testkit_2.10;2.1.1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in test-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in test: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in compile: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in runtime: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in runtime-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in compile-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0m	resolved ivy file produced in /Users/cdinn/projects/brando/target/resolution-cache/ca.chrisdinn/brando_2.10/0.4.0-SNAPSHOT/resolved.xml.xml[0m
+[0m[[0mdebug[0m] [0m:: downloading artifacts ::[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in test-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in test: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in compile: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in runtime: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in runtime-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in compile-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in test-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in test: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in compile: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in runtime: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in runtime-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0morg.scala-lang#scala-library;2.10.0 in compile-internal: excluding org.scala-lang#scala-library;2.10.0!scala-library.jar[0m
+[0m[[0mdebug[0m] [0m	 trying http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0m		tried http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0minfo[0m] [0mdownloading http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar ...[0m
+[0m[[0mdebug[0m] [0m	public: downloading http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0mdebug[0m] [0m		to /Users/cdinn/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/jars/akka-actor_2.10-2.2-M1.jar.part[0m
+[0m[[0mdebug[0m] [0msha1 file found for http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar: checking...[0m
+[0m[[0mdebug[0m] [0m	public: downloading http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar.sha1[0m
+[0m[[0mdebug[0m] [0m		to /var/folders/nr/2rrvh79s3dx9kgdg2jc7tcyw0000gn/T/ivytmp5402542254295468936sha1[0m
+[0m[[0mdebug[0m] [0msha1 OK for http://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.10/2.2-M1/akka-actor_2.10-2.2-M1.jar[0m
+[0m[[0minfo[0m] [0m	[SUCCESSFUL ] com.typesafe.akka#akka-actor_2.10;2.2-M1!akka-actor_2.10.jar (944ms)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.typesafe#config;1.0.0!config.jar(bundle)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scalatest#scalatest_2.10;1.9.1!scalatest_2.10.jar[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.typesafe.akka#akka-testkit_2.10;2.1.1!akka-testkit_2.10.jar(bundle)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-actors;2.10.0!scala-actors.jar[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-reflect;2.10.0!scala-reflect.jar[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 2491ms :: artifacts dl 969ms[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 3[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT compile produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/compile-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 3[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT runtime produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/runtime-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 7[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scalatest#scalatest_2.10;1.9.1 / Number of dependencies = 15[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-actors;2.10.0 / Number of dependencies = 1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-reflect;2.10.0 / Number of dependencies = 1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-testkit_2.10;2.1.1 / Number of dependencies = 4[0m
+[0m[[0mdebug[0m] [0mNon matching revision detected when sorting.  com.typesafe.akka#akka-testkit_2.10 depends on com.typesafe.akka#akka-actor_2.10;2.1.1, doesn't match com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-testkit_2.10;2.1.1[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT test produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/test-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT provided produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/provided-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT optional produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/optional-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 3[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT compile-internal produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/compile-internal-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 3[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT runtime-internal produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/runtime-internal-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 7[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-library;2.10.0 / Number of dependencies = 0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-actor_2.10;2.2-M1 / Number of dependencies = 2[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe#config;1.0.0 / Number of dependencies = 3[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : com.typesafe#config;1.0.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scalatest#scalatest_2.10;1.9.1 / Number of dependencies = 15[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-actors;2.10.0 / Number of dependencies = 1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : org.scala-lang#scala-reflect;2.10.0 / Number of dependencies = 1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort done for : org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-actors;2.10.0[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-reflect;2.10.0[0m
+[0m[[0mdebug[0m] [0mSort dependencies of : com.typesafe.akka#akka-testkit_2.10;2.1.1 / Number of dependencies = 4[0m
+[0m[[0mdebug[0m] [0mNon matching revision detected when sorting.  com.typesafe.akka#akka-testkit_2.10 depends on com.typesafe.akka#akka-actor_2.10;2.1.1, doesn't match com.typesafe.akka#akka-actor_2.10;2.2-M1[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scala-lang#scala-library;2.10.0[0m
+[0m[[0mdebug[0m] [0mModule descriptor is processed : org.scalatest#scalatest_2.10;1.9.1[0m
+[0m[[0mdebug[0m] [0mSort done for : com.typesafe.akka#akka-testkit_2.10;2.1.1[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT test-internal produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/test-internal-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT plugin produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/plugin-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT sources produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/sources-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT docs produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/docs-resolved.xml[0m
+[0m[[0mdebug[0m] [0mNbr of module to sort : 0[0m
+[0m[[0mdebug[0m] [0m	report for ca.chrisdinn#brando_2.10;0.4.0-SNAPSHOT pom produced in /Users/cdinn/projects/brando/target/resolution-cache/reports/ca.chrisdinn-brando_2.10/pom-resolved.xml[0m
+[0m[[0mdebug[0m] [0m	resolve done (2491ms resolve - 969ms download)[0m
+[0m[[0minfo[0m] [0mDone updating.[0m

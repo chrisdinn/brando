@@ -1,0 +1,15 @@
+[0m[[0minfo[0m] [0m[32mBrandoTest:[0m[0m
+[0m[[0minfo[0m] [0m[32mflushdb [0m[0m
+[0m[[0minfo[0m] [0m[32m- should respond with OK[0m[0m
+[0m[[0minfo[0m] [0m[32mset [0m[0m
+[0m[[0minfo[0m] [0m[32m- should respond with OK[0m[0m
+[0m[[0minfo[0m] [0m[32mget [0m[0m
+[0m[[0minfo[0m] [0m[32m- should respond with value option for existing key[0m[0m
+[0m[[0minfo[0m] [0m[32m- should respond with None for non-existent key[0m[0m
+[0m[[0minfo[0m] [0m[32mincr [0m[0m
+[0m[[0minfo[0m] [0m[32m- should increment and return value for existing key[0m[0m
+[0m[[0minfo[0m] [0m[32m- should return 1 for non-existent key[0m[0m
+[0m[[0minfo[0m] [0m[32msadd [0m[0m
+[0m[[0minfo[0m] [0m[32m- should return number of members added to set[0m[0m
+[0m[[0minfo[0m] [0m[32msmembers [0m[0m
+[0m[[0minfo[0m] [0m[32m- should return all members in a set[0m[0m
