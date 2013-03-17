@@ -9,7 +9,17 @@ import akka.util.ByteString
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
     with ImplicitSender {
-  import Reply.Ok
+  import Reply.{ Ok, Pong }
+
+  describe("ping") {
+    it("should respond with Pong") {
+      val brando = system.actorOf(Props[Brando])
+
+      brando ! Request("PING")
+
+      expectMsg(Pong)
+    }
+  }
 
   describe("flushdb") {
     it("should respond with OK") {

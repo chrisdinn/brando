@@ -2,71 +2,82 @@ package brando
 
 import akka.util.ByteString
 
+case class Response[+A](value: A, buffer: ByteString)
+
 object Reply {
-  abstract class Status(val status: String)
 
-  case object Ok extends Status("OK") {
+  abstract class Status(val status: String) {
     def unapply(s: ByteString) =
-      if (s.equals(ByteString("+OK\r\n"))) Some(Ok) else None
+      if (s.equals(ByteString("+" + status + "\r\n"))) Some(this) else None
+  }
+  case object Ok extends Status("OK")
+  case object Pong extends Status("PONG")
+
+  def readIntegerReply(reply: Response[Any]) = {
+    val intBytes = reply.buffer.takeWhile(_ != '\r').drop(1)
+    val remainder = reply.buffer.drop(1 + intBytes.length + 2)
+    Response(Some(intBytes.utf8String.toInt), remainder)
   }
 
-  def parseIntegerReply(data: ByteString) =
-    Some(data.takeWhile(_ != '\r').drop(1).utf8String.toInt)
+  def readBulkReply(reply: Response[Any]) = {
+    val dataLengthBytes = reply.buffer.takeWhile(_ != '\r').drop(1)
 
-  def parseBulkReply(data: ByteString) = {
-    val lengthBytes = data.takeWhile(_ != '\r').drop(1)
-    val length = lengthBytes.utf8String.toInt
-    if (length == -1)
-      None
-    else
-      Some(data.drop(lengthBytes.length + 3).take(length))
+    val headerLength = 1 + dataLengthBytes.length + 2
+    val dataLength = dataLengthBytes.utf8String.toInt
+
+    if (dataLength != -1) {
+      val data = reply.buffer.drop(headerLength).take(dataLength)
+      val remainder = reply.buffer.drop(headerLength + dataLength + 2)
+      Response(Some(data), remainder)
+    } else Response(None, reply.buffer.drop(headerLength))
   }
 
-  def parseMultiBulkReply(data: ByteString) = {
-    val numItems = data.takeWhile(_ != '\r').drop(1)
-    var itemsBuffer = data.drop(numItems.length + 3)
+  def readMultiBulkReply(reply: Response[Any]): Response[List[Any]] = {
+    val itemCountBytes = reply.buffer.takeWhile(_ != '\r').drop(1)
+    val itemCount = itemCountBytes.utf8String.toInt
 
-    parseItems(numItems.utf8String.toInt, itemsBuffer, List())
+    val headerLength = 1 + itemCountBytes.length + 2
+    var itemsBuffer = reply.buffer.drop(headerLength)
+
+    def readComponents(remaining: Int, response: Response[List[Any]]): Response[List[Any]] =
+      remaining match {
+        case 0 ⇒ response
+        case i ⇒
+          val nextResponse = readComponent(response)
+          val newValue = response.value :+ nextResponse.value
+          readComponents(i - 1, Response(newValue, nextResponse.buffer))
+      }
+
+    readComponents(itemCount, Response(Nil, itemsBuffer))
   }
 
-  def parseItems(remaining: Int, buffer: ByteString,
-    items: List[Option[Any]]): List[Option[Any]] = {
-    remaining match {
-      case 0 ⇒ items
-      case x ⇒
-        buffer(0) match {
-          case '$' ⇒
-            val item = parseBulkReply(buffer)
-            val remainingBuffer = item match {
-              case Some(i) ⇒
-                buffer.dropWhile(_ != '\r').drop(2).drop(i.length).drop(2)
-              case None ⇒ buffer.dropWhile(_ != '\r').drop(2)
-            }
-            parseItems(x - 1, remainingBuffer, items :+ item)
-
-          case ':' ⇒
-            val item = parseIntegerReply(buffer)
-            parseItems(x - 1, buffer.dropWhile(_ != '\r').drop(2), items :+ item)
-
+  def readComponent(response: Response[Any]) = {
+    response.buffer(0) match {
+      case '+' ⇒
+        val length = response.buffer.prefixLength(_ != '\r') + 2
+        val status = response.buffer.take(length) match {
+          case Ok(data)   ⇒ Ok
+          case Pong(data) ⇒ Pong
+          case x ⇒
+            println("+unknown status" + x.utf8String)
+            Response(None, ByteString.empty)
         }
+        Response(status, response.buffer.drop(length))
+
+      case ':' ⇒ readIntegerReply(response)
+      case '$' ⇒ readBulkReply(response)
+      case '*' ⇒ readMultiBulkReply(response)
+      case x   ⇒ println("hey " + x); Response(None, ByteString.empty)
     }
   }
 
-  def apply(data: ByteString) = {
-    data(0) match {
-      case '+' ⇒ // Status reply
-        data match {
-          case Ok(data) ⇒ Ok
-          case x        ⇒ println("+unknown " + x.utf8String)
-        }
+  def parse(response: Response[Any]): Response[Any] = {
+    response match {
+      case Response(_, ByteString.empty) ⇒ response
 
-      case ':' ⇒ parseIntegerReply(data)
-
-      case '$' ⇒ parseBulkReply(data)
-
-      case '*' ⇒ parseMultiBulkReply(data)
-
-      case x   ⇒ println("*unknown " + data.utf8String)
+      case reply                         ⇒ parse(readComponent(reply))
     }
   }
+
+  def apply(data: ByteString) = parse(Response(None, data)).value
 }
