@@ -1,4 +1,0 @@
-[0m[[0minfo[0m] [0m[32mRequestTest:[0m[0m
-[0m[[0minfo[0m] [0m[32mtoByteString [0m[0m
-[0m[[0minfo[0m] [0m[32m- should encode request as Redis protocol ByteString[0m[0m
-[0m[[0minfo[0m] [0m[32m- should encode request with 2 arguments[0m[0m
