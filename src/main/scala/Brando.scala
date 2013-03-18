@@ -6,27 +6,26 @@ import java.net.InetSocketAddress
 import akka.util.ByteString
 import collection.immutable.Queue
 
-case class Connect(manager: ActorRef, address: InetSocketAddress)
-case class Connected(connection: ActorRef)
+case class Connect(address: InetSocketAddress)
 case class Available(connection: ActorRef)
 
 class Connection extends Actor {
 
-  var tcpConnection: ActorRef = _
+  var socket: ActorRef = _
 
   var owner: ActorRef = _
   var caller: ActorRef = _
 
   def receive = {
 
-    case Connect(manager, address) ⇒
+    case Connect(address) ⇒
       owner = sender
-      manager ! Tcp.Connect(address)
+      IO(Tcp)(context.system) ! Tcp.Connect(address)
 
     case Tcp.Connected(remoteAddress, localAddress) ⇒
-      tcpConnection = sender
-      tcpConnection ! Tcp.Register(self)
-      owner ! Connected(self)
+      socket = sender
+      socket ! Tcp.Register(self)
+      owner ! Available(self)
 
     case Tcp.Received(data) ⇒
       caller ! Reply(data)
@@ -34,8 +33,13 @@ class Connection extends Actor {
 
     case request: Request ⇒
       caller = sender
-      tcpConnection ! Tcp.Write(request.toByteString, Tcp.NoAck)
+      socket ! Tcp.Write(request.toByteString, Tcp.NoAck)
 
+    case requests: List[_] ⇒
+      caller = sender
+      val requestBytes = requests.map(_.asInstanceOf[Request].toByteString)
+        .foldLeft(ByteString())(_ ++ _)
+      socket ! Tcp.Write(requestBytes, Tcp.NoAck)
   }
 
 }
@@ -43,39 +47,38 @@ class Connection extends Actor {
 class Brando extends Actor {
 
   val address = new InetSocketAddress("localhost", 6379)
-  val connectionManager = IO(Tcp)(context.system)
-  val connection = context.actorOf(Props[Connection])
+  val connectionActor = context.actorOf(Props[Connection])
 
-  var availableConnection: Option[ActorRef] = None
-  var pendingRequests = Queue[Pair[Request, ActorRef]]()
+  var readyConnection: Option[ActorRef] = None
+  var pendingRequests = Queue[Pair[Any, ActorRef]]()
 
-  connection ! Connect(connectionManager, address)
+  connectionActor ! Connect(address)
 
-  def openConnection(connection: ActorRef) =
-    if (pendingRequests.isEmpty) {
-      availableConnection = Some(connection)
-    } else {
-      val ((request, caller), queue) = pendingRequests.dequeue
-      pendingRequests = queue
-      connection.tell(request, caller)
+  def trySend(request: Any) =
+    readyConnection match {
+      case Some(connection) ⇒
+        readyConnection = None
+        connection forward request
+      case None ⇒
+        pendingRequests = pendingRequests.enqueue(Pair(request, sender))
     }
 
   def receive = {
 
-    case Connected(connection) ⇒ openConnection(connection)
-
-    case Available(connection) ⇒ openConnection(connection)
-
-    case request: Request ⇒
-      availableConnection match {
-        case Some(connection) ⇒
-          availableConnection = None
-          connection forward request
-        case None ⇒
-          pendingRequests = pendingRequests.enqueue(Pair(request, sender))
+    case Available(connection) ⇒
+      if (pendingRequests.isEmpty) {
+        readyConnection = Some(connection)
+      } else {
+        val ((request, caller), queue) = pendingRequests.dequeue
+        pendingRequests = queue
+        connection.tell(request, caller)
       }
 
-    case x ⇒ println("Unexpected " + x + "\r\n")
+    case request: Request  ⇒ trySend(request)
+
+    case requests: List[_] ⇒ trySend(requests)
+
+    case x                 ⇒ println("Unexpected " + x + "\r\n")
 
   }
 

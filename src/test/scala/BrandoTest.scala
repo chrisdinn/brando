@@ -138,4 +138,15 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
     }
 
   }
+
+  describe("piplining") {
+    it("should respond to a Seq of multiple requests all at once") {
+      val brando = system.actorOf(Props[Brando])
+      val ping = Request("PING")
+
+      brando ! List(ping, ping, ping)
+
+      expectMsg(List(Pong, Pong, Pong))
+    }
+  }
 }

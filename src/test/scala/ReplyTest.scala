@@ -69,4 +69,12 @@ class ReplyTest extends FunSpec {
     }
   }
 
+  describe("Pinelined replies") {
+    it("should parse pipelined replies") {
+      val reply = Reply(ByteString("+PONG\r\n+PONG\r\n+PONG\r\n"))
+
+      assert(reply === List(Reply.Pong, Reply.Pong, Reply.Pong))
+    }
+  }
+
 }
