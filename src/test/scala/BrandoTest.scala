@@ -9,7 +9,6 @@ import akka.util.ByteString
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
     with ImplicitSender {
-  import Reply.{ Ok, Pong }
 
   describe("ping") {
     it("should respond with Pong") {
@@ -17,7 +16,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("PING")
 
-      expectMsg(Pong)
+      expectMsg(Some(Pong))
     }
   }
 
@@ -27,7 +26,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("FLUSHDB")
 
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
   }
 
@@ -37,10 +36,10 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("SET", "mykey", "somevalue")
 
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
 
       brando ! Request("FLUSHDB")
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
   }
 
@@ -50,14 +49,14 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("SET", "mykey", "somevalue")
 
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
 
       brando ! Request("GET", "mykey")
 
       expectMsg(Some(ByteString("somevalue")))
 
       brando ! Request("FLUSHDB")
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
 
     it("should respond with None for non-existent key") {
@@ -75,14 +74,14 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("SET", "incr-test", "10")
 
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
 
       brando ! Request("INCR", "incr-test")
 
       expectMsg(Some(11))
 
       brando ! Request("FLUSHDB")
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
 
     it("should return 1 for non-existent key") {
@@ -93,7 +92,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       expectMsg(Some(1))
 
       brando ! Request("FLUSHDB")
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
   }
 
@@ -114,7 +113,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       expectMsg(Some(1))
 
       brando ! Request("FLUSHDB")
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
   }
 
@@ -128,13 +127,13 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("SMEMBERS", "smembers-test")
 
-      val resp = receiveOne(500.millis).asInstanceOf[List[Any]]
-      assert(resp.toSet ===
+      val resp = receiveOne(500.millis).asInstanceOf[Option[List[Any]]]
+      assert(resp.getOrElse(List()).toSet ===
         Set(Some(ByteString("one")), Some(ByteString("two")),
           Some(ByteString("three")), Some(ByteString("four"))))
 
       brando ! Request("FLUSHDB")
-      expectMsg(Ok)
+      expectMsg(Some(Ok))
     }
 
   }
@@ -146,7 +145,34 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! List(ping, ping, ping)
 
-      expectMsg(List(Pong, Pong, Pong))
+      expectMsg(List(Some(Pong), Some(Pong), Some(Pong)))
+    }
+  }
+
+  describe("large data sets") {
+    it("should read and write large files") {
+      import java.io.{ File, FileInputStream }
+
+      val file = new File("src/test/resources/crime_and_punishment.txt")
+      val in = new FileInputStream(file)
+      val bytes = new Array[Byte](file.length.toInt)
+      in.read(bytes)
+      in.close()
+
+      val largeText = new String(bytes, "UTF-8")
+
+      val brando = system.actorOf(Props[Brando])
+
+      brando ! Request("SET", "crime+and+punishment", largeText)
+
+      expectMsg(Some(Ok))
+
+      brando ! Request("GET", "crime+and+punishment")
+
+      expectMsg(Some(ByteString(largeText)))
+
+      brando ! Request("FLUSHDB")
+      expectMsg(Some(Ok))
     }
   }
 }
