@@ -3,25 +3,6 @@ package brando
 import annotation.tailrec
 import akka.util.ByteString
 
-abstract class StatusReply(val status: String)
-case object Ok extends StatusReply("OK")
-case object Pong extends StatusReply("PONG")
-
-object StatusReply {
-  def apply(status: ByteString) = {
-    status.utf8String match {
-      case Ok.status   ⇒ Some(Ok)
-      case Pong.status ⇒ Some(Pong)
-      case _           ⇒ None
-    }
-  }
-
-  def unapply(reply: ByteString) =
-    if (reply.startsWith(ByteString("+")) && reply.endsWith(ByteString("\r\n")))
-      apply(reply.drop(1).dropRight(2))
-    else None
-}
-
 object ReplyParser {
 
   trait Result {
@@ -41,7 +22,6 @@ object ReplyParser {
       case StatusReply(reply) ⇒
         Success(Some(reply), buffer.drop(length))
       case x ⇒
-        println("+unknown status" + x.utf8String)
         Failure(buffer)
     }
   }
@@ -86,11 +66,11 @@ object ReplyParser {
             case failure: Failure ⇒ Failure(buffer)
 
             case Success(newReply, next) ⇒
-              var replyList = result.reply.map(_.asInstanceOf[List[Option[Any]]])
+              var replyList = 
+                result.reply.map(_.asInstanceOf[List[Option[Any]]])
               var newReplyList = replyList map (_ :+ newReply)
 
               readComponents(i - 1, Success(newReplyList, next))
-
           }
       }
 

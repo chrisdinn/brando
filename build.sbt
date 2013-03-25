@@ -1,8 +1,8 @@
 name := "brando"
 
-organization := "ca.chrisdinn"
+organization := "com.digital-achiever"
 
-version := "0.4.0-SNAPSHOT"
+version := "0.0.1-SNAPSHOT"
 
 scalaVersion := "2.10.0"
 
@@ -15,3 +15,10 @@ libraryDependencies ++= Seq(
 )
 
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+
+publishTo <<= version { (v: String) =>
+  if (v.trim.endsWith("-SNAPSHOT")) 
+    Some(Resolver.file("Snapshots", file("../chrisdinn.github.com/snapshots/")))
+  else
+    Some(Resolver.file("Releases", file("../chrisdinn.github.com/releases/")))
+}
