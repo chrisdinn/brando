@@ -81,4 +81,12 @@ class ReplyParserTest extends FunSpec {
       assert(result === Success(expected))
     }
   }
+
+  describe("parsing empty replies") {
+    it("should return a failure if remaining partial response is empty") {
+      val result = parse(ByteString())
+
+      assert(result === Failure(ByteString()))
+    }
+  }
 }

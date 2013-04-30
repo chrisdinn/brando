@@ -147,6 +147,15 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       expectMsg(List(Some(Pong), Some(Pong), Some(Pong)))
     }
+
+    it("should support pipelines of setex commands") {
+      val brando = system.actorOf(Brando())
+      val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
+
+      brando ! List(setex, setex, setex)
+
+      expectMsg(List(Some(Ok), Some(Ok), Some(Ok)))
+    }
   }
 
   describe("large data sets") {

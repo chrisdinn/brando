@@ -85,6 +85,10 @@ object ReplyParser {
       case '*' ⇒ readMultiBulkReply(reply)
     }
 
-  def parse(reply: ByteString) = readComponent(reply)
-
+  def parse(reply: ByteString) =
+    if (reply.isEmpty) {
+      Failure(reply)
+    } else {
+      readComponent(reply)
+    }
 }
