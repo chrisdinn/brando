@@ -12,7 +12,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("ping") {
     it("should respond with Pong") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("PING")
 
@@ -22,7 +22,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("flushdb") {
     it("should respond with OK") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("FLUSHDB")
 
@@ -32,7 +32,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("set") {
     it("should respond with OK") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -45,7 +45,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("get") {
     it("should respond with value option for existing key") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -60,7 +60,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
     }
 
     it("should respond with None for non-existent key") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("GET", "mykey")
 
@@ -70,7 +70,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("incr") {
     it("should increment and return value for existing key") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("SET", "incr-test", "10")
 
@@ -85,7 +85,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
     }
 
     it("should return 1 for non-existent key") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("INCR", "incr-test")
 
@@ -98,7 +98,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("sadd") {
     it("should return number of members added to set") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("SADD", "sadd-test", "one")
 
@@ -119,7 +119,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("smembers") {
     it("should return all members in a set") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("SADD", "smembers-test", "one", "two", "three", "four")
 
@@ -140,7 +140,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
   describe("piplining") {
     it("should respond to a Seq of multiple requests all at once") {
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
       val ping = Request("PING")
 
       brando ! List(ping, ping, ping)
@@ -161,7 +161,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       val largeText = new String(bytes, "UTF-8")
 
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando())
 
       brando ! Request("SET", "crime+and+punishment", largeText)
 

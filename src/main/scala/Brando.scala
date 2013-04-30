@@ -26,7 +26,7 @@ class Connection extends Actor {
   @tailrec private def parseReply(bytes: ByteString) {
     parse(buffer ++ bytes) match {
       case Failure(leftoverBytes) ⇒
-        buffer = buffer ++ leftoverBytes
+        buffer = leftoverBytes
 
       case Success(reply, leftoverBytes) ⇒
         replies = replies :+ reply
@@ -98,9 +98,14 @@ object StatusReply {
     else None
 }
 
-class Brando extends Actor {
+object Brando {
+  def apply(host: String, port: Int): Props = Props(classOf[Brando], host, port)
+  def apply(): Props = Props(classOf[Brando], "localhost", 6379)
+}
 
-  val address = new InetSocketAddress("localhost", 6379)
+class Brando(host: String, port: Int) extends Actor {
+
+  val address = new InetSocketAddress(host, port)
   val connectionActor = context.actorOf(Props[Connection])
 
   var readyConnection: Option[ActorRef] = None

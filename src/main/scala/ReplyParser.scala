@@ -66,7 +66,7 @@ object ReplyParser {
             case failure: Failure ⇒ Failure(buffer)
 
             case Success(newReply, next) ⇒
-              var replyList = 
+              var replyList =
                 result.reply.map(_.asInstanceOf[List[Option[Any]]])
               var newReplyList = replyList map (_ :+ newReply)
 

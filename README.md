@@ -17,7 +17,7 @@ To use talk to Redis, create a Brando actor and send it requests and be prepared
 
       import brando._
 
-      val brando = system.actorOf(Props[Brando])
+      val brando = system.actorOf(Brando("localhost",6379))
 
       brando ! Request("SET", "some-key", "this-value")
 
