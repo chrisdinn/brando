@@ -2,7 +2,12 @@ package brando
 
 import akka.util.ByteString
 
-case class Request(command: String, params: String*) {
+object Request {
+  def apply(command: String, params: String*) =
+    new Request(ByteString(command), params map (ByteString(_)): _*)
+}
+
+case class Request(command: ByteString, params: ByteString*) {
   val CRLF = ByteString("\r\n")
 
   def args = command :: params.toList
@@ -11,8 +16,6 @@ case class Request(command: String, params: String*) {
 
   private def header = ByteString("*" + args.length) ++ CRLF
 
-  private def argLine(arg: String) = {
-    val bytes = ByteString(arg)
+  private def argLine(bytes: ByteString) =
     ByteString("$" + bytes.length) ++ CRLF ++ bytes ++ CRLF
-  }
 }

@@ -5,7 +5,6 @@ import akka.io.{ IO, Tcp }
 import java.net.InetSocketAddress
 import akka.util.ByteString
 
-import collection.immutable.Queue
 import annotation.tailrec
 
 case class Connect(address: InetSocketAddress)
@@ -79,16 +78,18 @@ class Connection extends Actor {
 
 }
 
-abstract class StatusReply(val status: String)
+abstract class StatusReply(val status: String) {
+  val bytes = ByteString(status)
+}
 case object Ok extends StatusReply("OK")
 case object Pong extends StatusReply("PONG")
 
 object StatusReply {
   def apply(status: ByteString) = {
-    status.utf8String match {
-      case Ok.status   ⇒ Some(Ok)
-      case Pong.status ⇒ Some(Pong)
-      case _           ⇒ None
+    status match {
+      case Ok.bytes   ⇒ Some(Ok)
+      case Pong.bytes ⇒ Some(Pong)
+      case _          ⇒ None
     }
   }
 
@@ -109,7 +110,7 @@ class Brando(host: String, port: Int) extends Actor {
   val connectionActor = context.actorOf(Props[Connection])
 
   var readyConnection: Option[ActorRef] = None
-  var pendingRequests = Queue[Pair[Any, ActorRef]]()
+  val pendingRequests = collection.mutable.Queue.empty[Pair[Any, ActorRef]]
 
   connectionActor ! Connect(address)
 
@@ -119,7 +120,7 @@ class Brando(host: String, port: Int) extends Actor {
         readyConnection = None
         connection forward request
       case None ⇒
-        pendingRequests = pendingRequests.enqueue(Pair(request, sender))
+        pendingRequests.enqueue(Pair(request, sender))
     }
 
   def receive = {
@@ -128,8 +129,7 @@ class Brando(host: String, port: Int) extends Actor {
       if (pendingRequests.isEmpty) {
         readyConnection = Some(connection)
       } else {
-        val ((request, caller), queue) = pendingRequests.dequeue
-        pendingRequests = queue
+        val (request, caller) = pendingRequests.dequeue
         connection.tell(request, caller)
       }
 

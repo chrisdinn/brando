@@ -4,7 +4,6 @@ import org.scalatest.FunSpec
 import akka.util.ByteString
 
 class RequestTest extends FunSpec {
-
   describe("toByteString") {
     it("should encode request as Redis protocol ByteString") {
       val request = Request("GET", "mykey")
@@ -14,7 +13,7 @@ class RequestTest extends FunSpec {
     }
 
     it("should encode request with 2 arguments") {
-      val request = Request("SET", "mykey", "somevalue")
+      val request = Request(ByteString("SET"), ByteString("mykey"), ByteString("somevalue"))
       val expected = ByteString("*3\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$9\r\nsomevalue\r\n")
 
       assert(request.toByteString === expected)
