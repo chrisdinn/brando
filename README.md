@@ -9,7 +9,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.com/snapshots/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.1-SNAPSHOT"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.2-SNAPSHOT"
 
 ## Getting started
 
