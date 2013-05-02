@@ -143,18 +143,45 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       val brando = system.actorOf(Brando())
       val ping = Request("PING")
 
-      brando ! List(ping, ping, ping)
+      brando ! ping
+      brando ! ping
+      brando ! ping
 
-      expectMsg(List(Some(Pong), Some(Pong), Some(Pong)))
+      expectMsg(Some(Pong))
+      expectMsg(Some(Pong))
+      expectMsg(Some(Pong))
+
     }
 
     it("should support pipelines of setex commands") {
       val brando = system.actorOf(Brando())
       val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
 
-      brando ! List(setex, setex, setex)
+      brando ! setex
+      brando ! setex
+      brando ! setex
 
-      expectMsg(List(Some(Ok), Some(Ok), Some(Ok)))
+      expectMsg(Some(Ok))
+      expectMsg(Some(Ok))
+      expectMsg(Some(Ok))
+    }
+
+    it("should receive responses in the right order") {
+      val brando = system.actorOf(Brando())
+      val ping = Request("PING")
+      val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
+
+      brando ! setex
+      brando ! ping
+      brando ! setex
+      brando ! ping
+      brando ! setex
+
+      expectMsg(Some(Ok))
+      expectMsg(Some(Pong))
+      expectMsg(Some(Ok))
+      expectMsg(Some(Pong))
+      expectMsg(Some(Ok))
     }
   }
 

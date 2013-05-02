@@ -3,7 +3,9 @@ package brando
 import annotation.tailrec
 import akka.util.ByteString
 
-object ReplyParser {
+trait ReplyParser {
+
+  var buffer = ByteString.empty
 
   trait Result {
     val reply: Option[Any]
@@ -91,4 +93,20 @@ object ReplyParser {
     } else {
       readComponent(reply)
     }
+
+  @tailrec final def parseReply(bytes: ByteString)(withReply: Any ⇒ Unit) {
+    parse(buffer ++ bytes) match {
+      case Failure(leftoverBytes) ⇒
+        buffer = leftoverBytes
+
+      case Success(reply, leftoverBytes) ⇒
+        buffer = ByteString.empty
+        withReply(reply)
+
+        if (leftoverBytes.size > 0) {
+          parseReply(leftoverBytes)(withReply)
+        }
+    }
+  }
+
 }

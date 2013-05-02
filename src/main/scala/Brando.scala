@@ -5,48 +5,33 @@ import akka.io.{ IO, Tcp }
 import java.net.InetSocketAddress
 import akka.util.ByteString
 
+import collection.mutable
 import annotation.tailrec
 
 case class Connect(address: InetSocketAddress)
 case class Available(connection: ActorRef)
 
-class Connection extends Actor {
-  import ReplyParser._
+case class CommandAck(sender: ActorRef)
+
+class Connection extends Actor with ReplyParser {
 
   var socket: ActorRef = _
 
+  val requesterQueue = mutable.Queue[ActorRef]()
   var owner: ActorRef = _
-  var caller: ActorRef = _
-
-  var expectedReplyCount = 0
-  var replies = List.empty[Option[Any]]
-  var buffer = ByteString.empty
-
-  @tailrec private def parseReply(bytes: ByteString) {
-    parse(buffer ++ bytes) match {
-      case Failure(leftoverBytes) ⇒
-        buffer = leftoverBytes
-
-      case Success(reply, leftoverBytes) ⇒
-        replies = replies :+ reply
-
-        replies.length match {
-          case x if x == expectedReplyCount ⇒
-            if (replies.length > 1)
-              caller ! replies
-            else
-              caller ! replies.head
-
-            replies = List.empty
-            buffer = ByteString.empty
-            owner ! Available(self)
-
-          case _ ⇒ parseReply(leftoverBytes)
-        }
-    }
-  }
 
   def receive = {
+    case request: Request ⇒
+      socket ! Tcp.Write(request.toByteString, CommandAck(sender))
+
+    case CommandAck(sender) ⇒ requesterQueue.enqueue(sender)
+
+    case Tcp.Received(data) ⇒ parseReply(data) { reply ⇒
+      requesterQueue.dequeue ! reply
+    }
+
+    case Tcp.CommandFailed(writeMessage) ⇒
+      socket ! writeMessage //just retry immediately
 
     case Connect(address) ⇒
       owner = sender
@@ -54,28 +39,11 @@ class Connection extends Actor {
 
     case Tcp.Connected(remoteAddress, localAddress) ⇒
       socket = sender
-      socket ! Tcp.Register(self)
+      socket ! Tcp.Register(self, useResumeWriting = false)
       owner ! Available(self)
-
-    case Tcp.Received(data) ⇒ parseReply(data)
-
-    case request: Request ⇒
-      caller = sender
-      expectedReplyCount = 1
-
-      socket ! Tcp.Write(request.toByteString, Tcp.NoAck)
-
-    case requests: List[_] ⇒
-      caller = sender
-      expectedReplyCount = requests.length
-      val requestBytes = requests.map(_.asInstanceOf[Request].toByteString)
-        .foldLeft(ByteString())(_ ++ _)
-
-      socket ! Tcp.Write(requestBytes, Tcp.NoAck)
 
     case x ⇒ println("connection didn't expect - " + x)
   }
-
 }
 
 abstract class StatusReply(val status: String) {
@@ -109,35 +77,30 @@ class Brando(host: String, port: Int) extends Actor {
   val address = new InetSocketAddress(host, port)
   val connectionActor = context.actorOf(Props[Connection])
 
-  var readyConnection: Option[ActorRef] = None
-  val pendingRequests = collection.mutable.Queue.empty[Pair[Any, ActorRef]]
+  type PendingRequest = (Request, ActorRef)
+
+  var connectionState: Either[mutable.Queue[PendingRequest], ActorRef] =
+    Left(mutable.Queue())
 
   connectionActor ! Connect(address)
 
-  def trySend(request: Any) =
-    readyConnection match {
-      case Some(connection) ⇒
-        readyConnection = None
-        connection forward request
-      case None ⇒
-        pendingRequests.enqueue(Pair(request, sender))
-    }
-
   def receive = {
 
-    case Available(connection) ⇒
-      if (pendingRequests.isEmpty) {
-        readyConnection = Some(connection)
-      } else {
-        val (request, caller) = pendingRequests.dequeue
-        connection.tell(request, caller)
-      }
+    case request: Request ⇒ connectionState match {
+      case Right(connection)     ⇒ connection forward request
+      case Left(pendingRequests) ⇒ pendingRequests.enqueue((request, sender))
+    }
 
-    case request: Request  ⇒ trySend(request)
+    case Available(connection) ⇒ connectionState match {
+      case Right(_) ⇒ connectionState = Right(connection)
+      case Left(pendingRequests) ⇒
+        pendingRequests foreach {
+          case (request, caller) ⇒ connection.tell(request, caller)
+        }
+        connectionState = Right(connection)
+    }
 
-    case requests: List[_] ⇒ trySend(requests)
-
-    case x                 ⇒ println("Unexpected " + x + "\r\n")
+    case x ⇒ println("Unexpected " + x + "\r\n")
 
   }
 

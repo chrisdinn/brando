@@ -4,7 +4,9 @@ import org.scalatest.FunSpec
 import akka.util.ByteString
 
 class ReplyParserTest extends FunSpec {
-  import ReplyParser._
+
+  object Parser extends ReplyParser
+  import Parser._
 
   describe("Status reply") {
     it("should decode Ok") {
@@ -36,7 +38,7 @@ class ReplyParserTest extends FunSpec {
     }
 
     it("should decode null as None") {
-      val result = ReplyParser.parse(ByteString("$-1\r\n"))
+      val result = parse(ByteString("$-1\r\n"))
 
       assert(result === Success(None))
     }
