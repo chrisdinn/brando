@@ -4,6 +4,7 @@ import org.scalatest.{ FunSpec, BeforeAndAfterAll }
 import akka.testkit._
 
 import akka.actor._
+import akka.actor.Status._
 import scala.concurrent.duration._
 import akka.util.ByteString
 
@@ -209,6 +210,26 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       brando ! Request("FLUSHDB")
       expectMsg(Some(Ok))
+    }
+  }
+
+  describe("error reply") {
+    it("should receive a failure with the redis error message") {
+      val brando = system.actorOf(Brando())
+
+      brando ! Request("SET", "key")
+
+      expectMsgPF(5.seconds) {
+        case Status.Failure(e) ⇒
+          assert(e.getMessage === "ERR wrong number of arguments for 'set' command")
+      }
+
+      brando ! Request("EXPIRE", "1", "key")
+
+      expectMsgPF(5.seconds) {
+        case Status.Failure(e) ⇒
+          assert(e.getMessage === "ERR value is not an integer or out of range")
+      }
     }
   }
 }

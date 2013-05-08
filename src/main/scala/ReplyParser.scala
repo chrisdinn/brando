@@ -2,6 +2,7 @@ package brando
 
 import annotation.tailrec
 import akka.util.ByteString
+import akka.actor.Status
 
 trait ReplyParser {
 
@@ -18,6 +19,17 @@ trait ReplyParser {
     val reply = None
   }
 
+  def readErrorReply(buffer: ByteString) = {
+    val length = buffer.prefixLength(_ != '\r') + 2
+    buffer.take(length) match {
+      case ErrorReply(reply) ⇒
+        val remainder = buffer.drop(length)
+        Success(Some(Status.Failure(new Exception(reply.utf8String))), remainder)
+      case x ⇒
+        Failure(buffer)
+    }
+  }
+
   def readStatusReply(buffer: ByteString) = {
     val length = buffer.prefixLength(_ != '\r') + 2
     buffer.take(length) match {
@@ -29,10 +41,13 @@ trait ReplyParser {
   }
 
   def readIntegerReply(buffer: ByteString) = {
-    val intBytes = buffer.takeWhile(_ != '\r').drop(1)
-    val remainder = buffer.drop(1 + intBytes.length + 2)
-
-    Success(Some(intBytes.utf8String.toInt), remainder)
+    val length = buffer.prefixLength(_ != '\r') + 2
+    buffer.take(length) match {
+      case IntegerReply(reply) ⇒
+        Success(Some(reply.utf8String.toInt), buffer.drop(length))
+      case x ⇒
+        Failure(buffer)
+    }
   }
 
   def readBulkReply(buffer: ByteString) = {
@@ -85,6 +100,7 @@ trait ReplyParser {
       case ':' ⇒ readIntegerReply(reply)
       case '$' ⇒ readBulkReply(reply)
       case '*' ⇒ readMultiBulkReply(reply)
+      case '-' ⇒ readErrorReply(reply)
     }
 
   def parse(reply: ByteString) =

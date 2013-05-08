@@ -1,6 +1,6 @@
 package brando
 
-import akka.actor.{ Actor, ActorRef, Props }
+import akka.actor.{ Actor, ActorRef, Props, Status }
 import akka.io.{ IO, Tcp }
 import java.net.InetSocketAddress
 import akka.util.ByteString
@@ -26,10 +26,13 @@ class Connection extends Actor with ReplyParser {
 
     case CommandAck(sender) ⇒ requesterQueue.enqueue(sender)
 
-    case Tcp.Received(data) ⇒ parseReply(data) { reply ⇒
-      requesterQueue.dequeue ! reply
-    }
-
+    case Tcp.Received(data) ⇒
+      parseReply(data) { reply ⇒
+        requesterQueue.dequeue ! (reply match {
+          case Some(failure) if failure.isInstanceOf[Status.Failure] ⇒ failure
+          case success ⇒ success
+        })
+      }
     case Tcp.CommandFailed(writeMessage) ⇒
       socket ! writeMessage //just retry immediately
 
@@ -44,6 +47,20 @@ class Connection extends Actor with ReplyParser {
 
     case x ⇒ println("connection didn't expect - " + x)
   }
+}
+
+object IntegerReply {
+  def unapply(reply: ByteString) =
+    if (reply.startsWith(ByteString(":")) && reply.endsWith(ByteString("\r\n")))
+      Some(reply.drop(1).dropRight(2))
+    else None
+}
+
+object ErrorReply {
+  def unapply(reply: ByteString) =
+    if (reply.startsWith(ByteString("-")) && reply.endsWith(ByteString("\r\n")))
+      Some(reply.drop(1).dropRight(2))
+    else None
 }
 
 abstract class StatusReply(val status: String) {
