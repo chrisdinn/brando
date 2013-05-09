@@ -4,6 +4,41 @@ import annotation.tailrec
 import akka.util.ByteString
 import akka.actor.Status
 
+object IntegerReply {
+  def unapply(reply: ByteString) =
+    if (reply.startsWith(ByteString(":")) && reply.endsWith(ByteString("\r\n")))
+      Some(reply.drop(1).dropRight(2))
+    else None
+}
+
+object ErrorReply {
+  def unapply(reply: ByteString) =
+    if (reply.startsWith(ByteString("-")) && reply.endsWith(ByteString("\r\n")))
+      Some(reply.drop(1).dropRight(2))
+    else None
+}
+
+abstract class StatusReply(val status: String) {
+  val bytes = ByteString(status)
+}
+case object Ok extends StatusReply("OK")
+case object Pong extends StatusReply("PONG")
+
+object StatusReply {
+  def apply(status: ByteString) = {
+    status match {
+      case Ok.bytes   ⇒ Some(Ok)
+      case Pong.bytes ⇒ Some(Pong)
+      case _          ⇒ None
+    }
+  }
+
+  def unapply(reply: ByteString) =
+    if (reply.startsWith(ByteString("+")) && reply.endsWith(ByteString("\r\n")))
+      apply(reply.drop(1).dropRight(2))
+    else None
+}
+
 trait ReplyParser {
 
   var buffer = ByteString.empty
@@ -124,5 +159,4 @@ trait ReplyParser {
         }
     }
   }
-
 }

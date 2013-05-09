@@ -2,16 +2,23 @@ package brando
 
 import akka.actor.{ Actor, ActorRef, Props, Status }
 import akka.io.{ IO, Tcp }
-import java.net.InetSocketAddress
-import akka.util.ByteString
+import akka.util.{ ByteString, Timeout }
+import akka.pattern.{ ask, pipe }
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.duration._
 
+import com.typesafe.config.ConfigFactory
+import java.net.InetSocketAddress
 import collection.mutable
 import annotation.tailrec
 
-case class Connect(address: InetSocketAddress)
-case class Available(connection: ActorRef)
+import ExecutionContext.Implicits.global
 
+case class Connect(address: InetSocketAddress)
 case class CommandAck(sender: ActorRef)
+object StartProcess
+object Available
+object UnAvailable
 
 class Connection extends Actor with ReplyParser {
 
@@ -33,8 +40,15 @@ class Connection extends Actor with ReplyParser {
           case success ⇒ success
         })
       }
-    case Tcp.CommandFailed(writeMessage) ⇒
+
+    case Tcp.CommandFailed(writeMessage: Tcp.Write) ⇒
       socket ! writeMessage //just retry immediately
+
+    case Tcp.CommandFailed(_: Tcp.Connect) ⇒
+      owner ! UnAvailable
+
+    case x: Tcp.ConnectionClosed ⇒
+      owner ! UnAvailable
 
     case Connect(address) ⇒
       owner = sender
@@ -43,63 +57,42 @@ class Connection extends Actor with ReplyParser {
     case Tcp.Connected(remoteAddress, localAddress) ⇒
       socket = sender
       socket ! Tcp.Register(self, useResumeWriting = false)
-      owner ! Available(self)
+      owner ! Available
 
     case x ⇒ println("connection didn't expect - " + x)
   }
 }
 
-object IntegerReply {
-  def unapply(reply: ByteString) =
-    if (reply.startsWith(ByteString(":")) && reply.endsWith(ByteString("\r\n")))
-      Some(reply.drop(1).dropRight(2))
-    else None
-}
-
-object ErrorReply {
-  def unapply(reply: ByteString) =
-    if (reply.startsWith(ByteString("-")) && reply.endsWith(ByteString("\r\n")))
-      Some(reply.drop(1).dropRight(2))
-    else None
-}
-
-abstract class StatusReply(val status: String) {
-  val bytes = ByteString(status)
-}
-case object Ok extends StatusReply("OK")
-case object Pong extends StatusReply("PONG")
-
-object StatusReply {
-  def apply(status: ByteString) = {
-    status match {
-      case Ok.bytes   ⇒ Some(Ok)
-      case Pong.bytes ⇒ Some(Pong)
-      case _          ⇒ None
-    }
-  }
-
-  def unapply(reply: ByteString) =
-    if (reply.startsWith(ByteString("+")) && reply.endsWith(ByteString("\r\n")))
-      apply(reply.drop(1).dropRight(2))
-    else None
-}
-
 object Brando {
-  def apply(host: String, port: Int): Props = Props(classOf[Brando], host, port)
-  def apply(): Props = Props(classOf[Brando], "localhost", 6379)
+  def apply(
+    host: String,
+    port: Int,
+    database: Option[Int] = None,
+    auth: Option[String] = None): Props = Props(classOf[Brando], host, port, database, auth)
+  def apply(): Props = Props(classOf[Brando], "localhost", 6379, None, None)
 }
 
-class Brando(host: String, port: Int) extends Actor {
-
-  val address = new InetSocketAddress(host, port)
-  val connectionActor = context.actorOf(Props[Connection])
+class Brando(
+    host: String,
+    port: Int,
+    database: Option[Int],
+    auth: Option[String]) extends Actor {
 
   type PendingRequest = (Request, ActorRef)
+
+  val config = ConfigFactory.load()
+  val retryDuration: Long = config.getMilliseconds("brando.connection_retry")
+  val timeoutDuration: Long = config.getMilliseconds("brando.timeout")
+
+  implicit val timeout = Timeout(timeoutDuration.milliseconds)
+
+  val address = new InetSocketAddress(host, port)
+  val connection = context.actorOf(Props[Connection])
 
   var connectionState: Either[mutable.Queue[PendingRequest], ActorRef] =
     Left(mutable.Queue())
 
-  connectionActor ! Connect(address)
+  connection ! Connect(address)
 
   def receive = {
 
@@ -108,17 +101,36 @@ class Brando(host: String, port: Int) extends Actor {
       case Left(pendingRequests) ⇒ pendingRequests.enqueue((request, sender))
     }
 
-    case Available(connection) ⇒ connectionState match {
-      case Right(_) ⇒ connectionState = Right(connection)
-      case Left(pendingRequests) ⇒
-        pendingRequests foreach {
-          case (request, caller) ⇒ connection.tell(request, caller)
-        }
-        connectionState = Right(connection)
-    }
+    case StartProcess ⇒
+      connectionState match {
+        case Right(_) ⇒
+          connectionState = Right(connection)
+        case Left(pendingRequests) ⇒
+          pendingRequests foreach {
+            case (request, caller) ⇒ connection.tell(request, caller)
+          }
+          connectionState = Right(connection)
+      }
+
+    case Available ⇒
+      (for {
+        auth ← if (auth.isDefined) connection ? Request(ByteString("AUTH"), ByteString(auth.get)) else Future.successful()
+        database ← if (database.isDefined) connection ? Request(ByteString("SELECT"), ByteString(database.get.toString)) else Future.successful()
+      } yield (StartProcess)) map {
+        self ! _
+      } onFailure {
+        case e: Exception ⇒
+          throw e
+      }
+
+    case UnAvailable ⇒
+      context.system.scheduler.scheduleOnce(retryDuration.milliseconds, connection, Connect(address))
+      connectionState match {
+        case Right(_) ⇒
+          connectionState = Left(mutable.Queue())
+        case Left(_) ⇒
+      }
 
     case x ⇒ println("Unexpected " + x + "\r\n")
-
   }
-
 }

@@ -232,4 +232,32 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       }
     }
   }
+
+  describe("select") {
+    it("should execute commands on the selected database") {
+      val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
+
+      brando ! Request("SET", "mykey", "somevalue")
+
+      expectMsg(Some(Ok))
+
+      brando ! Request("GET", "mykey")
+
+      expectMsg(Some(ByteString("somevalue")))
+
+      brando ! Request("SELECT", "0")
+
+      expectMsg(Some(Ok))
+
+      brando ! Request("GET", "mykey")
+
+      expectMsg(None)
+
+      brando ! Request("SELECT", "5")
+      expectMsg(Some(Ok))
+
+      brando ! Request("FLUSHDB")
+      expectMsg(Some(Ok))
+    }
+  }
 }
