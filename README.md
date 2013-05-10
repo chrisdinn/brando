@@ -37,6 +37,4 @@ To use talk to Redis, create a Brando actor and send it requests and be prepared
 
       brando ! Request("GET", "non-existent-key")
 
-      // Response: None      
-
-Brando only talks to localhost and Redis's default port, 6379.
+      // Response: None
