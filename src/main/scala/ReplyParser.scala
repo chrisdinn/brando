@@ -44,7 +44,7 @@ trait ReplyParser {
     val length = buffer.prefixLength(_ != '\r') + 2
     buffer.take(length) match {
       case IntegerReply(reply) ⇒
-        Success(Some(reply.utf8String.toInt), buffer.drop(length))
+        Success(Some(reply.utf8String.toLong), buffer.drop(length))
       case x ⇒
         Failure(buffer)
     }

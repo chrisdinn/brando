@@ -23,10 +23,11 @@ class ReplyParserTest extends FunSpec {
   }
 
   describe("Integer reply") {
-    it("should decode as integer") {
-      val result = parse(ByteString(":17575\r\n"))
-
-      assert(result === Success(Some(17575)))
+    it("should decode as long") {
+      parse(ByteString(":17575\r\n")) match {
+        case Success(Some(i: Long), next) ⇒ assert(i == 17575L)
+        case _                            ⇒ assert(false)
+      }
     }
   }
 
