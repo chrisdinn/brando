@@ -20,4 +20,11 @@ class RequestTest extends FunSpec {
     }
   }
 
+  describe("HashRequest") {
+    it("should create a request that contains all the arguments merged together") {
+      val req = HashRequest("HMSET", "setkey", Map("a" -> "a", "b" -> "b"))
+      expectResult(Request("HMSET", "setkey", "a", "a", "b", "b"))(req)
+    }
+  }
+
 }
