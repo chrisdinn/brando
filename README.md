@@ -38,3 +38,22 @@ To use talk to Redis, create a Brando actor and send it requests and be prepared
       brando ! Request("GET", "non-existent-key")
 
       // Response: None
+
+## Use Response extractors
+Brando actor forwards the reply as redis send it back. However, some extractors are provided to help mapping the responses to scala types.
+
+      for{ Response.AsString(value) ← brando ? Request("GET", "key") } yield value
+      
+      //value: String
+      
+      for{ Response.AsStrings(values) ← brando ? Request("KEYS", "*") } yield values
+      
+      //values: Seq[String]
+      
+      for{ Response.AsByteSeqs(value) ← brando ? Request("GET", "key") } yield value
+      
+      //value: Seq[Byte]
+      
+      for{ Response.AsStringsHash(fields) ← brando ? Request("HGETALL", "hash-key") } yield fields
+      
+      //value: Map[String,String]
