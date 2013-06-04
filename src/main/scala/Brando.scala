@@ -15,7 +15,7 @@ import annotation.tailrec
 import ExecutionContext.Implicits.global
 
 case class Connect(address: InetSocketAddress)
-case class CommandAck(sender: ActorRef)
+case class CommandAck(sender: ActorRef) extends Tcp.Event
 object StartProcess
 object Available
 object UnAvailable

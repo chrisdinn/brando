@@ -2,16 +2,16 @@ name := "brando"
 
 organization := "com.digital-achiever"
 
-version := "0.0.3"
+version := "0.0.4-SNAPSHOT"
 
 scalaVersion := "2.10.1"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.2-M3",
+  "com.typesafe.akka" %% "akka-actor" % "2.2.0-RC1",
   "org.scalatest" %% "scalatest" % "1.9.1" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.2-M3" % "test"
+  "com.typesafe.akka" %% "akka-testkit" % "2.2.0-RC1" % "test"
 )
 
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
