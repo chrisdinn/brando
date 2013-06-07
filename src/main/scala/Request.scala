@@ -15,6 +15,8 @@ object HashRequest {
   }
 }
 
+case class ShardRequest(command: String, key: String, params: String*)
+
 case class Request(command: ByteString, params: ByteString*) {
   val CRLF = ByteString("\r\n")
 
