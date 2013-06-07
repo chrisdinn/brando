@@ -3,6 +3,7 @@ package brando
 import java.util.zip.CRC32
 import collection.mutable
 import akka.actor.{ Actor, ActorRef }
+import akka.util.ByteString
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
@@ -29,9 +30,9 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
     case x ⇒ println("ShardManager received unexpected " + x + "\r\n")
   }
 
-  def lookup(key: String) = {
+  def lookup(key: ByteString) = {
     val crc32 = new CRC32
-    crc32.update(key.getBytes)
+    crc32.update(key.toArray)
     val mod = crc32.getValue % pool.size
     val id = pool.keys.toIndexedSeq(mod.toInt)
     pool(id)
