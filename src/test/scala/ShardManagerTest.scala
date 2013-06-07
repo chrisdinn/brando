@@ -21,6 +21,25 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
 
       assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
     }
+
+    it("should support updating existing shards but not creating new ones") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 6379, Some(1)),
+        Shard("server3", "localhost", 6379, Some(2)))
+
+      val shardManager = TestActorRef(new ShardManager(shards))
+
+      assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
+
+      shardManager ! Shard("server1", "localhost", 6379, Some(6))
+
+      assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
+
+      shardManager ! Shard("new_server", "localhost", 6378, Some(3))
+
+      assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
+    }
   }
 
   describe("sending requests") {

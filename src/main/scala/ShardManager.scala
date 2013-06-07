@@ -7,11 +7,9 @@ import akka.actor.{ Actor, ActorRef }
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
 class ShardManager(shards: Seq[Shard]) extends Actor {
-  override def preStart = {
-    shards map { self ! _ }
-  }
+  val pool = mutable.Map.empty[String, ActorRef]
 
-  var pool: mutable.Map[String, ActorRef] = mutable.Map.empty[String, ActorRef]
+  shards.map(create(_))
 
   def receive = {
     case request: ShardRequest ⇒
@@ -20,11 +18,13 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
 
     case shard: Shard ⇒
       pool.get(shard.id) match {
-        case Some(client) ⇒ context.stop(client)
-        case _            ⇒
+        case Some(client) ⇒
+          context.stop(client)
+          create(shard)
+
+        case _ ⇒
+          println("Update received for unknown shard ID " + shard.id + "\r\n")
       }
-      val client = context.actorOf(Brando(shard.host, shard.port, shard.database, shard.auth))
-      pool(shard.id) = client
 
     case x ⇒ println("ShardManager received unexpected " + x + "\r\n")
   }
@@ -35,5 +35,10 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
     val mod = crc32.getValue % pool.size
     val id = pool.keys.toIndexedSeq(mod.toInt)
     pool(id)
+  }
+
+  def create(shard: Shard) {
+    val client = context.actorOf(Brando(shard.host, shard.port, shard.database, shard.auth))
+    pool(shard.id) = client
   }
 }
