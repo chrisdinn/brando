@@ -15,8 +15,6 @@ object HashRequest {
   }
 }
 
-case class ShardRequest(command: String, key: String, params: String*)
-
 case class Request(command: ByteString, params: ByteString*) {
   val CRLF = ByteString("\r\n")
 
@@ -29,3 +27,11 @@ case class Request(command: ByteString, params: ByteString*) {
   private def argLine(bytes: ByteString) =
     ByteString("$" + bytes.length) ++ CRLF ++ bytes ++ CRLF
 }
+
+object ShardRequest {
+  def apply(command: String, key: String, params: String*) = {
+    new ShardRequest(ByteString(command), ByteString(key), params map (ByteString(_)): _*)
+  }
+}
+
+case class ShardRequest(command: ByteString, key: ByteString, params: ByteString*)
