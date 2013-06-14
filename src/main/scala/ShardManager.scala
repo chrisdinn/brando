@@ -7,7 +7,18 @@ import akka.util.ByteString
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
-class ShardManager(shards: Seq[Shard]) extends Actor {
+object ShardManager {
+  def defaultHashFunction(input: Array[Byte]): Long = {
+    val crc32 = new CRC32
+    crc32.update(input)
+    crc32.getValue
+  }
+}
+
+class ShardManager(shards: Seq[Shard],
+  hashFunction: (Array[Byte] ⇒ Long) = ShardManager.defaultHashFunction)
+    extends Actor {
+
   val pool = mutable.Map.empty[String, ActorRef]
 
   shards.map(create(_))
@@ -31,9 +42,8 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
   }
 
   def lookup(key: ByteString) = {
-    val crc32 = new CRC32
-    crc32.update(key.toArray)
-    val mod = crc32.getValue % pool.size
+    val hash = hashFunction(key.toArray)
+    val mod = hash % pool.size
     val id = pool.keys.toIndexedSeq(mod.toInt)
     pool(id)
   }
@@ -43,3 +53,4 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
     pool(shard.id) = client
   }
 }
+
