@@ -2,12 +2,27 @@ package brando
 
 import java.util.zip.CRC32
 import collection.mutable
-import akka.actor.{ Actor, ActorRef }
+import akka.actor.{ Actor, ActorRef, Props }
 import akka.util.ByteString
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
-class ShardManager(shards: Seq[Shard]) extends Actor {
+object ShardManager {
+  def defaultHashFunction(input: Array[Byte]): Long = {
+    val crc32 = new CRC32
+    crc32.update(input)
+    crc32.getValue
+  }
+
+  def apply(shards: Seq[Shard],
+    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction): Props = {
+    Props(classOf[ShardManager], shards, hashFunction)
+  }
+}
+
+class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
+    extends Actor {
+
   val pool = mutable.Map.empty[String, ActorRef]
 
   shards.map(create(_))
@@ -31,9 +46,8 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
   }
 
   def lookup(key: ByteString) = {
-    val crc32 = new CRC32
-    crc32.update(key.toArray)
-    val mod = crc32.getValue % pool.size
+    val hash = hashFunction(key.toArray)
+    val mod = hash % pool.size
     val id = pool.keys.toIndexedSeq(mod.toInt)
     pool(id)
   }
@@ -43,3 +57,4 @@ class ShardManager(shards: Seq[Shard]) extends Actor {
     pool(shard.id) = client
   }
 }
+
