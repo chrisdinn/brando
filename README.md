@@ -81,3 +81,15 @@ Individual shards can have their configuration updated on the fly. To do this, s
 	shardManager ! Shard("redis1", "10.0.0.4", 6379)
 	
 This is intended to support failover via [Redis Sentinel](http://redis.io/topics/sentinel). Note that the id of the shard __MUST__ match one of the original shards configured when the `ShardManager` instance was created. Adding new shards is not supported.
+
+## License
+
+This project is released under the Apache License v2, for more details see the 'LICENSE' file.
+
+## Contributing
+
+Fork the project, add tests if possible and send a pull request.
+
+## Contributors
+
+Chris Dinn, Gaetan Hervouet, Damien Levin, Arron Norwell
