@@ -7,9 +7,9 @@ A Redis client written with the Akka IO package introduced in Akka 2.2.
 
 In your build.sbt
 
-    resolvers += "http://chrisdinn.github.com/snapshots/"
+    resolvers += "http://chrisdinn.github.com/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.3"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.4"
 
 ## Getting started
 
