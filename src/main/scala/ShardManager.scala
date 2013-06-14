@@ -2,7 +2,7 @@ package brando
 
 import java.util.zip.CRC32
 import collection.mutable
-import akka.actor.{ Actor, ActorRef }
+import akka.actor.{ Actor, ActorRef, Props }
 import akka.util.ByteString
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
@@ -13,10 +13,14 @@ object ShardManager {
     crc32.update(input)
     crc32.getValue
   }
+
+  def apply(shards: Seq[Shard],
+    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction): Props = {
+    Props(classOf[ShardManager], shards, hashFunction)
+  }
 }
 
-class ShardManager(shards: Seq[Shard],
-  hashFunction: (Array[Byte] ⇒ Long) = ShardManager.defaultHashFunction)
+class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
     extends Actor {
 
   val pool = mutable.Map.empty[String, ActorRef]

@@ -17,7 +17,7 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
         Shard("server2", "localhost", 6379, Some(1)),
         Shard("server3", "localhost", 6379, Some(2)))
 
-      val shardManager = TestActorRef(new ShardManager(shards))
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
 
       assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
     }
@@ -28,7 +28,7 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
         Shard("server2", "localhost", 6379, Some(1)),
         Shard("server3", "localhost", 6379, Some(2)))
 
-      val shardManager = TestActorRef(new ShardManager(shards))
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
 
       assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
 
@@ -49,7 +49,7 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
         Shard("server2", "localhost", 6379, Some(1)),
         Shard("server3", "localhost", 6379, Some(2)))
 
-      val shardManager = TestActorRef(new ShardManager(shards))
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
 
       shardManager ! ShardRequest("SET", "shard_manager_test", "some value")
 
