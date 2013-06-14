@@ -11,7 +11,7 @@ In your build.sbt
 
     libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.4"
 
-## Getting started
+### Getting started
 
 To use talk to Redis, create a Brando actor and send it requests and be prepared to handle the response.
 
@@ -39,7 +39,8 @@ To use talk to Redis, create a Brando actor and send it requests and be prepared
 
       // Response: None
 
-## Use Response extractors
+### Response extractors
+
 Brando actor forwards the reply as redis send it back. However, some extractors are provided to help mapping the responses to scala types.
 
       for{ Response.AsString(value) ← brando ? Request("GET", "key") } yield value
@@ -58,7 +59,7 @@ Brando actor forwards the reply as redis send it back. However, some extractors 
       
       //value: Map[String,String]
       
-## Presharding
+### Presharding
 
 Brando now provides preliminary support for sharding (AKA "Presharding"), as outlined [in the Redis documentation](http://redis.io/topics/partitioning) and in [this blog post from antirez](http://oldblog.antirez.com/post/redis-presharding.html).
 
