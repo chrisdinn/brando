@@ -1,5 +1,5 @@
-Brando (codename)
-=================
+Brando
+======
 
 A Redis client written with the Akka IO package introduced in Akka 2.2.
 
