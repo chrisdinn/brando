@@ -92,4 +92,4 @@ Fork the project, add tests if possible and send a pull request.
 
 ## Contributors
 
-Chris Dinn, Gaetan Hervouet, Damien Levin, Arron Norwell
+Chris Dinn, Gaetan Hervouet, Damien Levin, Matt MacAulay, Arron Norwell
