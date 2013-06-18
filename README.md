@@ -1,7 +1,7 @@
 Brando
 ======
 
-A Redis client written with the Akka IO package introduced in Akka 2.2.
+A lightweight Redis client for Akka 2.2.
 
 ## Using
 
@@ -13,7 +13,9 @@ In your build.sbt
 
 ### Getting started
 
-To use talk to Redis, create a Brando actor and send it requests and be prepared to handle the response.
+Brando is a lightweight wrapper around the [Redis protocol](http://redis.io/topics/protocol).
+
+Create a Brando actor with your server host and port. Send it a command and get your response as a reply.
 
       import brando._
 
@@ -41,7 +43,7 @@ To use talk to Redis, create a Brando actor and send it requests and be prepared
 
 ### Response extractors
 
-Brando actor forwards the reply as redis send it back. However, some extractors are provided to help mapping the responses to scala types.
+Use the provided extractors to map the response to its Scala type.
 
       for{ Response.AsString(value) ← brando ? Request("GET", "key") } yield value
       
