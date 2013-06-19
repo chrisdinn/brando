@@ -29,13 +29,13 @@ Create a Brando actor with your server host and port. Send it a command and get 
 
       // Response: Some(ByteString("this-value"))
 
-      brando ! Request("SADD", "some-set", "one", "two", "three")
+      brando ! Request("SADD", "some-set", "one", "two")
 
-      // Response: Some(3)
+      // Response: Some(2)
 
-      brando ! Request("GET", "some-set")
+      brando ! Request("SMEMBERS", "some-set")
 
-      // Response: Some(List(Some("one"), Some("two"), Some("three")))
+      // Response: Some(List(Some(ByteString("one")), Some(ByteString("two"))))
 
       brando ! Request("GET", "non-existent-key")
 
