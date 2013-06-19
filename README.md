@@ -59,7 +59,7 @@ Use the provided extractors to map the response to its Scala type.
       
       for{ Response.AsStringsHash(fields) ← brando ? Request("HGETALL", "hash-key") } yield fields
       
-      //value: Map[String,String]
+      //fields: Map[String,String]
       
 ### Presharding
 
