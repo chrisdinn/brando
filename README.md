@@ -41,6 +41,11 @@ Create a Brando actor with your server host and port. Send it a command and get 
 
       // Response: None
 
+Brando supports database selection and authentication.
+
+      val brando = system.actorOf(Brando("localhost",6379,Some(5),Some("password")))
+     
+
 ### Response extractors
 
 Use the provided extractors to map the response to its Scala type.
