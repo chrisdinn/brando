@@ -59,7 +59,7 @@ private[brando] trait ReplyParser {
     buffer.take(length) match {
       case ErrorReply(reply) ⇒
         val remainder = buffer.drop(length)
-        Success(Some(Status.Failure(new Exception(reply.utf8String))), remainder)
+        Success(Some(Status.Failure(new BrandoException(reply.utf8String))), remainder)
       case x ⇒
         Failure(buffer)
     }
