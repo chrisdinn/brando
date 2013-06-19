@@ -85,6 +85,10 @@ Individual shards can have their configuration updated on the fly. To do this, s
 	
 This is intended to support failover via [Redis Sentinel](http://redis.io/topics/sentinel). Note that the id of the shard __MUST__ match one of the original shards configured when the `ShardManager` instance was created. Adding new shards is not supported.
 
+## Documentation
+
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-0.0.4/](http://chrisdinn.github.io/api/brando-0.0.4/)
+
 ## License
 
 This project is released under the Apache License v2, for more details see the 'LICENSE' file.
