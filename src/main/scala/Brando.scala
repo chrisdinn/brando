@@ -14,7 +14,7 @@ import annotation.tailrec
 
 import ExecutionContext.Implicits.global
 
-private case class BrandoException(message: String) extends Exception(message) {
+class BrandoException(message: String) extends Exception(message) {
   override lazy val toString = "%s: %s\n".format(getClass.getName, message)
 }
 private case class Connect(address: InetSocketAddress)
