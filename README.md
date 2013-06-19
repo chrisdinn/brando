@@ -41,6 +41,12 @@ Status replies are returned as case objects, such as `Pong` and `Ok`.
 
       // Response: Some(Ok)
 
+Error replies are returned as `Failure`
+
+      brando ! Request("EXPIRE", "1", "key")
+	  
+	  // Response: Failure(brando.BrandoException: ERR value is not an integer or out of range)
+
 Integer replies are returned as `Option[Int]`. 
 
       brando ! Request("SADD", "some-set", "one", "two")

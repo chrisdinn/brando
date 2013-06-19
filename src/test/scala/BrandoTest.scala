@@ -221,6 +221,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       expectMsgPF(5.seconds) {
         case Status.Failure(e) ⇒
+          assert(e.isInstanceOf[BrandoException])
           assert(e.getMessage === "ERR wrong number of arguments for 'set' command")
       }
 
@@ -228,6 +229,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
 
       expectMsgPF(5.seconds) {
         case Status.Failure(e) ⇒
+          assert(e.isInstanceOf[BrandoException])
           assert(e.getMessage === "ERR value is not an integer or out of range")
       }
     }
