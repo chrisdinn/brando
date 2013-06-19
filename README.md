@@ -9,7 +9,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.com/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.4"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.5"
 
 ### Getting started
 
