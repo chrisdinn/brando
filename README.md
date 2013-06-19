@@ -15,40 +15,61 @@ In your build.sbt
 
 Brando is a lightweight wrapper around the [Redis protocol](http://redis.io/topics/protocol).
 
-Create a Brando actor with your server host and port. Send it a command and get your response as a reply.
+Create a Brando actor with your server host and port. 
 
       import brando._
 
-      val brando = system.actorOf(Brando("localhost",6379))
+      val brando = system.actorOf(Brando("localhost", 6379))
+
+You should specify a database and password if you intend to use them. 
+
+      val brando = system.actorOf(Brando("localhost", 6379, database = Some(5), auth = Some("password")))
+
+This is important; if your Brando actor restarts you want be sure it reconnects successfully and to the same database.
+
+Next, send it a command and get your response as a reply.
+
+      brando ! Request("PING")
+
+      // Response: Some(Pong)
+
+The Redis protocol supports 5 standard types of reply: Status, Error, Integer, Bulk and Multi Bulk as well as a special NULL Bulk reply. 
+
+Status replies are returned as case objects, such as `Pong` and `Ok`.
 
       brando ! Request("SET", "some-key", "this-value")
 
       // Response: Some(Ok)
 
-      brando ! Request("GET", "some-key")
-
-      // Response: Some(ByteString("this-value"))
+Integer replies are returned as `Option[Int]`. 
 
       brando ! Request("SADD", "some-set", "one", "two")
 
       // Response: Some(2)
 
+Bulk replies as `Option[akka.util.ByteString]`.
+
+      brando ! Request("GET", "some-key")
+
+      // Response: Some(ByteString("this-value"))
+
+Multi Bulk replies as `Option[List[Option[ByteString]]]`.
+
       brando ! Request("SMEMBERS", "some-set")
 
       // Response: Some(List(Some(ByteString("one")), Some(ByteString("two"))))
+
+NULL Bulk replies are returned as `None` and may appear either on their own or nested inside a Multi Bulk reply.
 
       brando ! Request("GET", "non-existent-key")
 
       // Response: None
 
-Brando supports database selection and authentication.
-
-      val brando = system.actorOf(Brando("localhost",6379,Some(5),Some("password")))
-     
+If you're not sure what to expect in response to a request, please refer to the Redis command documentation at [http://redis.io/commands](http://redis.io/commands) where the reply type for each is clearly stated.
 
 ### Response extractors
 
-Use the provided extractors to map the response to its Scala type.
+Use the provided response extractors to map your Redis reply to a more appropriate Scala type.
 
       for{ Response.AsString(value) ← brando ? Request("GET", "key") } yield value
       

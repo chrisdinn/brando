@@ -24,7 +24,7 @@ private class Connection extends Actor with ReplyParser {
 
   var socket: ActorRef = _
 
-  val requesterQueue = mutable.Queue[ActorRef]()
+  val requesterQueue = mutable.Queue.empty[ActorRef]
   var owner: ActorRef = _
 
   def receive = {
