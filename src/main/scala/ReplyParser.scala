@@ -21,15 +21,37 @@ object ErrorReply {
 abstract class StatusReply(val status: String) {
   val bytes = ByteString(status)
 }
+
+object ValueType {
+  case object String extends StatusReply("string")
+  case object List extends StatusReply("list")
+  case object Set extends StatusReply("set")
+  case object ZSet extends StatusReply("set")
+  case object Hash extends StatusReply("hash")
+
+  private[brando] def unapply(reply: ByteString) =
+    reply match {
+      case String.bytes ⇒ Some(String)
+      case List.bytes   ⇒ Some(List)
+      case Set.bytes    ⇒ Some(Set)
+      case ZSet.bytes   ⇒ Some(ZSet)
+      case Hash.bytes   ⇒ Some(Hash)
+      case _            ⇒ None
+    }
+}
+
 case object Ok extends StatusReply("OK")
 case object Pong extends StatusReply("PONG")
+case object Queued extends StatusReply("QUEUED")
 
-object StatusReply {
+private[brando] object StatusReply {
   def apply(status: ByteString) = {
     status match {
-      case Ok.bytes   ⇒ Some(Ok)
-      case Pong.bytes ⇒ Some(Pong)
-      case _          ⇒ None
+      case Ok.bytes             ⇒ Some(Ok)
+      case Pong.bytes           ⇒ Some(Pong)
+      case Queued.bytes         ⇒ Some(Queued)
+      case ValueType(valueType) ⇒ Some(valueType)
+      case _                    ⇒ None
     }
   }
 
