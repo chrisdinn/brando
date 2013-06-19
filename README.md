@@ -33,7 +33,7 @@ Next, send it a command and get your response as a reply.
 
       // Response: Some(Pong)
 
-The Redis protocol supports 5 standard types of reply: Status, Error, Integer, Bulk and Multi Bulk as well as a special NULL Bulk reply. 
+The Redis protocol supports 5 standard types of reply: Status, Error, Integer, Bulk and Multi Bulk as well as a special NULL Bulk/Multi Bulk reply. 
 
 Status replies are returned as case objects, such as `Pong` and `Ok`.
 
@@ -59,7 +59,7 @@ Multi Bulk replies as `Option[List[Option[ByteString]]]`.
 
       // Response: Some(List(Some(ByteString("one")), Some(ByteString("two"))))
 
-NULL Bulk replies are returned as `None` and may appear either on their own or nested inside a Multi Bulk reply.
+NULL replies are returned as `None` and may appear either on their own or nested inside a Multi Bulk reply.
 
       brando ! Request("GET", "non-existent-key")
 
