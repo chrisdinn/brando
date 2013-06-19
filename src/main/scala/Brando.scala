@@ -14,13 +14,13 @@ import annotation.tailrec
 
 import ExecutionContext.Implicits.global
 
-case class Connect(address: InetSocketAddress)
-case class CommandAck(sender: ActorRef) extends Tcp.Event
-object StartProcess
-object Available
-object UnAvailable
+private case class Connect(address: InetSocketAddress)
+private case class CommandAck(sender: ActorRef) extends Tcp.Event
+private object StartProcess
+private object Available
+private object UnAvailable
 
-class Connection extends Actor with ReplyParser {
+private class Connection extends Actor with ReplyParser {
 
   var socket: ActorRef = _
 

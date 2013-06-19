@@ -39,7 +39,7 @@ object StatusReply {
     else None
 }
 
-trait ReplyParser {
+private[brando] trait ReplyParser {
 
   var buffer = ByteString.empty
 
