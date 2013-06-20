@@ -41,7 +41,7 @@ Status replies are returned as case objects, such as `Pong` and `Ok`.
 
       // Response: Some(Ok)
 
-Error replies are returned as `Failure`
+Error replies are returned as `akka.actor.Status.Failure` objects containing an an exception with server's response as its message.
 
       brando ! Request("EXPIRE", "1", "key")
 	  
@@ -70,8 +70,6 @@ NULL replies are returned as `None` and may appear either on their own or nested
       brando ! Request("GET", "non-existent-key")
 
       // Response: None
-
-Error replies are returned as akka.actor.Status.Failure objects containing an an exception with server's response as its message.
 
 If you're not sure what to expect in response to a request, please refer to the Redis command documentation at [http://redis.io/commands](http://redis.io/commands) where the reply type for each is clearly stated.
 
