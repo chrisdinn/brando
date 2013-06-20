@@ -12,8 +12,6 @@ import java.net.InetSocketAddress
 import collection.mutable
 import annotation.tailrec
 
-import ExecutionContext.Implicits.global
-
 class BrandoException(message: String) extends Exception(message) {
   override lazy val toString = "%s: %s\n".format(getClass.getName, message)
 }
@@ -80,6 +78,7 @@ class Brando(
     port: Int,
     database: Option[Int],
     auth: Option[String]) extends Actor {
+  import context.dispatcher
 
   type PendingRequest = (Request, ActorRef)
 
