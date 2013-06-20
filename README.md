@@ -7,7 +7,7 @@ A lightweight Redis client for Akka 2.2.
 
 In your build.sbt
 
-    resolvers += "http://chrisdinn.github.com/releases/"
+    resolvers += "http://chrisdinn.github.io/releases/"
 
     libraryDependencies += "com.digital-achiever" %% "brando" % "0.0.5"
 
@@ -120,6 +120,10 @@ This is intended to support failover via [Redis Sentinel](http://redis.io/topics
 ## Documentation
 
 Read the API documentation here: [http://chrisdinn.github.io/api/brando-0.0.5/](http://chrisdinn.github.io/api/brando-0.0.5/)
+
+## Mailing list
+
+Send questions, comments or discussion topics to the mailing list brando@librelist.com.
 
 ## License
 
