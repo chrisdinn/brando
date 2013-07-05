@@ -109,17 +109,16 @@ private[brando] trait ReplyParser {
 
   def readBulkReply(buffer: ByteString) = {
     val dataLengthBytes = buffer.takeWhile(_ != '\r').drop(1)
-
     val headerLength = 1 + dataLengthBytes.length + 2
     val dataLength = dataLengthBytes.utf8String.toInt
+    val responseLenght = headerLength + dataLength + 2
 
     dataLength match {
       case -1 ⇒ Success(None, buffer.drop(headerLength))
-
       case _ ⇒
         val data = buffer.drop(headerLength).take(dataLength)
-        if (data.length == dataLength) {
-          val remainder = buffer.drop(headerLength + dataLength + 2)
+        if ((data.length == dataLength) && (buffer.length >= responseLenght)) {
+          val remainder = buffer.drop(responseLenght)
           Success(Some(data), remainder)
         } else Failure(buffer)
     }
