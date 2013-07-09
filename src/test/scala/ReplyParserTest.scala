@@ -1,12 +1,16 @@
 package brando
 
-import org.scalatest.FunSpec
+import org.scalatest.{ FunSpec, BeforeAndAfterEach }
 import akka.util.ByteString
 
-class ReplyParserTest extends FunSpec {
+class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
 
   object Parser extends ReplyParser
   import Parser._
+
+  override def afterEach() {
+    remainingBuffer = ByteString.empty
+  }
 
   describe("Status reply") {
     it("should decode Ok") {
@@ -27,6 +31,17 @@ class ReplyParserTest extends FunSpec {
       parse(ByteString(":17575\r\n")) match {
         case Success(Some(i: Long), next) ⇒ assert(i == 17575L)
         case _                            ⇒ assert(false)
+      }
+    }
+  }
+
+  describe("Error reply") {
+    it("should decode the error") {
+      val result = parse(ByteString("-err\r\n"))
+      result match {
+        case Success(Some(akka.actor.Status.Failure(e)), _) ⇒
+          assert(e.getMessage === "err")
+        case x ⇒ fail(s"Parsed unexpected message $x")
       }
     }
   }
@@ -83,13 +98,158 @@ class ReplyParserTest extends FunSpec {
 
       assert(result === Success(expected))
     }
+
   }
 
   describe("parsing empty replies") {
     it("should return a failure if remaining partial response is empty") {
-      val result = parse(ByteString())
+      parseReply(ByteString()) { r ⇒ fail("nothing to parse") }
+    }
+  }
 
-      assert(result === Failure(ByteString()))
+  describe("parsing incomplete replies") {
+
+    var parsed = false
+    it("should handle a multi-bulk reply split into two parts") {
+      parseReply(ByteString("*")) { _ ⇒ fail("nothing to parse yet") }
+
+      parseReply(ByteString("1\r\n$3\r\nfoo\r\n")) { result ⇒
+        val expected = Some(List(Some(ByteString("foo"))))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+    }
+
+    it("should handle a multi-bulk reply split before an entry") {
+      parseReply(ByteString("*1\r\n")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("$3\r\nfoo\r\n")) { result ⇒
+        val expected = Some(List(Some(ByteString("foo"))))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+    }
+
+    it("should handle a multi-bulk reply split in an entry") {
+      parseReply(ByteString("*1\r\n$3\r\n")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("foo\r\n")) { result ⇒
+        val expected = Some(List(Some(ByteString("foo"))))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+    }
+
+    it("should handle a multi-bulk reply split between entries") {
+      parseReply(ByteString("*2\r\n$3\r\nfoo\r\n")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("$3\r\nbar\r\n")) { result ⇒
+        val expected = Some(List(Some(ByteString("foo")), Some(ByteString("bar"))))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle a status reply split into two parts") {
+      parseReply(ByteString("+")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("OK\r\n")) { result ⇒
+        val expected = Some(Ok)
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle a status reply split after the \\r") {
+      parseReply(ByteString("+OK\r")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("\n")) { result ⇒
+        val expected = Some(Ok)
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle an int reply split into two parts") {
+      parseReply(ByteString(":")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("17575\r\n")) { result ⇒
+        val expected = Some(17575)
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle a bulk reply split into two parts") {
+      parseReply(ByteString("$")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("3\r\nfoo\r\n")) { result ⇒
+        val expected = Some(ByteString("foo"))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle a bulk reply split after the number") {
+      parseReply(ByteString("$3")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("\r\nfoo\r\n")) { result ⇒
+        val expected = Some(ByteString("foo"))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle a bulk reply split after the first line") {
+      parseReply(ByteString("$3\r\n")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("foo\r\n")) { result ⇒
+        val expected = Some(ByteString("foo"))
+        assert(result === expected)
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
+    }
+
+    it("should handle an error reply split into two parts") {
+      parseReply(ByteString("-")) { _ ⇒ fail("nothing to parse yet") }
+
+      var parsed = false
+      parseReply(ByteString("foo\r\n")) { result ⇒
+        result match {
+          case Some(akka.actor.Status.Failure(e)) ⇒
+            assert(e.getMessage === "foo")
+          case x ⇒ fail(s"Parsed unexpected message $x")
+        }
+        parsed = true
+      }
+      if (!parsed) fail("Did not parse anything")
+      assert(remainingBuffer === ByteString.empty)
     }
   }
 }
