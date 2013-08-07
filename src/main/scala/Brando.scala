@@ -85,6 +85,7 @@ class Brando(
   val config = ConfigFactory.load()
   val retryDuration: Long = config.getMilliseconds("brando.connection_retry")
   val timeoutDuration: Long = config.getMilliseconds("brando.timeout")
+  val pendingLimit = config.getInt("brando.pending_limit")
 
   implicit val timeout = Timeout(timeoutDuration.milliseconds)
 
@@ -99,8 +100,11 @@ class Brando(
   def receive = {
 
     case request: Request ⇒ connectionState match {
-      case Right(connection)     ⇒ connection forward request
-      case Left(pendingRequests) ⇒ pendingRequests.enqueue((request, sender))
+      case Right(connection) ⇒
+        connection forward request
+      case Left(pendingRequests) ⇒
+        pendingRequests.enqueue((request, sender))
+        if (pendingRequests.size > pendingLimit) pendingRequests.dequeue
     }
 
     case StartProcess ⇒
