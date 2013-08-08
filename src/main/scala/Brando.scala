@@ -43,6 +43,7 @@ private class Connection extends Actor with ReplyParser {
       }
 
     case Tcp.CommandFailed(writeMessage: Tcp.Write) ⇒
+      requesterQueue.dequeue
       socket ! writeMessage //just retry immediately
 
     case Tcp.CommandFailed(_: Tcp.Connect) ⇒
