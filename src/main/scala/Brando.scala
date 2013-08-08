@@ -49,6 +49,7 @@ private class Connection extends Actor with ReplyParser {
       owner ! UnAvailable
 
     case x: Tcp.ConnectionClosed ⇒
+      requesterQueue.clear
       owner ! UnAvailable
 
     case Connect(address) ⇒
