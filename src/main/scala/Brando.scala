@@ -6,6 +6,7 @@ import akka.util.{ ByteString, Timeout }
 import akka.pattern.{ ask, pipe }
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
+import org.slf4j.{ Logger, LoggerFactory }
 
 import com.typesafe.config.ConfigFactory
 import java.net.InetSocketAddress
@@ -22,6 +23,8 @@ private object Available
 private object UnAvailable
 
 private class Connection extends Actor with ReplyParser {
+
+  val log = LoggerFactory.getLogger(this.getClass)
 
   var socket: ActorRef = _
 
@@ -49,19 +52,22 @@ private class Connection extends Actor with ReplyParser {
       owner ! UnAvailable
 
     case x: Tcp.ConnectionClosed ⇒
+      log.warn("connection closed")
       requesterQueue.clear
       owner ! UnAvailable
 
     case Connect(address) ⇒
+      log.info("connecting...")
       owner = sender
       IO(Tcp)(context.system) ! Tcp.Connect(address)
 
     case Tcp.Connected(remoteAddress, localAddress) ⇒
+      log.info("connected")
       socket = sender
       socket ! Tcp.Register(self, useResumeWriting = false)
       owner ! Available
 
-    case x ⇒ println("connection didn't expect - " + x)
+    case x ⇒ log.warn("didn't expect - " + x)
   }
 }
 
