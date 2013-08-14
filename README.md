@@ -119,7 +119,7 @@ This is intended to support failover via [Redis Sentinel](http://redis.io/topics
 
 ## Documentation
 
-Read the API documentation here: [http://chrisdinn.github.io/api/brando-0.1.2/](http://chrisdinn.github.io/api/brando-0.1.3/)
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-0.1.3/](http://chrisdinn.github.io/api/brando-0.1.3/)
 
 ## Mailing list
 
