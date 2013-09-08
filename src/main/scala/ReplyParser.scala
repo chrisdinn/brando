@@ -1,8 +1,8 @@
 package brando
 
 import annotation.tailrec
-import akka.util.ByteString
 import akka.actor.Status
+import akka.util.ByteString
 
 sealed abstract class StatusReply(val status: String) {
   val bytes = ByteString(status)
@@ -118,6 +118,11 @@ private[brando] trait ReplyParser {
       readComponents(itemCount, Success(Some(List.empty[Option[Any]]), rest))
 
     case _ ⇒ Failure(buffer)
+  }
+
+  def readPubSubMessage(buffer: ByteString) = splitLine(buffer) match {
+    case Some((int, rest)) ⇒ Success(Some(int.toLong), rest)
+    case x                 ⇒ Failure(buffer)
   }
 
   def parse(reply: ByteString) = reply(0) match {

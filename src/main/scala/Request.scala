@@ -1,21 +1,9 @@
 package brando
 
+import akka.actor.ActorRef
 import akka.util.ByteString
 
-object Request {
-  def apply(command: String, params: String*) =
-    new Request(ByteString(command), params map (ByteString(_)): _*)
-}
-
-//Helps creating a request like HMSET key k1 v1 k2 v2... 
-object HashRequest {
-  def apply(cmd: String, key: String, map: Map[String, String]) = {
-    val args = Seq(key) ++ map.map(e ⇒ Seq(e._1, e._2)).flatten
-    Request(cmd, args: _*)
-  }
-}
-
-case class Request(command: ByteString, params: ByteString*) {
+abstract class Request(command: ByteString, params: ByteString*) {
   val CRLF = ByteString("\r\n")
 
   def args = command :: params.toList
@@ -28,10 +16,40 @@ case class Request(command: ByteString, params: ByteString*) {
     ByteString("$" + bytes.length) ++ CRLF ++ bytes ++ CRLF
 }
 
+case class RedisRequest(command: ByteString, params: ByteString*) extends Request(command, params: _*)
+
+object Request {
+  def apply(command: String, params: String*): Request =
+    new RedisRequest(ByteString(command), params map (ByteString(_)): _*)
+
+  def apply(command: ByteString, params: ByteString*): Request =
+    new RedisRequest(command, params: _*)
+}
+
+case class SubscribeRequest(subscriber: ActorRef, channels: ByteString*)
+    extends Request(command = ByteString("SUBSCRIBE"), channels: _*) {
+}
+
+//Dummy implicit is used to get around double definition due to type erasure on apply(ActorRef, Seq)
+object SubscribeRequest {
+  def apply(subscriber: ActorRef, channels: String*)(implicit d: DummyImplicit): SubscribeRequest = {
+    SubscribeRequest(subscriber, channels map (ByteString(_)): _*)
+  }
+}
+
+//Helps creating a request like HMSET key k1 v1 k2 v2... 
+object HashRequest {
+  def apply(cmd: String, key: String, map: Map[String, String]) = {
+    val args = Seq(key) ++ map.map(e ⇒ Seq(e._1, e._2)).flatten
+    Request(cmd, args: _*)
+  }
+}
+
+case class ShardRequest(command: ByteString, key: ByteString, params: ByteString*)
+
 object ShardRequest {
   def apply(command: String, key: String, params: String*) = {
     new ShardRequest(ByteString(command), ByteString(key), params map (ByteString(_)): _*)
   }
 }
 
-case class ShardRequest(command: ByteString, key: ByteString, params: ByteString*)

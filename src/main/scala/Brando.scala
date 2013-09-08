@@ -2,19 +2,20 @@ package brando
 
 import akka.actor.{ Actor, ActorRef, Props, Status }
 import akka.io.{ IO, Tcp }
+import akka.pattern.ask
 import akka.util.{ ByteString, Timeout }
-import akka.pattern.{ ask, pipe }
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.collection.mutable
 import scala.concurrent.duration._
+import scala.concurrent.Future
+import scala.Some
 
 import com.typesafe.config.ConfigFactory
 import java.net.InetSocketAddress
-import collection.mutable
-import annotation.tailrec
 
 class BrandoException(message: String) extends Exception(message) {
   override lazy val toString = "%s: %s\n".format(getClass.getName, message)
 }
+case class PubSubMessage(channel: String, message: String)
 private case class Connect(address: InetSocketAddress)
 private case class CommandAck(sender: ActorRef) extends Tcp.Event
 private object StartProcess
@@ -27,8 +28,18 @@ private class Connection extends Actor with ReplyParser {
 
   val requesterQueue = mutable.Queue.empty[ActorRef]
   var owner: ActorRef = _
+  var subscribers: Map[ByteString, Seq[ActorRef]] = Map.empty
+
+  def getSubscribers(channel: ByteString): Seq[ActorRef] =
+    subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
 
   def receive = {
+    case subRequest: SubscribeRequest ⇒
+      subRequest.channels map { x ⇒
+        subscribers = subscribers + ((x, getSubscribers(x).+:(subRequest.subscriber)))
+      }
+      socket ! Tcp.Write(subRequest.toByteString, CommandAck(sender))
+
     case request: Request ⇒
       socket ! Tcp.Write(request.toByteString, CommandAck(sender))
 
@@ -36,10 +47,21 @@ private class Connection extends Actor with ReplyParser {
 
     case Tcp.Received(data) ⇒
       parseReply(data) { reply ⇒
-        requesterQueue.dequeue ! (reply match {
-          case Some(failure) if failure.isInstanceOf[Status.Failure] ⇒ failure
-          case success ⇒ success
-        })
+        reply match {
+          case Some(List(Some(x: ByteString), Some(channel: ByteString), Some(message: ByteString))) if (x.utf8String == "message") ⇒
+
+            val pubSubMessage = PubSubMessage(channel.utf8String, message.utf8String)
+            getSubscribers(channel).map { x ⇒
+              x ! pubSubMessage
+            }
+
+          case _ ⇒
+            requesterQueue.dequeue ! (reply match {
+              case Some(failure) if failure.isInstanceOf[Status.Failure] ⇒ failure
+              case success ⇒ success
+            })
+        }
+
       }
 
     case Tcp.CommandFailed(writeMessage: Tcp.Write) ⇒

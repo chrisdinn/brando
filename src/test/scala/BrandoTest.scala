@@ -1,5 +1,6 @@
 package brando
 
+import brando.SubscribeRequest
 import org.scalatest.{ FunSpec, BeforeAndAfterAll }
 import akka.testkit._
 
@@ -7,6 +8,7 @@ import akka.actor._
 import akka.actor.Status._
 import scala.concurrent.duration._
 import akka.util.ByteString
+import java.util.UUID
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
     with ImplicitSender {
@@ -294,5 +296,63 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")))))
     }
 
+  }
+
+  describe("subscriber") {
+
+    it("should be able to subscribe to a pubsub channel") {
+      val channel = UUID.randomUUID().toString
+      val subscriber = system.actorOf(Brando())
+
+      subscriber ! SubscribeRequest(self, channel)
+
+      expectMsg(Some(List(Some(
+        ByteString("subscribe")),
+        Some(ByteString(channel)),
+        Some(1))))
+    }
+
+    it("should receive published messages from a pubsub channel") {
+      val channel = UUID.randomUUID().toString
+      val subscriber = system.actorOf(Brando())
+      val publisher = system.actorOf(Brando())
+
+      subscriber ! SubscribeRequest(self, channel)
+
+      expectMsg(Some(List(Some(
+        ByteString("subscribe")),
+        Some(ByteString(channel)),
+        Some(1))))
+
+      publisher ! Request("PUBLISH", channel, "test")
+      expectMsg(Some(1)) //publisher gets back number of subscribers when publishing
+
+      expectMsg(PubSubMessage(channel, "test"))
+    }
+
+    it("should be able to unsubscribe from a pubsub channel") {
+      val channel = UUID.randomUUID().toString
+      val subscriber = system.actorOf(Brando())
+      val publisher = system.actorOf(Brando())
+
+      subscriber ! SubscribeRequest(self, channel)
+
+      expectMsg(Some(List(Some(
+        ByteString("subscribe")),
+        Some(ByteString(channel)),
+        Some(1))))
+
+      subscriber ! Request("UNSUBSCRIBE", channel)
+
+      expectMsg(Some(List(Some(
+        ByteString("unsubscribe")),
+        Some(ByteString(channel)),
+        Some(0))))
+
+      publisher ! Request("PUBLISH", channel, "test")
+      expectMsg(Some(0))
+
+      expectNoMsg
+    }
   }
 }

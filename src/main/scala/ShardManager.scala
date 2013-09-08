@@ -1,9 +1,9 @@
 package brando
 
-import java.util.zip.CRC32
-import collection.mutable
 import akka.actor.{ Actor, ActorRef, Props }
 import akka.util.ByteString
+import collection.mutable
+import java.util.zip.CRC32
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
@@ -30,7 +30,7 @@ class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
   def receive = {
     case request: ShardRequest ⇒
       val client = lookup(request.key)
-      client forward Request(request.command, (request.key +: request.params): _*)
+      client forward RedisRequest(request.command, (request.key +: request.params): _*)
 
     case shard: Shard ⇒
       pool.get(shard.id) match {
