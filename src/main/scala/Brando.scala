@@ -34,9 +34,11 @@ private class Connection extends Actor with ReplyParser {
     subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
 
   def receive = {
-    case subRequest: SubscribeRequest ⇒
-      subRequest.channels map { x ⇒
-        subscribers = subscribers + ((x, getSubscribers(x).+:(subRequest.subscriber)))
+    case subRequest: Request
+      if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
+
+      subRequest.params map { x ⇒
+        subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
       }
       socket ! Tcp.Write(subRequest.toByteString, CommandAck(sender))
 

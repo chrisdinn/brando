@@ -30,7 +30,7 @@ class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
   def receive = {
     case request: ShardRequest ⇒
       val client = lookup(request.key)
-      client forward RedisRequest(request.command, (request.key +: request.params): _*)
+      client forward Request(request.command, (request.key +: request.params): _*)
 
     case shard: Shard ⇒
       pool.get(shard.id) match {

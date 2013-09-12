@@ -1,7 +1,7 @@
 package brando
 
-import org.scalatest.FunSpec
 import akka.util.ByteString
+import org.scalatest.FunSpec
 
 class ResponseTest extends FunSpec {
   describe("Utf8String") {

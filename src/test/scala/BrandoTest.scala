@@ -1,13 +1,11 @@
 package brando
 
-import brando.SubscribeRequest
-import org.scalatest.{ FunSpec, BeforeAndAfterAll }
+import org.scalatest.FunSpec
 import akka.testkit._
 
 import akka.actor._
-import akka.actor.Status._
-import scala.concurrent.duration._
 import akka.util.ByteString
+import scala.concurrent.duration._
 import java.util.UUID
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
@@ -304,7 +302,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       val channel = UUID.randomUUID().toString
       val subscriber = system.actorOf(Brando())
 
-      subscriber ! SubscribeRequest(self, channel)
+      subscriber ! Request("SUBSCRIBE", channel)
 
       expectMsg(Some(List(Some(
         ByteString("subscribe")),
@@ -317,7 +315,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       val subscriber = system.actorOf(Brando())
       val publisher = system.actorOf(Brando())
 
-      subscriber ! SubscribeRequest(self, channel)
+      subscriber ! Request("SUBSCRIBE", channel)
 
       expectMsg(Some(List(Some(
         ByteString("subscribe")),
@@ -335,7 +333,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       val subscriber = system.actorOf(Brando())
       val publisher = system.actorOf(Brando())
 
-      subscriber ! SubscribeRequest(self, channel)
+      subscriber ! Request("SUBSCRIBE", channel)
 
       expectMsg(Some(List(Some(
         ByteString("subscribe")),
