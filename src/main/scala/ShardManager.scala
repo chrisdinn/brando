@@ -1,9 +1,9 @@
 package brando
 
-import java.util.zip.CRC32
-import collection.mutable
 import akka.actor.{ Actor, ActorRef, Props }
 import akka.util.ByteString
+import collection.mutable
+import java.util.zip.CRC32
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 

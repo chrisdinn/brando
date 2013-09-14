@@ -13,7 +13,7 @@ class RequestTest extends FunSpec {
     }
 
     it("should encode request with 2 arguments") {
-      val request = Request(ByteString("SET"), ByteString("mykey"), ByteString("somevalue"))
+      val request = Request("SET", "mykey", "somevalue")
       val expected = ByteString("*3\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$9\r\nsomevalue\r\n")
 
       assert(request.toByteString === expected)
