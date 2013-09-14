@@ -7,7 +7,7 @@ object Request {
     new Request(ByteString(command), params map (ByteString(_)): _*)
 }
 
-//Helps creating a request like HMSET key k1 v1 k2 v2... 
+//Helps creating a request like HMSET key k1 v1 k2 v2...
 object HashRequest {
   def apply(cmd: String, key: String, map: Map[String, String]) = {
     val args = Seq(key) ++ map.map(e ⇒ Seq(e._1, e._2)).flatten

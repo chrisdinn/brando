@@ -1,7 +1,7 @@
 package brando
 
-import org.scalatest.{ FunSpec, BeforeAndAfterEach }
 import akka.util.ByteString
+import org.scalatest.{ FunSpec, BeforeAndAfterEach }
 
 class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
 

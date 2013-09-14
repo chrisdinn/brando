@@ -1,11 +1,9 @@
 package brando
 
-import org.scalatest.{ FunSpec }
+import org.scalatest.FunSpec
 import akka.testkit._
 
 import akka.actor._
-import akka.actor.Status._
-import scala.concurrent.duration._
 import akka.util.ByteString
 
 class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with FunSpec with ImplicitSender {
