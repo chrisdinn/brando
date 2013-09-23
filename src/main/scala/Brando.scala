@@ -34,8 +34,7 @@ private class Connection extends Actor with ReplyParser {
     subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
 
   def receive = {
-    case subRequest: Request
-      if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
+    case subRequest: Request if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
 
       subRequest.params map { x ⇒
         subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
