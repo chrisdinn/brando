@@ -1,6 +1,6 @@
 package brando
 
-import akka.actor.{ Stash, ActorRef, Actor }
+import akka.actor.{ Props, Stash, ActorRef, Actor }
 import akka.pattern._
 import akka.util.{ ByteString, Timeout }
 import scala.concurrent.{ Future, Await }
@@ -8,15 +8,28 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 
 case class SentinelConfig(host: String, port: Int)
-class SentinelFailoverOccurredException(message: String) extends Exception(message) //used for actor restart
+class SentinelFailoverOccurredException(message: String) extends Exception(message)
+
+object SentinelClient {
+  def apply(sentinelConfigs: Seq[SentinelConfig], shardNames: Seq[String]): Props =
+    Props(classOf[Brando], sentinelConfigs, shardNames)
+}
 
 /**
- * Sentinel solution - supports sharding (currently required).
- * @param sentinels
- * @param shardNames
+ * Sentinel Redis client for HA.
+ * Redis allows a slave to replicate data from a master.
+ * Sentinel allows failover from the master to the replicated slave.
+ *
+ * Behavior:
+ * - Gets redis connection information from sentinel
+ * - Watches for failover events and will restart to get up-to-date redis master info.
+ * - Built on sharding to support both HA and distribution
+ *
+ * @param sentinelConfigs Give configuration(host/port) of each of the sentinel instances.
+ * @param shardNames Provide the name of the shard that is in sentinel configuration.
  */
 
-class SentinelClient(sentinels: Seq[SentinelConfig], shardNames: Seq[String]) extends Actor with Stash {
+class SentinelClient(sentinelConfigs: Seq[SentinelConfig], shardNames: Seq[String]) extends Actor with Stash {
   def this(sentinels: Seq[SentinelConfig], masterName: String) = this(sentinels, Seq(masterName))
   def this(sentinel: SentinelConfig, masterName: String) = this(Seq(sentinel), Seq(masterName))
   def this(sentinel: SentinelConfig, shardNames: Seq[String]) = this(Seq(sentinel), shardNames)
@@ -28,23 +41,19 @@ class SentinelClient(sentinels: Seq[SentinelConfig], shardNames: Seq[String]) ex
 
   var shards: Seq[Shard] = _
   lazy val shardManager = context.actorOf(ShardManager(shards), "ShardManager")
-  lazy val sentinelConnection: ActorRef = sentinels.map { x ⇒
+  lazy val sentinelConnection: ActorRef = sentinelConfigs.map { x ⇒
     context.actorOf(Brando(x.host, x.port, None, None))
   }.dropWhile { x ⇒
     val result = Await.result(x ? Request("PING"), 300 millis)
     result != Some(Pong)
   }.headOption.getOrElse(throw new Error("cannot connect to sentinel(s)"))
 
-  /**
-   * initialization message ensures the actor gets redis info from sentinel on restart.
-   */
   override def preStart() {
     self ! ("init", sentinelConnection)
   }
 
   /**
    * Uninitialized state
-   * Init message will determine redis master(s) to connect to.
    * @return
    */
 
@@ -63,8 +72,6 @@ class SentinelClient(sentinels: Seq[SentinelConfig], shardNames: Seq[String]) ex
           }
 
           sentinel ! Request("SUBSCRIBE", "failover-end")
-          //          sentinel ! Request("SUBSCRIBE", "+odown")
-          //          sentinel ! Request("SUBSCRIBE", "-odown")
 
           context become (online)
           unstashAll()
@@ -75,8 +82,8 @@ class SentinelClient(sentinels: Seq[SentinelConfig], shardNames: Seq[String]) ex
   }
 
   /**
-   * Online state.
-   * Rely on actor restart to get updated master information on failover.
+   * become online after getting redis master info
+   * @return
    */
   def online: Receive = {
     case request: ShardRequest ⇒
