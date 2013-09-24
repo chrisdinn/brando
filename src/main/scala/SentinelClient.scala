@@ -53,10 +53,9 @@ class SentinelClient(sentinelConfigs: Seq[SentinelConfig], shardNames: Seq[Strin
   }
 
   /**
-   * Uninitialized state
+   * Uninitialized hotswap state
    * @return
    */
-
   def receive: Actor.Receive = {
     case ("init", sentinel: ActorRef) ⇒
       val requestsForMaster = shardNames.map { x ⇒
@@ -72,6 +71,7 @@ class SentinelClient(sentinelConfigs: Seq[SentinelConfig], shardNames: Seq[Strin
           }
 
           sentinel ! Request("SUBSCRIBE", "failover-end")
+          sentinel ! Request("SUBSCRIBE", "-slave-restart-as-master")
 
           context become (online)
           unstashAll()
@@ -82,15 +82,16 @@ class SentinelClient(sentinelConfigs: Seq[SentinelConfig], shardNames: Seq[Strin
   }
 
   /**
-   * become online after getting redis master info
+   * online hotswap state
    * @return
    */
   def online: Receive = {
     case request: ShardRequest ⇒
       shardManager forward request
-    case message: PubSubMessage if message.channel == "failover-end" ⇒
-      //TODO - confirm the master is in use by this actor
-      throw new SentinelFailoverOccurredException("Failover occurred so restarting sentinel: " + message)
+    case message: PubSubMessage if message.channel == "failover-end" || message.channel == "-slave-restart-as-master" ⇒
+      if (shards.exists { x ⇒ message.message.contains(x.id) })
+        throw new SentinelFailoverOccurredException("Change to redis master so restarting sentinel actor: " + message)
+
     case msg ⇒
   }
 }

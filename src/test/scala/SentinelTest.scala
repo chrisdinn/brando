@@ -35,11 +35,28 @@ class SentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpec
   }
 
   describe("failover") {
-    it("should recover from failoev") {
+    it("should recover from failover") {
 
       val shardManager = newSentinelClient
 
-      shardManager ! PubSubMessage("failover-end", "failover-end")
+      shardManager ! PubSubMessage("failover-end", "shard1")
+
+      shardManager ! ShardRequest("SET", "shard_manager_test", "some value")
+
+      expectMsg(Some(Ok))
+
+      shardManager ! ShardRequest("GET", "shard_manager_test")
+
+      expectMsg(Some(ByteString("some value")))
+    }
+  }
+
+  describe("master reset") {
+    it("should recover from reset") {
+
+      val shardManager = newSentinelClient
+
+      shardManager ! PubSubMessage("-slave-restart-as-master", "shard1")
 
       shardManager ! ShardRequest("SET", "shard_manager_test", "some value")
 

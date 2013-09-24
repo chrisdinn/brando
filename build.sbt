@@ -22,3 +22,5 @@ publishTo <<= version { (v: String) =>
   else
     Some(Resolver.file("Releases", file("../chrisdinn.github.com/releases/")))
 }
+
+parallelExecution in Test := false
