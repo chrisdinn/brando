@@ -1,6 +1,6 @@
 package brando
 
-import akka.actor.{ Actor, ActorRef, Props, Status }
+import akka.actor.{ Actor, ActorContext, ActorRef, Props, Status, Stash }
 import akka.io.{ IO, Tcp }
 import akka.pattern.ask
 import akka.util.{ ByteString, Timeout }
@@ -18,24 +18,29 @@ class BrandoException(message: String) extends Exception(message) {
 case class PubSubMessage(channel: String, message: String)
 private case class Connect(address: InetSocketAddress)
 private case class CommandAck(sender: ActorRef) extends Tcp.Event
-private object StartProcess
-private object Available
-private object UnAvailable
+private object Authenticate
+private object Authenticated
 
-private class Connection extends Actor with ReplyParser {
+private class Connection(
+    brando: ActorContext,
+    address: InetSocketAddress,
+    connectionRetry: Long,
+    connected: PartialFunction[Any, Unit],
+    disconnected: PartialFunction[Any, Unit]) extends Actor with ReplyParser {
+  import context.dispatcher
 
   var socket: ActorRef = _
 
   val requesterQueue = mutable.Queue.empty[ActorRef]
-  var owner: ActorRef = _
   var subscribers: Map[ByteString, Seq[ActorRef]] = Map.empty
+
+  self ! Connect(address)
 
   def getSubscribers(channel: ByteString): Seq[ActorRef] =
     subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
 
   def receive = {
-    case subRequest: Request
-      if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
+    case subRequest: Request if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
 
       subRequest.params map { x ⇒
         subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
@@ -70,20 +75,21 @@ private class Connection extends Actor with ReplyParser {
       socket ! writeMessage //just retry immediately
 
     case Tcp.CommandFailed(_: Tcp.Connect) ⇒
-      owner ! UnAvailable
+      context.system.scheduler.scheduleOnce(connectionRetry.milliseconds, self, Connect(address))
 
     case x: Tcp.ConnectionClosed ⇒
       requesterQueue.clear
-      owner ! UnAvailable
+      brando.become(disconnected)
+      context.system.scheduler.scheduleOnce(connectionRetry.milliseconds, self, Connect(address))
 
     case Connect(address) ⇒
-      owner = sender
       IO(Tcp)(context.system) ! Tcp.Connect(address)
 
     case Tcp.Connected(remoteAddress, localAddress) ⇒
       socket = sender
       socket ! Tcp.Register(self, useResumeWriting = false)
-      owner ! Available
+      brando.become(connected)
+      brando.self ! Authenticate
 
     case x ⇒ println("connection didn't expect - " + x)
   }
@@ -102,66 +108,39 @@ class Brando(
     host: String,
     port: Int,
     database: Option[Int],
-    auth: Option[String]) extends Actor {
+    auth: Option[String]) extends Actor with Stash {
   import context.dispatcher
 
-  type PendingRequest = (Request, ActorRef)
-
   val config = ConfigFactory.load()
-  val retryDuration: Long = config.getMilliseconds("brando.connection_retry")
   val timeoutDuration: Long = config.getMilliseconds("brando.timeout")
-  val pendingLimit = config.getInt("brando.pending_limit")
+  val connectionRetry: Long = config.getMilliseconds("brando.connection_retry")
 
-  implicit val timeout = Timeout(timeoutDuration.milliseconds)
+  implicit val timeout = Timeout(timeoutDuration)
 
   val address = new InetSocketAddress(host, port)
-  val connection = context.actorOf(Props[Connection])
+  val connection = context.actorOf(Props(classOf[Connection], context, address, connectionRetry, connected, disconnected))
 
-  var connectionState: Either[mutable.Queue[PendingRequest], ActorRef] =
-    Left(mutable.Queue())
+  def receive = disconnected
 
-  connection ! Connect(address)
+  def authenticated: Receive = { case request: Request ⇒ connection forward request }
 
-  def receive = {
+  def disconnected: Receive = { case request: Request ⇒ stash() }
 
-    case request: Request ⇒ connectionState match {
-      case Right(connection) ⇒
-        connection forward request
-      case Left(pendingRequests) ⇒
-        pendingRequests.enqueue((request, sender))
-        if (pendingRequests.size > pendingLimit) pendingRequests.dequeue
-    }
-
-    case StartProcess ⇒
-      connectionState match {
-        case Right(_) ⇒
-          connectionState = Right(connection)
-        case Left(pendingRequests) ⇒
-          pendingRequests foreach {
-            case (request, caller) ⇒ connection.tell(request, caller)
-          }
-          connectionState = Right(connection)
-      }
-
-    case Available ⇒
+  def connected: Receive = {
+    case request: Request ⇒
+      stash()
+    case Authenticated ⇒
+      unstashAll()
+      context.become(authenticated)
+    case Authenticate ⇒
       (for {
         auth ← if (auth.isDefined) connection ? Request(ByteString("AUTH"), ByteString(auth.get)) else Future.successful()
         database ← if (database.isDefined) connection ? Request(ByteString("SELECT"), ByteString(database.get.toString)) else Future.successful()
-      } yield (StartProcess)) map {
+      } yield (Authenticated)) map {
         self ! _
       } onFailure {
         case e: Exception ⇒
           throw e
       }
-
-    case UnAvailable ⇒
-      context.system.scheduler.scheduleOnce(retryDuration.milliseconds, connection, Connect(address))
-      connectionState match {
-        case Right(_) ⇒
-          connectionState = Left(mutable.Queue())
-        case Left(_) ⇒
-      }
-
-    case x ⇒ println("Unexpected " + x + "\r\n")
   }
 }
