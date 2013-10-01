@@ -9,7 +9,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "0.1.4"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "0.2.1"
 
 ### Getting started
 
@@ -119,7 +119,7 @@ This is intended to support failover via [Redis Sentinel](http://redis.io/topics
 
 ## Documentation
 
-Read the API documentation here: [http://chrisdinn.github.io/api/brando-0.1.4/](http://chrisdinn.github.io/api/brando-0.1.4/)
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-0.2.1/](http://chrisdinn.github.io/api/brando-0.2.1/)
 
 ## Mailing list
 
