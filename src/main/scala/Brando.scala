@@ -22,11 +22,9 @@ private object Authenticate
 private object Authenticated
 
 private class Connection(
-    brando: ActorContext,
+    brando: ActorRef,
     address: InetSocketAddress,
-    connectionRetry: Long,
-    connected: PartialFunction[Any, Unit],
-    disconnected: PartialFunction[Any, Unit]) extends Actor with ReplyParser {
+    connectionRetry: Long) extends Actor with ReplyParser {
   import context.dispatcher
 
   var socket: ActorRef = _
@@ -68,7 +66,6 @@ private class Connection(
               case success ⇒ success
             })
         }
-
       }
 
     case Tcp.CommandFailed(writeMessage: Tcp.Write) ⇒
@@ -79,17 +76,16 @@ private class Connection(
 
     case x: Tcp.ConnectionClosed ⇒
       requesterQueue.clear
-      brando.become(disconnected)
+      brando ! x
       context.system.scheduler.scheduleOnce(connectionRetry.milliseconds, self, Connect(address))
 
     case Connect(address) ⇒
       IO(Tcp)(context.system) ! Tcp.Connect(address)
 
-    case Tcp.Connected(remoteAddress, localAddress) ⇒
+    case x: Tcp.Connected ⇒
       socket = sender
       socket ! Tcp.Register(self, useResumeWriting = false)
-      brando.become(connected)
-      brando.self ! Authenticate
+      brando ! x
 
     case x ⇒ println("connection didn't expect - " + x)
   }
@@ -118,17 +114,25 @@ class Brando(
   implicit val timeout = Timeout(timeoutDuration)
 
   val address = new InetSocketAddress(host, port)
-  val connection = context.actorOf(Props(classOf[Connection], context, address, connectionRetry, connected, disconnected))
+  val connection = context.actorOf(Props(classOf[Connection], self, address, connectionRetry))
 
   def receive = disconnected
 
-  def authenticated: Receive = { case request: Request ⇒ connection forward request }
+  def authenticated: Receive = {
+    case request: Request        ⇒ connection forward request
+    case x: Tcp.ConnectionClosed ⇒ context.become(disconnected)
+  }
 
-  def disconnected: Receive = { case request: Request ⇒ stash() }
+  def disconnected: Receive = {
+    case request: Request ⇒ stash()
+    case x: Tcp.Connected ⇒
+      context.become(connected)
+      self ! Authenticate
+  }
 
   def connected: Receive = {
-    case request: Request ⇒
-      stash()
+    case request: Request        ⇒ stash()
+    case x: Tcp.ConnectionClosed ⇒ context.become(disconnected)
     case Authenticated ⇒
       unstashAll()
       context.become(authenticated)
