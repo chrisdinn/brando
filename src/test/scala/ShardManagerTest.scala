@@ -5,6 +5,7 @@ import akka.testkit._
 
 import akka.actor._
 import akka.util.ByteString
+import scala.concurrent.duration._
 
 class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with FunSpec with ImplicitSender {
 
@@ -56,6 +57,49 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
       shardManager ! ShardRequest("GET", "shard_manager_test")
 
       expectMsg(Some(ByteString("some value")))
+    }
+  }
+
+  describe("Listening to Shard state changes") {
+
+    it("should notify listeners when a shard connect successfully") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 6379, Some(1)))
+
+      val probe = TestProbe()
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
+
+      probe.expectMsg(ShardStateChange(shards(0), Connected))
+      probe.expectMsg(ShardStateChange(shards(1), Connected))
+    }
+
+    it("should notify listeners when a shard fails to connect") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 13579, Some(1)))
+
+      val probe = TestProbe()
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
+
+      probe.expectMsg(ShardStateChange(shards(0), Connected))
+      probe.expectNoMsg(5900.milliseconds)
+      probe.expectMsg(ShardStateChange(shards(1), ConnectionFailed))
+    }
+
+    it("should notify listeners when a shard fails to authenticate") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 6379, Some(1), auth = Some("not-valid-auth")))
+
+      val probe = TestProbe()
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
+
+      probe.expectMsg(ShardStateChange(shards(0), Connected))
+      probe.expectMsg(ShardStateChange(shards(1), AuthenticationFailed))
     }
   }
 }

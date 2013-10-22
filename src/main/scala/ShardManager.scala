@@ -7,6 +7,8 @@ import java.util.zip.CRC32
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
+case class ShardStateChange(shard: Shard, state: BrandoStateChange)
+
 object ShardManager {
   def defaultHashFunction(input: Array[Byte]): Long = {
     val crc32 = new CRC32
@@ -15,19 +17,24 @@ object ShardManager {
   }
 
   def apply(shards: Seq[Shard],
-    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction): Props = {
-    Props(classOf[ShardManager], shards, hashFunction)
+    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
+    listeners: Set[ActorRef] = Set()): Props = {
+    Props(classOf[ShardManager], shards, hashFunction, listeners)
   }
 }
 
-class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
-    extends Actor {
+class ShardManager(
+    shards: Seq[Shard],
+    hashFunction: (Array[Byte] ⇒ Long),
+    listeners: Set[ActorRef] = Set()) extends Actor {
 
   val pool = mutable.Map.empty[String, ActorRef]
+  val shardLookup = mutable.Map.empty[ActorRef, Shard]
 
   shards.map(create(_))
 
   def receive = {
+
     case request: ShardRequest ⇒
       val client = lookup(request.key)
       client forward Request(request.command, (request.key +: request.params): _*)
@@ -42,6 +49,13 @@ class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
           println("Update received for unknown shard ID " + shard.id + "\r\n")
       }
 
+    case stateChange: BrandoStateChange ⇒
+      shardLookup.get(sender) match {
+        case Some(shard) ⇒
+          listeners foreach { l ⇒ l ! ShardStateChange(shard, stateChange) }
+        case None ⇒ println("Update received for unknown shard actorRef " + sender + "\r\n")
+      }
+
     case x ⇒ println("ShardManager received unexpected " + x + "\r\n")
   }
 
@@ -53,8 +67,9 @@ class ShardManager(shards: Seq[Shard], hashFunction: (Array[Byte] ⇒ Long))
   }
 
   def create(shard: Shard) {
-    val client = context.actorOf(Brando(shard.host, shard.port, shard.database, shard.auth))
+    val client = context.actorOf(
+      Brando(shard.host, shard.port, shard.database, shard.auth, Set(self)))
     pool(shard.id) = client
+    shardLookup(client) = shard
   }
 }
-
