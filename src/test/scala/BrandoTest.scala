@@ -353,4 +353,30 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
       expectNoMsg
     }
   }
+
+  describe("State notifications") {
+
+    it("should send an Authenticated event if connecting succeeds") {
+      val probe = TestProbe()
+      val brando = system.actorOf(Brando("localhost", 6379, listeners = Set(probe.ref)))
+
+      probe.expectMsg(Connected)
+    }
+
+    it("should send an ConnectionFailed event if connecting fails after the configured number of retries") {
+      val probe = TestProbe()
+      val brando = system.actorOf(Brando("localhost", 13579, listeners = Set(probe.ref)))
+
+      //3 retries * 2 seconds = 6 seconds
+      probe.expectNoMsg(5900.milliseconds)
+      probe.expectMsg(ConnectionFailed)
+    }
+
+    it("should send an AuthenticationFailed event if connecting succeeds but authentication fails") {
+      val probe = TestProbe()
+      val brando = system.actorOf(Brando("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
+
+      probe.expectMsg(AuthenticationFailed)
+    }
+  }
 }

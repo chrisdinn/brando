@@ -95,7 +95,7 @@ Use the provided response extractors to map your Redis reply to a more appropria
       
 ### Presharding
 
-Brando now provides preliminary support for sharding (AKA "Presharding"), as outlined [in the Redis documentation](http://redis.io/topics/partitioning) and in [this blog post from antirez](http://oldblog.antirez.com/post/redis-presharding.html).
+Brando provides preliminary support for sharding (AKA "Presharding"), as outlined [in the Redis documentation](http://redis.io/topics/partitioning) and in [this blog post from antirez](http://oldblog.antirez.com/post/redis-presharding.html).
 
 To use it, simply create an instance of `ShardManager`, passing it a list of Redis shards you'd like it to connect to. From there, we simply create a pool of `Brando` instances - one for each shard.
 
@@ -103,7 +103,7 @@ To use it, simply create an instance of `ShardManager`, passing it a list of Red
 					 Shard("redis2", "10.0.0.2", 6379),
 					 Shard("redis3", "10.0.0.3", 6379))
 					 
-	val shardManager = context.actorOf(Props(new ShardManager(shards)))
+	val shardManager = context.actorOf(ShardManager(shards))
 
 Once an instance of `ShardManager` has been created, send it commands via the `ShardRequest` class.
 
@@ -116,6 +116,12 @@ Individual shards can have their configuration updated on the fly. To do this, s
 	shardManager ! Shard("redis1", "10.0.0.4", 6379)
 	
 This is intended to support failover via [Redis Sentinel](http://redis.io/topics/sentinel). Note that the id of the shard __MUST__ match one of the original shards configured when the `ShardManager` instance was created. Adding new shards is not supported.
+
+State changes such as disconnects and connection failures can be monitored by providing a set of listeners to the `ShardManager`:
+
+	val shardManager = context.actorOf(ShardManager(shards, listeners = Set(self)))
+
+The `ShardManager` will send a `ShardStateChange` message when a shard changes state; this message contains the shard as well as the new state, which may be one of `Connected`, `Disconnected`, `AuthenticationFailed`, or `ConnectionFailed`. Brando automatically attempts to reconnect after the `Disconnected` event, so no user action is required.. If a connection attempt fails after multiple retries, then `ConnectionFailed` will occur, after which Brando will no longer attempt to connect.
 
 ## Documentation
 
