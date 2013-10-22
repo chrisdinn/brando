@@ -93,6 +93,21 @@ Use the provided response extractors to map your Redis reply to a more appropria
       
       //fields: Map[String,String]
       
+### Monitoring Connection State Changes
+
+If a set of listeners is provided to the Brando actor when it is created , it will inform the those listeners about state changes to the underlying Redis connection. For example (from inside an actor):
+
+      val brando = context.actorOf(Brando("localhost", 6379, listeners = Set(self)))
+
+Currently, the possible messages sent to each listener include the following:
+
+ * `Connected`: When a TCP connection has been created, and Authentication (if applicable) has succeeded.
+ * `Disconnected`: The connection has been lost. Brando transparently handles disconnects and will automatically reconnect, so typically no user action at all is needed here. During the time that Brando is disconnected, Redis commands sent to Brando will be queued, and will be processed when a connection is established.
+ * `AuthenticationFailed`: The TCP connected was made, but Redis auth failed.
+ * `ConnectionFailed`:  A connection could not be (re-) established after three attempts. Brando will not attempt to recover from this state; the user should take action.
+
+All these messages inherit from the `BrandoStateChange` trait.
+
 ### Presharding
 
 Brando provides preliminary support for sharding (AKA "Presharding"), as outlined [in the Redis documentation](http://redis.io/topics/partitioning) and in [this blog post from antirez](http://oldblog.antirez.com/post/redis-presharding.html).
@@ -102,26 +117,26 @@ To use it, simply create an instance of `ShardManager`, passing it a list of Red
 	val shards = Seq(Shard("redis1", "10.0.0.1", 6379),
 					 Shard("redis2", "10.0.0.2", 6379),
 					 Shard("redis3", "10.0.0.3", 6379))
-					 
+
 	val shardManager = context.actorOf(ShardManager(shards))
 
 Once an instance of `ShardManager` has been created, send it commands via the `ShardRequest` class.
 
 	shardManager ! ShardRequest(ByteString("GET"), ByteString(mykey))
-	
+
 Note that `ShardRequest` explicitly requires a key for all operations. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model.
 
 Individual shards can have their configuration updated on the fly. To do this, send a `Shard` message to `ShardManager`.
 
 	shardManager ! Shard("redis1", "10.0.0.4", 6379)
-	
+
 This is intended to support failover via [Redis Sentinel](http://redis.io/topics/sentinel). Note that the id of the shard __MUST__ match one of the original shards configured when the `ShardManager` instance was created. Adding new shards is not supported.
 
 State changes such as disconnects and connection failures can be monitored by providing a set of listeners to the `ShardManager`:
 
 	val shardManager = context.actorOf(ShardManager(shards, listeners = Set(self)))
 
-The `ShardManager` will send a `ShardStateChange` message when a shard changes state; this message contains the shard as well as the new state, which may be one of `Connected`, `Disconnected`, `AuthenticationFailed`, or `ConnectionFailed`. Brando automatically attempts to reconnect after the `Disconnected` event, so no user action is required.. If a connection attempt fails after multiple retries, then `ConnectionFailed` will occur, after which Brando will no longer attempt to connect.
+The `ShardManager` will send a `ShardStateChange(shard, state)` message when a shard changes state; here `shard` is a shard object indicating which shard has changed state, and `state` is a `BrandoStateChange` object, documented above, indicating which new state the shard has entered.
 
 ## Documentation
 
