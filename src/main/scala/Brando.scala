@@ -18,7 +18,7 @@ case class PubSubMessage(channel: String, message: String)
 private case class Connect(address: InetSocketAddress)
 private case class CommandAck(sender: ActorRef) extends Tcp.Event
 
-sealed trait BrandoStateChange
+trait BrandoStateChange
 case object Disconnected extends BrandoStateChange
 case object Connected extends BrandoStateChange
 case object AuthenticationFailed extends BrandoStateChange

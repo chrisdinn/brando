@@ -21,12 +21,18 @@ object ShardManager {
     listeners: Set[ActorRef] = Set()): Props = {
     Props(classOf[ShardManager], shards, hashFunction, listeners)
   }
+
+  def withHealthMonitor(shards: Seq[Shard],
+    hashFunction: (Array[Byte] ⇒ Long),
+    listeners: Set[ActorRef] = Set()): Props = {
+    Props(new ShardManager(shards, hashFunction, listeners) with HealthMonitor)
+  }
 }
 
 class ShardManager(
     shards: Seq[Shard],
     hashFunction: (Array[Byte] ⇒ Long),
-    listeners: Set[ActorRef] = Set()) extends Actor {
+    val listeners: Set[ActorRef] = Set()) extends Actor {
 
   val pool = mutable.Map.empty[String, ActorRef]
   val shardLookup = mutable.Map.empty[ActorRef, Shard]
