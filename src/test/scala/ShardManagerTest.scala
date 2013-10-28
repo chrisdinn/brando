@@ -63,16 +63,13 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
   describe("Listening to Shard state changes") {
 
     it("should notify listeners when a shard connect successfully") {
-      val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)))
+      val shards = Seq(Shard("server1", "localhost", 6379, Some(0)))
 
       val probe = TestProbe()
 
       val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
 
       probe.expectMsg(ShardStateChange(shards(0), Connected))
-      probe.expectMsg(ShardStateChange(shards(1), Connected))
     }
 
     it("should notify listeners when a shard fails to connect") {
