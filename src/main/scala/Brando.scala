@@ -121,7 +121,7 @@ class Brando(
     listeners: Set[ActorRef]) extends Actor with Stash {
   import context.dispatcher
 
-  val config = ConfigFactory.load()
+  val config = context.system.settings.config
   val timeoutDuration: Long = config.getMilliseconds("brando.timeout")
   val connectionRetry: Long = config.getMilliseconds("brando.connection_retry")
   val maxConnectionAttempts: Long = config.getMilliseconds("brando.connection_attempts")
