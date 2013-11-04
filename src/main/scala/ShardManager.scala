@@ -23,7 +23,7 @@ object ShardManager {
   }
 
   def withHealthMonitor(shards: Seq[Shard],
-    hashFunction: (Array[Byte] ⇒ Long),
+    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
     listeners: Set[ActorRef] = Set()): Props = {
     Props(new ShardManager(shards, hashFunction, listeners) with HealthMonitor)
   }
