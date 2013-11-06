@@ -9,7 +9,7 @@ case object NonRespondingShardRestarted extends BrandoStateChange
 
 trait HealthMonitor extends ShardManager {
 
-  val healthCheckRate = 5.seconds
+  val healthCheckRate: FiniteDuration
 
   implicit val ec = context.dispatcher
   implicit lazy val timeout = Timeout(healthCheckRate)

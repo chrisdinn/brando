@@ -4,6 +4,7 @@ import akka.actor.{ Actor, ActorRef, Props }
 import akka.util.ByteString
 import collection.mutable
 import java.util.zip.CRC32
+import concurrent.duration.FiniteDuration
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
@@ -23,9 +24,10 @@ object ShardManager {
   }
 
   def withHealthMonitor(shards: Seq[Shard],
+    healthChkRate: FiniteDuration,
     hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
     listeners: Set[ActorRef] = Set()): Props = {
-    Props(new ShardManager(shards, hashFunction, listeners) with HealthMonitor)
+    Props(new ShardManager(shards, hashFunction, listeners) with HealthMonitor { val healthCheckRate = healthChkRate })
   }
 }
 
