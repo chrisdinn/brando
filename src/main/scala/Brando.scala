@@ -122,7 +122,7 @@ class Brando(
   import context.dispatcher
 
   val config = context.system.settings.config
-  val timeoutDuration: Long = config.getMilliseconds("brando.timeout")
+  val timeoutDuration: Long = config.getMilliseconds("redis.timeout")
   val connectionRetry: Long = config.getMilliseconds("brando.connection_retry")
   val maxConnectionAttempts: Long = config.getMilliseconds("brando.connection_attempts")
 
