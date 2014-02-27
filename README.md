@@ -1,7 +1,7 @@
 Brando
 ======
 
-A lightweight Redis client for Akka 2.2.
+A lightweight Redis client for use with [Akka](http://akka.io).
 
 ## Using
 
