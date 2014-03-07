@@ -1,13 +1,14 @@
 package brando
 
-import org.scalatest.FunSpec
+import org.scalatest.FunSpecLike
 import akka.testkit._
 
 import akka.actor._
 import akka.util.ByteString
 import scala.concurrent.duration._
 
-class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with FunSpec with ImplicitSender {
+class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
+    with FunSpecLike with ImplicitSender {
 
   describe("creating shards") {
     it("should create a pool of clients mapped to ids") {

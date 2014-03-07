@@ -10,6 +10,7 @@ import scala.concurrent.Future
 
 import com.typesafe.config.ConfigFactory
 import java.net.InetSocketAddress
+import java.util.concurrent.TimeUnit
 
 class BrandoException(message: String) extends Exception(message) {
   override lazy val toString = "%s: %s\n".format(getClass.getName, message)
@@ -122,11 +123,11 @@ class Brando(
   import context.dispatcher
 
   val config = context.system.settings.config
-  val timeoutDuration: Long = config.getMilliseconds("redis.timeout")
-  val connectionRetry: Long = config.getMilliseconds("brando.connection_retry")
-  val maxConnectionAttempts: Long = config.getMilliseconds("brando.connection_attempts")
+  val timeoutDuration: Long = config.getDuration("redis.timeout", TimeUnit.MILLISECONDS)
+  val connectionRetry: Long = config.getDuration("brando.connection_retry", TimeUnit.MILLISECONDS)
+  val maxConnectionAttempts: Long = config.getDuration("brando.connection_attempts", TimeUnit.MILLISECONDS)
 
-  implicit val timeout = Timeout(timeoutDuration)
+  implicit val timeout = Timeout(timeoutDuration, TimeUnit.MILLISECONDS)
 
   case object Authenticating
   case object Authenticated

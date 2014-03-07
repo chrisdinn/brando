@@ -1,6 +1,6 @@
 package brando
 
-import org.scalatest.FunSpec
+import org.scalatest.FunSpecLike
 import akka.testkit._
 
 import akka.actor._
@@ -8,7 +8,7 @@ import akka.util.ByteString
 import scala.concurrent.duration._
 import java.util.UUID
 
-class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpec
+class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     with ImplicitSender {
 
   describe("ping") {

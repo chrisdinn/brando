@@ -1,13 +1,15 @@
 package brando
 
-import org.scalatest.{ FunSpec, BeforeAndAfterAll }
+import org.scalatest.{ FunSpecLike, BeforeAndAfterAll }
 import akka.testkit._
 import akka.actor._
 import scala.concurrent.duration._
 import akka.util.ByteString
 import collection.mutable
 
-class TestHealthMonitor(responder: ActorRef, listeners: Set[ActorRef]) extends ShardManager(Seq(), ShardManager.defaultHashFunction, listeners) with HealthMonitor {
+class TestHealthMonitor(responder: ActorRef, listeners: Set[ActorRef])
+    extends ShardManager(Seq(), ShardManager.defaultHashFunction, listeners)
+    with HealthMonitor {
 
   val shard = Shard("1", "localhost", 6379)
 
@@ -17,7 +19,8 @@ class TestHealthMonitor(responder: ActorRef, listeners: Set[ActorRef]) extends S
   override val shardLookup = mutable.Map(responder -> shard)
 }
 
-class HealthMonitorTest extends TestKit(ActorSystem("HealthMonitorTest")) with FunSpec with BeforeAndAfterAll {
+class HealthMonitorTest extends TestKit(ActorSystem("HealthMonitorTest"))
+    with FunSpecLike with BeforeAndAfterAll {
 
   override def afterAll { system.shutdown() }
 
