@@ -1,0 +1,6 @@
+language: scala
+services:
+  - redis-server
+cache:
+  directories:
+  - $HOME/.ivy2
