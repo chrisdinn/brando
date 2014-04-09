@@ -21,17 +21,17 @@ Create a Brando actor with your server host and port.
 
       import brando._
 
-      val brando = system.actorOf(Brando("localhost", 6379))
+      val redis = system.actorOf(Brando("localhost", 6379))
 
 You should specify a database and password if you intend to use them. 
 
-      val brando = system.actorOf(Brando("localhost", 6379, database = Some(5), auth = Some("password")))
+      val redis = system.actorOf(Brando("localhost", 6379, database = Some(5), auth = Some("password")))
 
 This is important; if your Brando actor restarts you want be sure it reconnects successfully and to the same database.
 
 Next, send it a command and get your response as a reply.
 
-      brando ! Request("PING")
+      redis ! Request("PING")
 
       // Response: Some(Pong)
 
@@ -39,37 +39,37 @@ The Redis protocol supports 5 standard types of reply: Status, Error, Integer, B
 
 Status replies are returned as case objects, such as `Pong` and `Ok`.
 
-      brando ! Request("SET", "some-key", "this-value")
+      redis ! Request("SET", "some-key", "this-value")
 
       // Response: Some(Ok)
 
 Error replies are returned as `akka.actor.Status.Failure` objects containing an an exception with server's response as its message.
 
-      brando ! Request("EXPIRE", "1", "key")
+      redis ! Request("EXPIRE", "1", "key")
 	  
 	  // Response: Failure(brando.BrandoException: ERR value is not an integer or out of range)
 
 Integer replies are returned as `Option[Int]`. 
 
-      brando ! Request("SADD", "some-set", "one", "two")
+      redis ! Request("SADD", "some-set", "one", "two")
 
       // Response: Some(2)
 
 Bulk replies as `Option[akka.util.ByteString]`.
 
-      brando ! Request("GET", "some-key")
+      redis ! Request("GET", "some-key")
 
       // Response: Some(ByteString("this-value"))
 
 Multi Bulk replies as `Option[List[Option[ByteString]]]`.
 
-      brando ! Request("SMEMBERS", "some-set")
+      redis ! Request("SMEMBERS", "some-set")
 
       // Response: Some(List(Some(ByteString("one")), Some(ByteString("two"))))
 
 NULL replies are returned as `None` and may appear either on their own or nested inside a Multi Bulk reply.
 
-      brando ! Request("GET", "non-existent-key")
+      redis ! Request("GET", "non-existent-key")
 
       // Response: None
 
@@ -79,19 +79,19 @@ If you're not sure what to expect in response to a request, please refer to the 
 
 Use the provided response extractors to map your Redis reply to a more appropriate Scala type.
 
-      for{ Response.AsString(value) ← brando ? Request("GET", "key") } yield value
+      for{ Response.AsString(value) ← redis ? Request("GET", "key") } yield value
       
       //value: String
       
-      for{ Response.AsStrings(values) ← brando ? Request("KEYS", "*") } yield values
+      for{ Response.AsStrings(values) ← redis ? Request("KEYS", "*") } yield values
       
       //values: Seq[String]
       
-      for{ Response.AsByteSeqs(value) ← brando ? Request("GET", "key") } yield value
+      for{ Response.AsByteSeqs(value) ← redis ? Request("GET", "key") } yield value
       
       //value: Seq[Byte]
       
-      for{ Response.AsStringsHash(fields) ← brando ? Request("HGETALL", "hash-key") } yield fields
+      for{ Response.AsStringsHash(fields) ← redis ? Request("HGETALL", "hash-key") } yield fields
       
       //fields: Map[String,String]
       
@@ -99,7 +99,7 @@ Use the provided response extractors to map your Redis reply to a more appropria
 
 If a set of listeners is provided to the Brando actor when it is created , it will inform the those listeners about state changes to the underlying Redis connection. For example (from inside an actor):
 
-      val brando = context.actorOf(Brando("localhost", 6379, listeners = Set(self)))
+      val redis = context.actorOf(Brando("localhost", 6379, listeners = Set(self)))
 
 Currently, the possible messages sent to each listener include the following:
 
