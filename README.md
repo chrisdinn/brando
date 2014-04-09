@@ -1,6 +1,8 @@
 Brando
 ======
 
+[![Build Status](https://travis-ci.org/alexbool/brando.svg?branch=master)](https://travis-ci.org/alexbool/brando)
+
 A lightweight Redis client for use with [Akka](http://akka.io).
 
 ## Using
@@ -157,5 +159,3 @@ Fork the project, add tests if possible and send a pull request.
 ## Contributors
 
 Chris Dinn, Jason Goodwin, Gaetan Hervouet, Damien Levin, Matt MacAulay, Arron Norwell
-
-[![Build Status](https://travis-ci.org/alexbool/brando.svg?branch=master)](https://travis-ci.org/alexbool/brando)
