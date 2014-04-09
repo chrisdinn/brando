@@ -1,7 +1,7 @@
 Brando
 ======
 
-[![Build Status](https://travis-ci.org/alexbool/brando.svg?branch=master)](https://travis-ci.org/alexbool/brando)
+[![Build Status](https://travis-ci.org/chrisdinn/brando.svg?branch=master)](https://travis-ci.org/chrisdinn/brando)
 
 A lightweight Redis client for use with [Akka](http://akka.io).
 
