@@ -1,6 +1,6 @@
 package brando
 
-import akka.actor.{ Actor, ActorContext, ActorRef, Props, Status, Stash }
+import akka.actor.{ Actor, ActorContext, ActorRef, Props, Status, Stash, Terminated }
 import akka.io.{ IO, Tcp }
 import akka.pattern.ask
 import akka.util.{ ByteString, Timeout }
@@ -119,7 +119,7 @@ class Brando(
     port: Int,
     database: Option[Int],
     auth: Option[String],
-    listeners: Set[ActorRef]) extends Actor with Stash {
+    private[brando] var listeners: Set[ActorRef]) extends Actor with Stash {
   import context.dispatcher
 
   val config = context.system.settings.config
@@ -136,13 +136,15 @@ class Brando(
   val connection = context.actorOf(Props(classOf[Connection],
     self, address, connectionRetry, maxConnectionAttempts))
 
-  def receive = disconnected
+  listeners.map(context.watch(_))
+
+  def receive = disconnected orElse cleanListeners
 
   def authenticated: Receive = {
     case request: Request ⇒ connection forward request
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
-      context.become(disconnected)
+      context.become(disconnected orElse cleanListeners)
   }
 
   def disconnected: Receive = {
@@ -150,7 +152,7 @@ class Brando(
 
     case x: Tcp.Connected ⇒
 
-      context.become(authenticating)
+      context.become(authenticating orElse cleanListeners)
 
       (for {
         auth ← if (auth.isDefined) connection ? Request(ByteString("AUTH"), ByteString(auth.get)) else Future.successful()
@@ -171,16 +173,21 @@ class Brando(
 
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
-      context.become(disconnected)
+      context.become(disconnected orElse cleanListeners)
 
     case Connected ⇒
       unstashAll()
       notifyStateChange(Connected)
-      context.become(authenticated)
+      context.become(authenticated orElse cleanListeners)
 
     case AuthenticationFailed ⇒
       notifyStateChange(AuthenticationFailed)
 
+  }
+
+  def cleanListeners: Receive = {
+    case Terminated(l) ⇒
+      listeners = listeners - l
   }
 
   private def notifyStateChange(newState: BrandoStateChange) {
