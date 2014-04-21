@@ -87,6 +87,25 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       probe.expectMsg(ShardStateChange(shards(1), ConnectionFailed))
     }
 
+    it("should cleaned up any dead listeners") {
+
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 13579, Some(1)))
+
+      val probe1 = TestProbe()
+      val probe2 = TestProbe()
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe1.ref, probe2.ref))).underlyingActor
+      assertResult(2)(shardManager.listeners.size)
+
+      probe1.ref ! PoisonPill
+      probe2.expectMsg(ShardStateChange(shards(0), Connected))
+
+      assertResult(1)(shardManager.listeners.size)
+
+    }
+
     it("should notify listeners when a shard fails to authenticate") {
       val shards = Seq(
         Shard("server1", "localhost", 6379, Some(0)),

@@ -36,6 +36,21 @@ class HealthMonitorTest extends TestKit(ActorSystem("HealthMonitorTest"))
       manager ! PoisonPill
     }
 
+    it("should cleaned up any dead listeners") {
+
+      val probe1 = TestProbe()
+      val probe2 = TestProbe()
+
+      val brando = TestActorRef(new Brando("localhost", 6379, None, None, listeners = Set(probe1.ref, probe2.ref))).underlyingActor
+      assertResult(2)(brando.listeners.size)
+
+      probe1.ref ! PoisonPill
+      probe2.expectMsg(Connected)
+
+      assertResult(1)(brando.listeners.size)
+
+    }
+
     it("should restart the shard, and notify, when healthcheck fails") {
       val probe = TestProbe()
       val listener = TestProbe()
