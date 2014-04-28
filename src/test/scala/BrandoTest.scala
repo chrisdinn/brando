@@ -4,6 +4,7 @@ import org.scalatest.FunSpecLike
 import akka.testkit._
 
 import akka.actor._
+import akka.io.{ IO, Tcp }
 import akka.util.ByteString
 import scala.concurrent.duration._
 import java.util.UUID
@@ -377,6 +378,21 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       val brando = system.actorOf(Brando("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
 
       probe.expectMsg(AuthenticationFailed)
+    }
+  }
+
+  describe("Connection") {
+    it("should keep retrying to connect if brando.connection_attempts is not defined") {
+      val socket = TestProbe()
+      val brando = TestProbe()
+      val address = new java.net.InetSocketAddress("test.com", 16379)
+      val connection = TestActorRef(new Connection(brando.ref, address, 1000000, None))
+
+      for (i ← 1 to 10) {
+        connection ! Tcp.CommandFailed(Tcp.Connect(address))
+        assert(connection.underlyingActor.connectionAttempts === i)
+      }
+      brando.expectNoMsg
     }
   }
 }
