@@ -7,6 +7,7 @@ import akka.util.{ ByteString, Timeout }
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.concurrent.Future
+import scala.util.Try
 
 import com.typesafe.config.ConfigFactory
 import java.net.InetSocketAddress
@@ -29,7 +30,7 @@ private class Connection(
     brando: ActorRef,
     address: InetSocketAddress,
     connectionRetry: Long,
-    maxConnectionAttempts: Long) extends Actor with ReplyParser {
+    maxConnectionAttempts: Option[Int]) extends Actor with ReplyParser {
   import context.dispatcher
 
   var socket: ActorRef = _
@@ -79,7 +80,7 @@ private class Connection(
       socket ! writeMessage //just retry immediately
 
     case Tcp.CommandFailed(_: Tcp.Connect) ⇒
-      if (connectionAttempts >= maxConnectionAttempts) {
+      if (maxConnectionAttempts.isDefined && connectionAttempts >= maxConnectionAttempts.get) {
         brando ! ConnectionFailed
       } else {
         connectionAttempts += 1
@@ -125,8 +126,7 @@ class Brando(
   val config = context.system.settings.config
   val timeoutDuration: Long = config.getDuration("redis.timeout", TimeUnit.MILLISECONDS)
   val connectionRetry: Long = config.getDuration("brando.connection_retry", TimeUnit.MILLISECONDS)
-  val maxConnectionAttempts: Long = config.getDuration("brando.connection_attempts", TimeUnit.MILLISECONDS)
-
+  val maxConnectionAttempts: Option[Int] = Try(config.getInt("brando.connection_attempts")).toOption
   implicit val timeout = Timeout(timeoutDuration, TimeUnit.MILLISECONDS)
 
   case object Authenticating
