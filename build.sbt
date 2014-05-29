@@ -4,14 +4,16 @@ organization := "com.digital-achiever"
 
 version := "1.0.3-SNAPSHOT"
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.11.1"
+
+crossScalaVersions := Seq("2.10.4", "2.11.1")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.3.0",
-  "org.scalatest" %% "scalatest" % "2.1.0" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.0" % "test"
+  "com.typesafe.akka" %% "akka-actor" % "2.3.3",
+  "org.scalatest" %% "scalatest" % "2.1.3" % "test",
+  "com.typesafe.akka" %% "akka-testkit" % "2.3.3" % "test"
 )
 
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
