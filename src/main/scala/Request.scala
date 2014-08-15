@@ -35,3 +35,5 @@ object ShardRequest {
 }
 
 case class ShardRequest(command: ByteString, key: ByteString, params: ByteString*)
+
+case class ShardBroadcast(request: Request)

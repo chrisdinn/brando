@@ -47,6 +47,9 @@ class ShardManager(
       val client = lookup(request.key)
       client forward Request(request.command, (request.key +: request.params): _*)
 
+    case broadcast: ShardBroadcast ⇒
+      for ((_, shard) ← pool) shard forward broadcast.request
+
     case shard: Shard ⇒
       pool.get(shard.id) match {
         case Some(client) ⇒

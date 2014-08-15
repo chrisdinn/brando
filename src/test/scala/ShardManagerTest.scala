@@ -58,6 +58,25 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest")) with Fun
 
       expectMsg(Some(ByteString("some value")))
     }
+
+    it("should broadcast a request to all shards") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 6379, Some(1)),
+        Shard("server3", "localhost", 6379, Some(2)))
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+
+      shardManager ! ShardBroadcast(Request("RPUSH", "shard_list_test", "some value"))
+
+      for (i ← 1 to shards.length) expectMsg(Some(1))
+
+      shardManager ! ShardBroadcast(Request("LPOP", "shard_list_test"))
+
+      for (i ← 1 to shards.length) expectMsg(Some(ByteString("some value")))
+
+      shardManager ! ShardBroadcast(Request("DEL", "shard_list_test"))
+    }
   }
 
   describe("Listening to Shard state changes") {
