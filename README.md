@@ -126,11 +126,19 @@ Once an instance of `ShardManager` has been created, send it commands via the `S
 
 	shardManager ! ShardRequest(ByteString("GET"), ByteString(mykey))
 
-Note that `ShardRequest` explicitly requires a key for all operations. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model.
+Note that `ShardRequest` explicitly requires a key for all operations. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model. However, there are some exceptions to this rule that are supported.
+
+To override the shard key used in the `ShardRequest`, use the method `ShardRequest.withKeyOverride` or create a `ShardRequestKeyOverride` directly.
+
+        shardManager ! ShardRequest.withKeyOverride("key", "RPUSH", "some-list", "some-value")
+
+To broadcast a request to each shard, send a `ShardBroadcast` to the `ShardManager`.
+
+        shardManager ! ShardBroadcast(Request("RPOP", "some-list"))
 
 Individual shards can have their configuration updated on the fly. To do this, send a `Shard` message to `ShardManager`.
 
-	shardManager ! Shard("redis1", "10.0.0.4", 6379)
+        shardManager ! Shard("redis1", "10.0.0.4", 6379)
 
 This is intended to support failover via [Redis Sentinel](http://redis.io/topics/sentinel). Note that the id of the shard __MUST__ match one of the original shards configured when the `ShardManager` instance was created. Adding new shards is not supported.
 

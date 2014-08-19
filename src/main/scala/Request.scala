@@ -32,6 +32,24 @@ object ShardRequest {
   def apply(command: String, key: String, params: String*) = {
     new ShardRequest(ByteString(command), ByteString(key), params map (ByteString(_)): _*)
   }
+
+  def withKeyOverride(
+    shardKey: String,
+    command: String,
+    params: String*) = {
+    new ShardRequestKeyOverride(
+      ByteString(shardKey),
+      ByteString(command),
+      params map (ByteString(_)): _*)
+  }
 }
 
 case class ShardRequest(command: ByteString, key: ByteString, params: ByteString*)
+
+case class ShardRequestKeyOverride(
+  shardKey: ByteString,
+  command: ByteString,
+  params: ByteString*)
+
+case class ShardBroadcast(request: Request)
+
