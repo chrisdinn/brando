@@ -29,9 +29,7 @@ case class Request(command: ByteString, params: ByteString*) {
 }
 
 object ShardRequest {
-  def apply(command: String, key: String, params: String*) = {
-    new ShardRequest(ByteString(command), ByteString(key), params map (ByteString(_)): _*)
+  def apply(key: String, command: String, params: String*) = {
+    (ByteString(key), Request(ByteString(command), params map (ByteString(_)): _*))
   }
 }
-
-case class ShardRequest(command: ByteString, key: ByteString, params: ByteString*)
