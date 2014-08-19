@@ -51,11 +51,11 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
       val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
 
-      shardManager ! ShardRequest("SET", "shard_manager_test", "some value")
+      shardManager ! ShardRequest("some_key", "SET", "shard_manager_test", "some value")
 
       expectMsg(Some(Ok))
 
-      shardManager ! ShardRequest("GET", "shard_manager_test")
+      shardManager ! ShardRequest("some_key", "GET", "shard_manager_test")
 
       expectMsg(Some(ByteString("some value")))
     }
