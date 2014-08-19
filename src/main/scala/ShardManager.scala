@@ -5,6 +5,7 @@ import akka.util.ByteString
 import collection.mutable
 import java.util.zip.CRC32
 import concurrent.duration.FiniteDuration
+import scala.util.Failure
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
@@ -46,10 +47,27 @@ class ShardManager(
 
     case (key: ByteString, request: Request) ⇒
       val client = lookup(key)
-      client forward Request(request.command, request.params: _*)
+      client forward request
 
-    case broadcast: Request ⇒
-      for ((_, shard) ← pool) shard forward broadcast
+    case (key: String, request: Request) ⇒
+      val client = lookup(ByteString(key))
+      client forward request
+
+    case request: Request ⇒
+      request.params.length match {
+        case 0 ⇒
+          sender ! Failure(new IllegalArgumentException("Received empty Request params, can not shard without a key"))
+
+        case s ⇒ {
+          val client = lookup(request.params.head)
+          client forward request
+        }
+      }
+
+    case broadcast: BroadcastRequest ⇒
+      for ((_, shard) ← pool) {
+        shard forward Request(broadcast.command, broadcast.params: _*)
+      }
 
     case shard: Shard ⇒
       pool.get(shard.id) match {

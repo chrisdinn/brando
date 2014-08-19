@@ -122,14 +122,19 @@ To use it, simply create an instance of `ShardManager`, passing it a list of Red
 
 	val shardManager = context.actorOf(ShardManager(shards))
 
-Once an instance of `ShardManager` has been created, send it commands via a `Tuple2[ByteString, Request]` or using the `apply` method of the `ShardRequest` object.
+Once an instance of `ShardManager` has been created, it can be sent several types of messages:
 
-	shardManager ! (ByteString("shardkey"), Request(ByteString("GET"), ByteString("mykey"))
-	shardManager ! ShardRequest("shardkey", "GET", "mykey")
+* `Request` objects for inferring the shard key from the params
+* `Tuple2[String, Request]` objects for specifying the shard key explicitly
+* `ShardBroadcast` objects for broadcasting requests to all shards
 
-These two statements are equivalent and result in a "GET mykey" command being issued to the shard selected using "shardkey" in the hashing function. Note that `ShardRequest` explicitly requires a key for all operations. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model. With this warning in mind, broadcasting to all shards is as simple as sending the `ShardManager` a `Request` object,
+Here are some examples,
 
-        shardManager ! Request(ByteString("LPOP", ByteString("mylist"))) 
+	shardManager ! Request("SET", "mykey", "some_value")
+	shardManager ! ("myshardkey", Request("SET", "mykey", "some_value"))
+	shardManager ! BroadcastRequest("LPOP", "mylistkey")
+
+Note that the `ShardManager` explicitly requires a key for all operations except for the `BroadcastRequest`. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model.
 
 Individual shards can have their configuration updated on the fly. To do this, send a `Shard` message to `ShardManager`.
 

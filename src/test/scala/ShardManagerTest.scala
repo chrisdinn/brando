@@ -6,6 +6,7 @@ import akka.testkit._
 import akka.actor._
 import akka.util.ByteString
 import scala.concurrent.duration._
+import scala.util.Failure
 
 class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
     with FunSpecLike with ImplicitSender {
@@ -51,13 +52,43 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
       val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
 
-      shardManager ! ShardRequest("some_key", "SET", "shard_manager_test", "some value")
+      shardManager ! ("key", Request("SET", "shard_manager_test", "some value"))
 
       expectMsg(Some(Ok))
 
-      shardManager ! ShardRequest("some_key", "GET", "shard_manager_test")
+      shardManager ! ("key", Request("GET", "shard_manager_test"))
 
       expectMsg(Some(ByteString("some value")))
+    }
+
+    it("should infer the key from the params list") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 6379, Some(1)),
+        Shard("server3", "localhost", 6379, Some(2)))
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+
+      shardManager ! Request("SET", "shard_manager_test", "some value")
+
+      expectMsg(Some(Ok))
+
+      shardManager ! Request("GET", "shard_manager_test")
+
+      expectMsg(Some(ByteString("some value")))
+    }
+
+    it("should fail with IllegalArgumentException when params is empty") {
+      val shards = Seq(
+        Shard("server1", "localhost", 6379, Some(0)),
+        Shard("server2", "localhost", 6379, Some(1)),
+        Shard("server3", "localhost", 6379, Some(2)))
+
+      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+
+      shardManager ! Request("SET")
+
+      expectMsgClass(classOf[Failure[IllegalArgumentException]])
     }
 
     it("should broadcast a Request to all shards") {
@@ -70,11 +101,11 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
       val listName = scala.util.Random.nextString(5)
 
-      shardManager ! Request("LPUSH", listName, "somevalue")
+      shardManager ! BroadcastRequest("LPUSH", listName, "somevalue")
 
       shards.foreach { _ ⇒ expectMsg(Some(new java.lang.Long(1))) }
 
-      shardManager ! Request("LPOP", listName)
+      shardManager ! BroadcastRequest("LPOP", listName)
 
       shards.foreach { _ ⇒ expectMsg(Some(ByteString("somevalue"))) }
     }
