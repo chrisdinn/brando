@@ -4,6 +4,7 @@ import akka.actor.{ Actor, ActorRef, Props, Terminated }
 import akka.util.ByteString
 import collection.mutable
 import java.util.zip.CRC32
+import concurrent.Future
 import concurrent.duration.FiniteDuration
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
@@ -36,6 +37,8 @@ class ShardManager(
     hashFunction: (Array[Byte] ⇒ Long),
     private[brando] var listeners: Set[ActorRef] = Set()) extends Actor {
 
+  import context.dispatcher
+
   val pool = mutable.Map.empty[String, ActorRef]
   val shardLookup = mutable.Map.empty[ActorRef, Shard]
 
@@ -45,8 +48,11 @@ class ShardManager(
   def receive = {
 
     case (key: ByteString, request: Request) ⇒
-      val client = lookup(key)
-      client forward Request(request.command, request.params: _*)
+      val from = sender
+      Future {
+        val client = lookup(key)
+        client tell (Request(request.command, request.params: _*), from)
+      }
 
     case shard: Shard ⇒
       pool.get(shard.id) match {
