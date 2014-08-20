@@ -6,6 +6,7 @@ import collection.mutable
 import java.util.zip.CRC32
 import concurrent.Future
 import concurrent.duration.FiniteDuration
+import scala.util.Failure
 
 case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
 
@@ -48,10 +49,23 @@ class ShardManager(
   def receive = {
 
     case (key: ByteString, request: Request) ⇒
-      val from = sender
-      Future {
-        val client = lookup(key)
-        client tell (Request(request.command, request.params: _*), from)
+      forward(key, request)
+
+    case (key: String, request: Request) ⇒
+      forward(ByteString(key), request)
+
+    case request: Request ⇒
+      request.params.length match {
+        case 0 ⇒
+          sender ! Failure(new IllegalArgumentException("Received empty Request params, can not shard without a key"))
+
+        case s ⇒
+          forward(request.params.head, request)
+      }
+
+    case broadcast: BroadcastRequest ⇒
+      for ((_, shard) ← pool) {
+        shard forward Request(broadcast.command, broadcast.params: _*)
       }
 
     case shard: Shard ⇒
@@ -76,6 +90,9 @@ class ShardManager(
 
     case x ⇒ println("ShardManager received unexpected " + x + "\r\n")
   }
+
+  def forward(key: ByteString, req: Request) =
+    Future(lookup(key)).map(_ forward req)
 
   def lookup(key: ByteString) = {
     val hash = hashFunction(key.toArray)
