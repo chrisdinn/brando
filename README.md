@@ -132,9 +132,9 @@ Here are some examples,
 
 	shardManager ! Request("SET", "mykey", "some_value")
 	shardManager ! ("myshardkey", Request("SET", "mykey", "some_value"))
-	shardManager ! BroadcastRequest("LPOP", "mylistkey")
+	shardManager ! BroadcastRequest("LPOP", "mylistkey") // don't use the ask pattern
 
-Note that the `ShardManager` explicitly requires a key for all operations except for the `BroadcastRequest`. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model.
+Note that the `ShardManager` explicitly requires a key for all operations except for the `BroadcastRequest`. This is because the key is used to determined which shard each request should be forwarded to. In this context, operations which operate on multiple keys (e.g. `MSET`, `MGET`) or no keys at all (e.g. `SELECT`, `FLUSHDB`) should be avoided, as they break the Redis sharding model. Also note that the `BroadcastRequest` must not be used with the `ask` pattern in Akka or responses will be lost!
 
 Individual shards can have their configuration updated on the fly. To do this, send a `Shard` message to `ShardManager`.
 
