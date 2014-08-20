@@ -28,8 +28,10 @@ case class Request(command: ByteString, params: ByteString*) {
     ByteString("$" + bytes.length) ++ CRLF ++ bytes ++ CRLF
 }
 
-object ShardRequest {
-  def apply(key: String, command: String, params: String*) = {
-    (ByteString(key), Request(ByteString(command), params map (ByteString(_)): _*))
-  }
+object BroadcastRequest {
+  def apply(cmd: String, params: String*) =
+    new BroadcastRequest(ByteString(cmd), params map (ByteString(_)): _*)
 }
+
+case class BroadcastRequest(command: ByteString, params: ByteString*)
+

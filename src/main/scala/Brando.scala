@@ -155,8 +155,8 @@ class Brando(
       context.become(authenticating orElse cleanListeners)
 
       (for {
-        auth ← if (auth.isDefined) connection ? Request(ByteString("AUTH"), ByteString(auth.get)) else Future.successful()
-        database ← if (database.isDefined) connection ? Request(ByteString("SELECT"), ByteString(database.get.toString)) else Future.successful()
+        auth ← if (auth.isDefined) connection ? Request(ByteString("AUTH"), ByteString(auth.get)) else Future.successful(Unit)
+        database ← if (database.isDefined) connection ? Request(ByteString("SELECT"), ByteString(database.get.toString)) else Future.successful(Unit)
       } yield (Connected)) map {
         self ! _
       } onFailure {
