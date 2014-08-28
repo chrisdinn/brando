@@ -11,7 +11,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "1.0.2"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "2.0.0"
 
 ### Getting started
 
@@ -166,4 +166,4 @@ Fork the project, add tests if possible and send a pull request.
 
 ## Contributors
 
-Chris Dinn, Jason Goodwin, Gaetan Hervouet, Damien Levin, Matt MacAulay, Arron Norwell
+Chris Dinn, Jason Goodwin, Tyson Hamilton, Gaetan Hervouet, Damien Levin, Matt MacAulay, Arron Norwell
