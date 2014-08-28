@@ -91,8 +91,10 @@ class ShardManager(
     case x ⇒ println("ShardManager received unexpected " + x + "\r\n")
   }
 
-  def forward(key: ByteString, req: Request) =
-    Future(lookup(key)).map(_ forward req)
+  def forward(key: ByteString, req: Request) = {
+    val s = sender
+    Future(lookup(key)).map(_.tell(req, s))
+  }
 
   def lookup(key: ByteString) = {
     val hash = hashFunction(key.toArray)
