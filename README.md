@@ -11,7 +11,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "2.0.0"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "2.0.1"
 
 ### Getting started
 
