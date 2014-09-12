@@ -41,13 +41,13 @@ class ShardManager(
   import context.dispatcher
 
   val pool = mutable.Map.empty[String, ActorRef]
+  var poolKeys: Seq[String] = Seq()
   val shardLookup = mutable.Map.empty[ActorRef, Shard]
 
   shards.map(create(_))
   listeners.map(context.watch(_))
 
   def receive = {
-
     case (key: ByteString, request: Request) ⇒
       forward(key, request)
 
@@ -71,8 +71,8 @@ class ShardManager(
     case shard: Shard ⇒
       pool.get(shard.id) match {
         case Some(client) ⇒
-          context.stop(client)
           create(shard)
+          context.stop(client)
 
         case _ ⇒
           println("Update received for unknown shard ID " + shard.id + "\r\n")
@@ -93,20 +93,21 @@ class ShardManager(
 
   def forward(key: ByteString, req: Request) = {
     val s = sender
-    Future(lookup(key)).map(_.tell(req, s))
+    Future { lookup(key).tell(req, s) }
   }
 
   def lookup(key: ByteString) = {
     val hash = hashFunction(key.toArray)
-    val mod = hash % pool.size
-    val id = pool.keys.toIndexedSeq(mod.toInt)
+    val mod = hash % poolKeys.size
+    val id = poolKeys(mod.toInt)
     pool(id)
   }
 
   def create(shard: Shard) {
     val client = context.actorOf(
       Brando(shard.host, shard.port, shard.database, shard.auth, Set(self)))
-    pool(shard.id) = client
     shardLookup(client) = shard
+    pool(shard.id) = client
+    poolKeys = pool.keys.toIndexedSeq
   }
 }
