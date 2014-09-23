@@ -26,6 +26,8 @@ case object Connected extends BrandoStateChange
 case object AuthenticationFailed extends BrandoStateChange
 case object ConnectionFailed extends BrandoStateChange
 
+
+
 private class Connection(
     brando: ActorRef,
     address: InetSocketAddress,
@@ -33,6 +35,17 @@ private class Connection(
     maxConnectionAttempts: Option[Int]) extends Actor with ReplyParser {
   import context.dispatcher
 
+  object BlockingRequest{
+    def unapply(r:Request) : Option[Request] =
+       r.command.utf8String.toLowerCase match{
+         case "subscribe" => Some(r)
+         case "blpop" => Some(r)
+         case "brpop" => Some(r)
+         case "brpoplpush" => Some(r)
+         case _ => None
+      }
+  }
+  
   var socket: ActorRef = _
 
   val requesterQueue = mutable.Queue.empty[ActorRef]
@@ -46,8 +59,7 @@ private class Connection(
     subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
 
   def receive = {
-    case subRequest: Request if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
-
+    case BlockingRequest(subRequest) ⇒
       subRequest.params map { x ⇒
         subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
       }
