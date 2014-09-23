@@ -5,9 +5,11 @@ import akka.testkit._
 
 import akka.actor._
 import akka.io.{ IO, Tcp }
-import akka.util.ByteString
+import akka.util._
+import akka.pattern._
 import scala.concurrent.duration._
 import java.util.UUID
+import scala.concurrent._
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     with ImplicitSender {
@@ -140,7 +142,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   }
 
-  describe("piplining") {
+  describe("pipelining") {
     it("should respond to a Seq of multiple requests all at once") {
       val brando = system.actorOf(Brando())
       val ping = Request("PING")
@@ -297,7 +299,8 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   }
 
-  describe("subscriber") {
+  describe("blocking requests"){
+      describe("subscribe") {
 
     it("should be able to subscribe to a pubsub channel") {
       val channel = UUID.randomUUID().toString
@@ -352,6 +355,29 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       expectMsg(Some(0))
 
       expectNoMsg
+    }
+  }
+      
+  describe("should be able to block on blpop"){
+      val brando = system.actorOf(Brando())
+      try{
+    	  val channel = UUID.randomUUID().toString
+    	  val popBrando =  system.actorOf(Brando())
+    	  popBrando ! Request("BLPOP", "blpop:list", "0")
+
+	      expectNoMsg
+	      
+	      brando ! Request("LPUSH","blpop:list", "blpop-value")
+	      expectMsgType[Option[Long]]
+	      
+	      expectMsg(Some(List(Some(
+	        ByteString("blpop:list")),
+	        Some(ByteString("blpop-value")))))
+    
+      } finally{
+    	  implicit val timeout = Timeout(1.seconds)
+          Await.ready((brando ? Request("del", "blpop:list")), 1.seconds)
+      }
     }
   }
 
