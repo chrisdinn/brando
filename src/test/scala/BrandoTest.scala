@@ -299,84 +299,84 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   }
 
-  describe("blocking requests"){
-      describe("subscribe") {
+  describe("blocking requests") {
+    describe("subscribe") {
 
-    it("should be able to subscribe to a pubsub channel") {
-      val channel = UUID.randomUUID().toString
-      val subscriber = system.actorOf(Brando())
+      it("should be able to subscribe to a pubsub channel") {
+        val channel = UUID.randomUUID().toString
+        val subscriber = system.actorOf(Brando())
 
-      subscriber ! Request("SUBSCRIBE", channel)
+        subscriber ! Request("SUBSCRIBE", channel)
 
-      expectMsg(Some(List(Some(
-        ByteString("subscribe")),
-        Some(ByteString(channel)),
-        Some(1))))
+        expectMsg(Some(List(Some(
+          ByteString("subscribe")),
+          Some(ByteString(channel)),
+          Some(1))))
+      }
+
+      it("should receive published messages from a pubsub channel") {
+        val channel = UUID.randomUUID().toString
+        val subscriber = system.actorOf(Brando())
+        val publisher = system.actorOf(Brando())
+
+        subscriber ! Request("SUBSCRIBE", channel)
+
+        expectMsg(Some(List(Some(
+          ByteString("subscribe")),
+          Some(ByteString(channel)),
+          Some(1))))
+
+        publisher ! Request("PUBLISH", channel, "test")
+        expectMsg(Some(1)) //publisher gets back number of subscribers when publishing
+
+        expectMsg(PubSubMessage(channel, "test"))
+      }
+
+      it("should be able to unsubscribe from a pubsub channel") {
+        val channel = UUID.randomUUID().toString
+        val subscriber = system.actorOf(Brando())
+        val publisher = system.actorOf(Brando())
+
+        subscriber ! Request("SUBSCRIBE", channel)
+
+        expectMsg(Some(List(Some(
+          ByteString("subscribe")),
+          Some(ByteString(channel)),
+          Some(1))))
+
+        subscriber ! Request("UNSUBSCRIBE", channel)
+
+        expectMsg(Some(List(Some(
+          ByteString("unsubscribe")),
+          Some(ByteString(channel)),
+          Some(0))))
+
+        publisher ! Request("PUBLISH", channel, "test")
+        expectMsg(Some(0))
+
+        expectNoMsg
+      }
     }
 
-    it("should receive published messages from a pubsub channel") {
-      val channel = UUID.randomUUID().toString
-      val subscriber = system.actorOf(Brando())
-      val publisher = system.actorOf(Brando())
-
-      subscriber ! Request("SUBSCRIBE", channel)
-
-      expectMsg(Some(List(Some(
-        ByteString("subscribe")),
-        Some(ByteString(channel)),
-        Some(1))))
-
-      publisher ! Request("PUBLISH", channel, "test")
-      expectMsg(Some(1)) //publisher gets back number of subscribers when publishing
-
-      expectMsg(PubSubMessage(channel, "test"))
-    }
-
-    it("should be able to unsubscribe from a pubsub channel") {
-      val channel = UUID.randomUUID().toString
-      val subscriber = system.actorOf(Brando())
-      val publisher = system.actorOf(Brando())
-
-      subscriber ! Request("SUBSCRIBE", channel)
-
-      expectMsg(Some(List(Some(
-        ByteString("subscribe")),
-        Some(ByteString(channel)),
-        Some(1))))
-
-      subscriber ! Request("UNSUBSCRIBE", channel)
-
-      expectMsg(Some(List(Some(
-        ByteString("unsubscribe")),
-        Some(ByteString(channel)),
-        Some(0))))
-
-      publisher ! Request("PUBLISH", channel, "test")
-      expectMsg(Some(0))
-
-      expectNoMsg
-    }
-  }
-      
-  describe("should be able to block on blpop"){
+    describe("should be able to block on blpop") {
       val brando = system.actorOf(Brando())
-      try{
-    	  val channel = UUID.randomUUID().toString
-    	  val popBrando =  system.actorOf(Brando())
-    	  popBrando ! Request("BLPOP", "blpop:list", "0")
+      try {
+        val channel = UUID.randomUUID().toString
+        val popBrando = system.actorOf(Brando())
+        popBrando ! Request("BLPOP", "blpop:list", "0")
 
-	      expectNoMsg
-	      
-	      brando ! Request("LPUSH","blpop:list", "blpop-value")
-	      expectMsgType[Option[Long]]
-	      
-	      expectMsg(Some(List(Some(
-	        ByteString("blpop:list")),
-	        Some(ByteString("blpop-value")))))
-    
-      } finally{
-    	  implicit val timeout = Timeout(1.seconds)
-          Await.ready((brando ? Request("del", "blpop:list")), 1.seconds)
+        expectNoMsg
+
+        brando ! Request("LPUSH", "blpop:list", "blpop-value")
+        expectMsgType[Option[Long]]
+
+        expectMsg(Some(List(Some(
+          ByteString("blpop:list")),
+          Some(ByteString("blpop-value")))))
+
+      } finally {
+        implicit val timeout = Timeout(1.seconds)
+        Await.ready((brando ? Request("del", "blpop:list")), 1.seconds)
       }
     }
   }
@@ -404,6 +404,18 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       val brando = system.actorOf(Brando("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
 
       probe.expectMsg(AuthenticationFailed)
+    }
+
+    it("should send a notification to later added listener") {
+      val probe = TestProbe()
+      val probe2 = TestProbe()
+      val brando = system.actorOf(Brando("localhost", 13579, listeners = Set(probe2.ref)))
+      brando ! probe.ref
+
+      //3 retries * 2 seconds = 6 seconds
+      probe.expectNoMsg(5900.milliseconds)
+      probe2.expectMsg(ConnectionFailed)
+      probe.expectMsg(ConnectionFailed)
     }
   }
 

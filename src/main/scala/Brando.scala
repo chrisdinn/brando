@@ -26,8 +26,6 @@ case object Connected extends BrandoStateChange
 case object AuthenticationFailed extends BrandoStateChange
 case object ConnectionFailed extends BrandoStateChange
 
-
-
 private class Connection(
     brando: ActorRef,
     address: InetSocketAddress,
@@ -35,17 +33,17 @@ private class Connection(
     maxConnectionAttempts: Option[Int]) extends Actor with ReplyParser {
   import context.dispatcher
 
-  object BlockingRequest{
-    def unapply(r:Request) : Option[Request] =
-       r.command.utf8String.toLowerCase match{
-         case "subscribe" => Some(r)
-         case "blpop" => Some(r)
-         case "brpop" => Some(r)
-         case "brpoplpush" => Some(r)
-         case _ => None
+  object BlockingRequest {
+    def unapply(r: Request): Option[Request] =
+      r.command.utf8String.toLowerCase match {
+        case "subscribe"  ⇒ Some(r)
+        case "blpop"      ⇒ Some(r)
+        case "brpop"      ⇒ Some(r)
+        case "brpoplpush" ⇒ Some(r)
+        case _            ⇒ None
       }
   }
-  
+
   var socket: ActorRef = _
 
   val requesterQueue = mutable.Queue.empty[ActorRef]
@@ -153,10 +151,13 @@ class Brando(
   def receive = disconnected orElse cleanListeners
 
   def authenticated: Receive = {
-    case request: Request ⇒ connection forward request
+    case request: Request ⇒
+      connection forward request
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
       context.become(disconnected orElse cleanListeners)
+    case s: ActorRef ⇒
+      listeners = listeners + s
   }
 
   def disconnected: Receive = {
@@ -178,6 +179,9 @@ class Brando(
 
     case ConnectionFailed ⇒
       notifyStateChange(ConnectionFailed)
+
+    case s: ActorRef ⇒
+      listeners = listeners + s
   }
 
   def authenticating: Receive = {
@@ -195,6 +199,8 @@ class Brando(
     case AuthenticationFailed ⇒
       notifyStateChange(AuthenticationFailed)
 
+    case s: ActorRef ⇒
+      listeners = listeners + s
   }
 
   def cleanListeners: Receive = {
