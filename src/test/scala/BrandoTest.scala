@@ -2,14 +2,13 @@ package brando
 
 import org.scalatest.FunSpecLike
 import akka.testkit._
-
 import akka.actor._
+import akka.pattern._
 import akka.io.{ IO, Tcp }
 import akka.util._
-import akka.pattern._
+import scala.concurrent.Await
 import scala.concurrent.duration._
 import java.util.UUID
-import scala.concurrent._
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     with ImplicitSender {
@@ -298,7 +297,6 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
   }
-
   describe("blocking requests") {
     describe("subscribe") {
 

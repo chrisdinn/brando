@@ -2,7 +2,7 @@ package brando
 
 import akka.actor.{ Actor, ActorContext, ActorRef, Props, Status, Stash, Terminated }
 import akka.io.{ IO, Tcp }
-import akka.pattern.ask
+import akka.pattern._
 import akka.util.{ ByteString, Timeout }
 import scala.collection.mutable
 import scala.concurrent.duration._
@@ -33,17 +33,6 @@ private class Connection(
     maxConnectionAttempts: Option[Int]) extends Actor with ReplyParser {
   import context.dispatcher
 
-  object BlockingRequest {
-    def unapply(r: Request): Option[Request] =
-      r.command.utf8String.toLowerCase match {
-        case "subscribe"  ⇒ Some(r)
-        case "blpop"      ⇒ Some(r)
-        case "brpop"      ⇒ Some(r)
-        case "brpoplpush" ⇒ Some(r)
-        case _            ⇒ None
-      }
-  }
-
   var socket: ActorRef = _
 
   val requesterQueue = mutable.Queue.empty[ActorRef]
@@ -57,7 +46,8 @@ private class Connection(
     subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
 
   def receive = {
-    case BlockingRequest(subRequest) ⇒
+    case subRequest: Request if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
+
       subRequest.params map { x ⇒
         subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
       }
