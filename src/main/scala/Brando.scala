@@ -30,7 +30,8 @@ private class Connection(
     brando: ActorRef,
     address: InetSocketAddress,
     connectionRetry: Long,
-    maxConnectionAttempts: Option[Int]) extends Actor with ReplyParser {
+    maxConnectionAttempts: Option[Int],
+    connectionTimeout: FiniteDuration) extends Actor with ReplyParser {
   import context.dispatcher
 
   var socket: ActorRef = _
@@ -93,7 +94,7 @@ private class Connection(
       context.system.scheduler.scheduleOnce(connectionRetry.milliseconds, self, Connect(address))
 
     case Connect(address) ⇒
-      IO(Tcp)(context.system) ! Tcp.Connect(address)
+      IO(Tcp)(context.system) ! Tcp.Connect(address, timeout = Some(connectionTimeout))
 
     case x: Tcp.Connected ⇒
       socket = sender
@@ -124,17 +125,17 @@ class Brando(
   import context.dispatcher
 
   val config = context.system.settings.config
-  val timeoutDuration: Long = config.getDuration("redis.timeout", TimeUnit.MILLISECONDS)
+  val connectionTimeout: Long = config.getDuration("redis.timeout", TimeUnit.MILLISECONDS)
   val connectionRetry: Long = config.getDuration("brando.connection_retry", TimeUnit.MILLISECONDS)
   val maxConnectionAttempts: Option[Int] = Try(config.getInt("brando.connection_attempts")).toOption
-  implicit val timeout = Timeout(timeoutDuration, TimeUnit.MILLISECONDS)
+  implicit val timeout = Timeout(connectionTimeout, TimeUnit.MILLISECONDS)
 
   case object Authenticating
   case object Authenticated
 
   val address = new InetSocketAddress(host, port)
   val connection = context.actorOf(Props(classOf[Connection],
-    self, address, connectionRetry, maxConnectionAttempts))
+    self, address, connectionRetry, maxConnectionAttempts, connectionTimeout.millis))
 
   listeners.map(context.watch(_))
 
