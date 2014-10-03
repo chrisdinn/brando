@@ -422,13 +422,24 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       val socket = TestProbe()
       val brando = TestProbe()
       val address = new java.net.InetSocketAddress("test.com", 16379)
-      val connection = TestActorRef(new Connection(brando.ref, address, 1000000, None))
+      val connection = TestActorRef(new Connection(brando.ref, address, 1000000, None, 1.seconds))
 
       for (i ← 1 to 10) {
         connection ! Tcp.CommandFailed(Tcp.Connect(address))
         assert(connection.underlyingActor.connectionAttempts === i)
       }
       brando.expectNoMsg
+    }
+
+    it("should stop retrying to connect and timeout once brando.connection_attempts is reached") {
+      val socket = TestProbe()
+      val brando = TestProbe()
+      val address = new java.net.InetSocketAddress("test.com", 16379)
+      val connection = TestActorRef(new Connection(brando.ref, address, 10, Some(1), 1.seconds))
+
+      connection ! Tcp.CommandFailed(Tcp.Connect(address))
+      assert(connection.underlyingActor.connectionAttempts === 1)
+      brando.expectMsg(ConnectionFailed)
     }
   }
 }
