@@ -431,7 +431,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       brando.expectNoMsg
     }
 
-    it("should stop retrying to connect if brando.connection_attempts is defined") {
+    it("should stop retrying to connect and timeout once brando.connection_attempts is reached") {
       val socket = TestProbe()
       val brando = TestProbe()
       val address = new java.net.InetSocketAddress("test.com", 16379)
