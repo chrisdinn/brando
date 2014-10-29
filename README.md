@@ -49,7 +49,7 @@ Error replies are returned as `akka.actor.Status.Failure` objects containing an 
 	  
 	  // Response: Failure(brando.BrandoException: ERR value is not an integer or out of range)
 
-Integer replies are returned as `Option[Int]`. 
+Integer replies are returned as `Option[Long]`. 
 
       redis ! Request("SADD", "some-set", "one", "two")
 
