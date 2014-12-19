@@ -6,8 +6,19 @@ import org.scalatest.FunSpec
 class ResponseTest extends FunSpec {
   describe("Utf8String") {
     it("should extract an utf8 String from a ByteString") {
-      val ok = Response.AsString.unapply(Some(ByteString("ok")))
-      assertResult(Some("ok"))(ok)
+      val Response.AsString(r) = Some(ByteString("ok"))
+      assert(r === "ok")
+    }
+
+    describe("option") {
+      it("should extract the utf8 string if it matches") {
+        val Response.AsStringOption(r) = Some(ByteString("ok"))
+        assert(r === Some("ok"))
+      }
+      it("should return none otherwise") {
+        val Response.AsStringOption(r) = None
+        assert(r === None)
+      }
     }
   }
 

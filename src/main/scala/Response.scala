@@ -50,5 +50,14 @@ object Response {
       }
     }
   }
+
+  object AsStringOption {
+    def unapply(value: Any) = {
+      value match {
+        case Some(str: ByteString) ⇒ Some(Some(str.utf8String))
+        case _                     ⇒ Some(None)
+      }
+    }
+  }
 }
 
