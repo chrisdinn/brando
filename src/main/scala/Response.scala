@@ -3,29 +3,34 @@ package brando
 import akka.util.ByteString
 
 object Response {
-  private def recUnapply[T](list: List[Any], mapper: ByteString ⇒ T, result: Seq[T] = Seq.empty): Option[Seq[T]] = {
-    if (list.isEmpty) Some(result)
-    else list match {
-      case Some(s: ByteString) :: tail ⇒ recUnapply(list.tail, mapper, result :+ mapper(s))
-      case _                           ⇒ None
+
+  def collectItems[T](value: Any, mapper: PartialFunction[Any, T]): Option[Seq[T]] = {
+    value match {
+      case Some(v: List[_]) ⇒ v.foldLeft(Option(Seq[T]())) {
+        case (Some(acc), e @ (Some(_: ByteString) | None)) if (mapper.isDefinedAt(e)) ⇒
+          Some(acc :+ mapper(e))
+        case (Some(acc), e @ (Some(_: ByteString) | None)) ⇒ Some(acc)
+        case _ ⇒ None
+      }
+      case _ ⇒ None
     }
   }
 
   object AsStrings {
     def unapply(value: Any) = {
-      value match {
-        case Some(list: List[Any]) ⇒ recUnapply[String](list, { _.utf8String })
-        case _                     ⇒ None
-      }
+      collectItems(value, { case Some(v: ByteString) ⇒ v.utf8String })
+    }
+  }
+
+  object AsStringOptions {
+    def unapply(value: Any) = {
+      collectItems(value, { case Some(v: ByteString) ⇒ Some(v.utf8String); case _ ⇒ None })
     }
   }
 
   object AsByteSeqs {
     def unapply(value: Any) = {
-      value match {
-        case Some(list: List[Any]) ⇒ recUnapply[Seq[Byte]](list, { t ⇒ t.toArray })
-        case _                     ⇒ None
-      }
+      collectItems(value, { case Some(v: ByteString) ⇒ v.toArray.toList })
     }
   }
 
