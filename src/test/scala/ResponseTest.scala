@@ -22,6 +22,14 @@ class ResponseTest extends FunSpec {
     }
   }
 
+  describe("StringOptions") {
+    it("should extract a list of option string from a option bytestring list ") {
+      val resp = Some(List(Some(ByteString("l1")), None, Some(ByteString("l2"))))
+      val seq = Response.AsStringOptions.unapply(resp)
+      assertResult(Some(Seq(Some("l1"), None, Some("l2"))))(seq)
+    }
+  }
+
   describe("Strings") {
     it("should extract a list of string from a option bytestring list ") {
       val resp = Some(List(Some(ByteString("l1")), Some(ByteString("l2")), Some(ByteString("l3"))))
@@ -65,5 +73,4 @@ class ResponseTest extends FunSpec {
       assertResult(None)(map)
     }
   }
-
 }
