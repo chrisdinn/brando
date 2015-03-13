@@ -37,7 +37,8 @@ private class Connection(
   var socket: ActorRef = _
 
   val requesterQueue = mutable.Queue.empty[ActorRef]
-  var subscribers: Map[ByteString, Seq[ActorRef]] = Map.empty
+  var subscribers = Map[ByteString, Seq[ActorRef]]()
+  var multiBatches = Map[ActorRef, List[Request]]()
 
   var connectionAttempts = 0
 
@@ -48,16 +49,30 @@ private class Connection(
 
   def receive = {
     case subRequest: Request if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
-
       subRequest.params map { x ⇒
         subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
       }
       socket ! Tcp.Write(subRequest.toByteString, CommandAck(sender))
 
+    case multi: Request if (multi.command.utf8String.toLowerCase == "multi") ⇒
+      multiBatches += sender -> List(multi)
+
+    case discard: Request if (discard.command.utf8String.toLowerCase == "discard") ⇒
+      multiBatches = multiBatches - sender
+
+    case exec: Request if (exec.command.utf8String.toLowerCase == "exec") ⇒
+      multiBatches(sender).foreach(r ⇒ socket ! Tcp.Write(r.toByteString, CommandAck(sender)))
+      socket ! Tcp.Write(exec.toByteString, CommandAck(sender))
+      multiBatches = multiBatches - sender
+
+    case request: Request if multiBatches.contains(sender) ⇒
+      multiBatches += sender -> (multiBatches(sender) :+ request)
+
     case request: Request ⇒
       socket ! Tcp.Write(request.toByteString, CommandAck(sender))
 
-    case CommandAck(sender) ⇒ requesterQueue.enqueue(sender)
+    case CommandAck(sender) ⇒
+      requesterQueue.enqueue(sender)
 
     case Tcp.Received(data) ⇒
       parseReply(data) { reply ⇒
@@ -147,21 +162,18 @@ class Brando(
     case request: Request ⇒
       connection forward request
 
-    case requests: Requests ⇒
-      stash()
-      requests.list.foreach(connection forward _)
-
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
       context.become(disconnected orElse cleanListeners)
+
     case s: ActorRef ⇒
       listeners = listeners + s
   }
 
   def disconnected: Receive = {
-    case requests: Requests ⇒ stash()
 
-    case request: Request   ⇒ stash()
+    case request: Request ⇒
+      stash()
 
     case x: Tcp.Connected ⇒
 
@@ -185,9 +197,9 @@ class Brando(
   }
 
   def authenticating: Receive = {
-    case requests: Requests ⇒ stash()
 
-    case request: Request   ⇒ stash()
+    case request: Request ⇒
+      stash()
 
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)

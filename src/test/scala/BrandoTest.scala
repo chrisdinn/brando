@@ -266,23 +266,46 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
   }
 
   describe("multi/exec requests") {
-    it("should support multi requests as an atomic transaction") {
+    it("should batch multi requests to ensure back to back sequential execution.") {
+      val probe = TestProbe()
+
       val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
-      brando ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
-      expectMsg(Some(Ok))
-      expectMsg(Some(Queued))
-      expectMsg(Some(Queued))
-      expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")))))
+      brando.tell(Request("MULTI"), probe.ref)
+      brando.tell(Request("SET", "mykey", "somevalue"), probe.ref)
+      brando.tell(Request("GET", "mykey"), probe.ref)
+      brando.tell(Request("GET", "mykey"), probe.ref)
+      brando.tell(Request("EXEC"), probe.ref)
+
+      probe.expectMsg(Some(Ok))
+      probe.expectMsg(Some(Queued))
+      probe.expectMsg(Some(Queued))
+      probe.expectMsg(Some(Queued))
+      probe.expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")), Some(ByteString("somevalue")))))
     }
 
-    it("should support multi requests with multiple results") {
+    it("should send request in batches per sender") {
+      val probe1 = TestProbe()
+      val probe2 = TestProbe()
+
       val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
-      brando ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
-      expectMsg(Some(Ok))
-      expectMsg(Some(Queued))
-      expectMsg(Some(Queued))
-      expectMsg(Some(Queued))
-      expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")), Some(ByteString("somevalue")))))
+
+      brando.tell(Request("MULTI"), probe1.ref)
+      brando.tell(Request("MULTI"), probe2.ref)
+      brando.tell(Request("SET", "mykey", "new-value"), probe1.ref)
+      brando.tell(Request("SET", "mykey2", "somevalue"), probe2.ref)
+      brando.tell(Request("SET", "mykey", "old-value"), system.deadLetters)
+      brando.tell(Request("GET", "mykey"), probe1.ref)
+      brando.tell(Request("EXEC"), probe2.ref)
+      brando.tell(Request("EXEC"), probe1.ref)
+
+      probe2.expectMsg(Some(Ok))
+      probe2.expectMsg(Some(Queued))
+      probe2.expectMsg(Some(List(Some(Ok))))
+
+      probe1.expectMsg(Some(Ok))
+      probe1.expectMsg(Some(Queued))
+      probe1.expectMsg(Some(Queued))
+      probe1.expectMsg(Some(List(Some(Ok), Some(ByteString("new-value")))))
     }
   }
 
