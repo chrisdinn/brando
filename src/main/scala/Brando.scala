@@ -148,7 +148,6 @@ class Brando(
       connection forward request
 
     case requests: Requests ⇒
-      stash()
       requests.list.foreach(connection forward _)
 
     case x: Tcp.ConnectionClosed ⇒
@@ -159,12 +158,13 @@ class Brando(
   }
 
   def disconnected: Receive = {
-    case requests: Requests ⇒ stash()
+    case requests: Requests ⇒
+      stash()
 
-    case request: Request   ⇒ stash()
+    case request: Request ⇒
+      stash()
 
     case x: Tcp.Connected ⇒
-
       context.become(authenticating orElse cleanListeners)
 
       (for {
@@ -185,9 +185,11 @@ class Brando(
   }
 
   def authenticating: Receive = {
-    case requests: Requests ⇒ stash()
+    case requests: Requests ⇒
+      stash()
 
-    case request: Request   ⇒ stash()
+    case request: Request ⇒
+      stash()
 
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
