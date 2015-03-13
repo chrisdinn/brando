@@ -11,7 +11,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "2.0.5"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "2.1.0"
 
 ### Getting started
 
@@ -74,6 +74,12 @@ NULL replies are returned as `None` and may appear either on their own or nested
       // Response: None
 
 If you're not sure what to expect in response to a request, please refer to the Redis command documentation at [http://redis.io/commands](http://redis.io/commands) where the reply type for each is clearly stated.
+
+To ensure that a list of requests are executed back to back, the brando actor can receive the following message : 
+
+	redis ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
+
+This is very usefull in that case since it'll make sure no other requests are executed between the MULTI and EXEC commands.
 
 ### Response extractors
 

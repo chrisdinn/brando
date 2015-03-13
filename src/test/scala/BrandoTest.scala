@@ -265,38 +265,27 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
   }
 
-  describe("multi") {
-    it("should return the multi responses after the exec command") {
+  describe("multi/exec requests") {
+    it("should support multi requests as an atomic transaction") {
       val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
-
-      brando ! Request("MULTI")
-      expectMsg(Some(Ok))
-
-      brando ! Request("SET", "mykey", "somevalue")
-      expectMsg(Some(Queued))
-
-      brando ! Request("GET", "mykey")
-      expectMsg(Some(Queued))
-
-      brando ! Request("EXEC")
-      expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")))))
-    }
-
-    it("should pipeline multi requests") {
-      val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
-
-      brando ! Request("MULTI")
-      brando ! Request("SET", "mykey", "somevalue")
-      brando ! Request("GET", "mykey")
-      brando ! Request("EXEC")
-
+      brando ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(Some(Ok))
       expectMsg(Some(Queued))
       expectMsg(Some(Queued))
       expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")))))
     }
 
+    it("should support multi requests with multiple results") {
+      val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
+      brando ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
+      expectMsg(Some(Ok))
+      expectMsg(Some(Queued))
+      expectMsg(Some(Queued))
+      expectMsg(Some(Queued))
+      expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")), Some(ByteString("somevalue")))))
+    }
   }
+
   describe("blocking requests") {
     describe("subscribe") {
 
