@@ -71,8 +71,10 @@ private class Connection(
 
           case _ ⇒
             requesterQueue.dequeue ! (reply match {
-              case Some(failure) if failure.isInstanceOf[Status.Failure] ⇒ failure
-              case success ⇒ success
+              case Some(failure: Status.Failure) ⇒
+                failure
+              case success ⇒
+                success
             })
         }
       }
@@ -144,6 +146,11 @@ class Brando(
   def authenticated: Receive = {
     case request: Request ⇒
       connection forward request
+
+    case requests: Requests ⇒
+      stash()
+      requests.list.foreach(connection forward _)
+
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
       context.become(disconnected orElse cleanListeners)
@@ -152,7 +159,9 @@ class Brando(
   }
 
   def disconnected: Receive = {
-    case request: Request ⇒ stash()
+    case requests: Requests ⇒ stash()
+
+    case request: Request   ⇒ stash()
 
     case x: Tcp.Connected ⇒
 
@@ -176,7 +185,9 @@ class Brando(
   }
 
   def authenticating: Receive = {
-    case request: Request ⇒ stash()
+    case requests: Requests ⇒ stash()
+
+    case request: Request   ⇒ stash()
 
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)

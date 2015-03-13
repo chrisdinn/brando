@@ -26,5 +26,4 @@ class RequestTest extends FunSpec {
       assertResult(Request("HMSET", "setkey", "a", "a", "b", "b"))(req)
     }
   }
-
 }
