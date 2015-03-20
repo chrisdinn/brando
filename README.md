@@ -78,6 +78,8 @@ If you're not sure what to expect in response to a request, please refer to the 
 To ensure that a list of requests are executed back to back, the brando actor can receive the following message : 
 
 	redis ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
+	
+	// Response : List(Some(Ok), Some(Queued), Some(Queued), Some("somevalue"))
 
 This is very usefull in that case since it'll make sure no other requests are executed between the MULTI and EXEC commands.
 Responses will also be grouped in a single list of the same size as the Batch requests.

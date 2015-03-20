@@ -106,7 +106,6 @@ private class Connection(
       brando ! x
 
     case _ ⇒
-    //println("connection didn't expect - " + x)
   }
 }
 
@@ -151,7 +150,7 @@ class Brando(
 
     case batch: Batch ⇒
       val requester = sender
-      val batcher = actor(sender.path.name + "-batcher")(new Act {
+      val batcher = actor(new Act {
         var responses = List[Any]()
         become {
           case response if (responses.size + 1) < batch.requests.size ⇒
