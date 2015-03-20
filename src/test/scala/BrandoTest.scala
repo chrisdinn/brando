@@ -268,21 +268,21 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
   describe("multi/exec requests") {
     it("should support multi requests as an atomic transaction") {
       val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
-      brando ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
-      expectMsg(Some(Ok))
-      expectMsg(Some(Queued))
-      expectMsg(Some(Queued))
-      expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")))))
+      brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
+      expectMsg(List(Some(Ok),
+        Some(Queued),
+        Some(Queued),
+        Some(List(Some(Ok), Some(ByteString("somevalue"))))))
     }
 
     it("should support multi requests with multiple results") {
       val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
-      brando ! Requests(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
-      expectMsg(Some(Ok))
-      expectMsg(Some(Queued))
-      expectMsg(Some(Queued))
-      expectMsg(Some(Queued))
-      expectMsg(Some(List(Some(Ok), Some(ByteString("somevalue")), Some(ByteString("somevalue")))))
+      brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
+      expectMsg(List(Some(Ok),
+        Some(Queued),
+        Some(Queued),
+        Some(Queued),
+        Some(List(Some(Ok), Some(ByteString("somevalue")), Some(ByteString("somevalue"))))))
     }
   }
 

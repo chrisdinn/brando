@@ -35,4 +35,4 @@ object BroadcastRequest {
 
 case class BroadcastRequest(command: ByteString, params: ByteString*)
 
-case class Requests(list: Request*)
+case class Batch(requests: Request*)
