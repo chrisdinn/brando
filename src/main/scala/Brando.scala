@@ -1,6 +1,7 @@
 package brando
 
-import akka.actor.{ Actor, ActorContext, ActorRef, Props, Status, Stash, Terminated }
+import akka.actor.{ Actor, ActorContext, ActorRef, Props, Status, Stash, Terminated, PoisonPill }
+import akka.actor.ActorDSL._
 import akka.io.{ IO, Tcp }
 import akka.pattern._
 import akka.util.{ ByteString, Timeout }
@@ -104,7 +105,8 @@ private class Connection(
       socket ! Tcp.Register(self, useResumeWriting = false)
       brando ! x
 
-    case x ⇒ println("connection didn't expect - " + x)
+    case _ ⇒
+    //println("connection didn't expect - " + x)
   }
 }
 
@@ -147,8 +149,19 @@ class Brando(
     case request: Request ⇒
       connection forward request
 
-    case requests: Requests ⇒
-      requests.list.foreach(connection forward _)
+    case batch: Batch ⇒
+      val requester = sender
+      val batcher = actor(sender.path.name + "-batcher")(new Act {
+        var responses = List[Any]()
+        become {
+          case response if (responses.size + 1) < batch.requests.size ⇒
+            responses = responses :+ response
+          case response ⇒
+            requester ! (responses :+ response)
+            self ! PoisonPill
+        }
+      })
+      batch.requests.foreach(connection.tell(_, batcher))
 
     case x: Tcp.ConnectionClosed ⇒
       notifyStateChange(Disconnected)
@@ -158,7 +171,7 @@ class Brando(
   }
 
   def disconnected: Receive = {
-    case requests: Requests ⇒
+    case batch: Batch ⇒
       stash()
 
     case request: Request ⇒
@@ -185,7 +198,7 @@ class Brando(
   }
 
   def authenticating: Receive = {
-    case requests: Requests ⇒
+    case batch: Batch ⇒
       stash()
 
     case request: Request ⇒
