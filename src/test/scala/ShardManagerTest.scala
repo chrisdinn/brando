@@ -11,46 +11,71 @@ import scala.util.Failure
 class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
     with FunSpecLike with ImplicitSender {
 
+  import ShardManager._
+  import Connection._
+
   describe("creating shards") {
     it("should create a pool of clients mapped to ids") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)),
-        Shard("server3", "localhost", 6379, Some(2)))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1),
+        RedisShard("server3", "localhost", 6379, 2))
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards))
 
       assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
     }
 
     it("should support updating existing shards but not creating new ones") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)),
-        Shard("server3", "localhost", 6379, Some(2)))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1),
+        RedisShard("server3", "localhost", 6379, 2))
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
-
-      assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
-
-      shardManager ! Shard("server1", "localhost", 6379, Some(6))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards))
 
       assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
 
-      shardManager ! Shard("new_server", "localhost", 6378, Some(3))
+      shardManager ! RedisShard("server1", "localhost", 6379, 6)
+
+      assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
+
+      shardManager ! RedisShard("new_server", "localhost", 6378, 3)
 
       assert(shardManager.underlyingActor.pool.keys === Set("server1", "server2", "server3"))
     }
   }
 
   describe("sending requests") {
+    describe("using sentinel") {
+      it("should forward each request to the appropriate client transparently") {
+        val shards = Seq(
+          SentinelShard("mymaster", 0))
+
+        val sentinel = system.actorOf(SentinelClient())
+        val shardManager = TestActorRef[ShardManager](ShardManager(
+          shards, Set(), Some(sentinel)))
+
+        shardManager ! ("key", Request("SET", "shard_manager_test", "some value"))
+
+        expectMsg(Some(Ok))
+
+        shardManager ! ("key", Request("GET", "shard_manager_test"))
+
+        expectMsg(Some(ByteString("some value")))
+      }
+    }
+
     it("should forward each request to the appropriate client transparently") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)),
-        Shard("server3", "localhost", 6379, Some(2)))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1),
+        RedisShard("server3", "localhost", 6379, 2))
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards))
 
       shardManager ! ("key", Request("SET", "shard_manager_test", "some value"))
 
@@ -63,11 +88,12 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
     it("should infer the key from the params list") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)),
-        Shard("server3", "localhost", 6379, Some(2)))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1),
+        RedisShard("server3", "localhost", 6379, 2))
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards))
 
       shardManager ! Request("SET", "shard_manager_test", "some value")
 
@@ -80,11 +106,12 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
     it("should fail with IllegalArgumentException when params is empty") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)),
-        Shard("server3", "localhost", 6379, Some(2)))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1),
+        RedisShard("server3", "localhost", 6379, 2))
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards))
 
       shardManager ! Request("SET")
 
@@ -93,11 +120,12 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
     it("should broadcast a Request to all shards") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1)),
-        Shard("server3", "localhost", 6379, Some(2)))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1),
+        RedisShard("server3", "localhost", 6379, 2))
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards))
 
       val listName = scala.util.Random.nextString(5)
 
@@ -112,45 +140,47 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
   }
 
   describe("Listening to Shard state changes") {
-
     it("should notify listeners when a shard connect successfully") {
-      val shards = Seq(Shard("server1", "localhost", 6379, Some(0)))
+      val shards = Seq(RedisShard("server1", "localhost", 6379, 0))
 
       val probe = TestProbe()
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards, Set(probe.ref)))
 
-      probe.expectMsg(ShardStateChange(shards(0), Connected))
+      probe.expectMsg(Connecting("localhost", 6379))
+      probe.expectMsg(Connected("localhost", 6379))
     }
 
     it("should notify listeners when a shard fails to connect") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 13579, Some(1)))
+        RedisShard("server2", "localhost", 13579, 1))
 
       val probe = TestProbe()
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards, Set(probe.ref)))
 
-      probe.expectMsg(ShardStateChange(shards(0), Connected))
-      probe.expectNoMsg(5900.milliseconds)
-      probe.expectMsg(ShardStateChange(shards(1), ConnectionFailed))
+      probe.expectMsg(Connecting("localhost", 13579))
+      probe.expectMsg(ConnectionFailed("localhost", 13579))
     }
 
     it("should cleaned up any dead listeners") {
 
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 13579, Some(1)))
+        RedisShard("server1", "localhost", 6379, 0))
 
       val probe1 = TestProbe()
       val probe2 = TestProbe()
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe1.ref, probe2.ref))).underlyingActor
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards, Set(probe1.ref, probe2.ref))).underlyingActor
       assertResult(2)(shardManager.listeners.size)
 
       probe1.ref ! PoisonPill
-      probe2.expectMsg(ShardStateChange(shards(0), Connected))
+
+      probe2.expectMsg(Connecting("localhost", 6379))
+      probe2.expectMsg(Connected("localhost", 6379))
 
       assertResult(1)(shardManager.listeners.size)
 
@@ -158,15 +188,18 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
 
     it("should notify listeners when a shard fails to authenticate") {
       val shards = Seq(
-        Shard("server1", "localhost", 6379, Some(0)),
-        Shard("server2", "localhost", 6379, Some(1), auth = Some("not-valid-auth")))
+        RedisShard("server1", "localhost", 6379, 0),
+        RedisShard("server2", "localhost", 6379, 1, auth = Some("not-valid-auth")))
 
       val probe = TestProbe()
 
-      val shardManager = TestActorRef(new ShardManager(shards, ShardManager.defaultHashFunction, Set(probe.ref)))
+      val shardManager = TestActorRef[ShardManager](ShardManager(
+        shards, Set(probe.ref)))
 
-      probe.expectMsg(ShardStateChange(shards(0), Connected))
-      probe.expectMsg(ShardStateChange(shards(1), AuthenticationFailed))
+      probe.expectMsg(Connecting("localhost", 6379))
+      probe.expectMsg(Connecting("localhost", 6379))
+      probe.expectMsg(Connected("localhost", 6379))
+      probe.expectMsg(Brando.AuthenticationFailed("localhost", 6379))
     }
   }
 }

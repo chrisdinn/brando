@@ -9,9 +9,12 @@ import akka.util._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import java.util.UUID
+import java.net.ServerSocket
 
 class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     with ImplicitSender {
+
+  import Connection._
 
   describe("ping") {
     it("should respond with Pong") {
@@ -239,7 +242,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("select") {
     it("should execute commands on the selected database") {
-      val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
+      val brando = system.actorOf(Brando("localhost", 6379, 5))
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -267,7 +270,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("multi/exec requests") {
     it("should support multi requests as an atomic transaction") {
-      val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
+      val brando = system.actorOf(Brando("localhost", 6379, 5))
       brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(List(Some(Ok),
         Some(Queued),
@@ -276,7 +279,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     it("should support multi requests with multiple results") {
-      val brando = system.actorOf(Brando("localhost", 6379, Some(5)))
+      val brando = system.actorOf(Brando("localhost", 6379, 5))
       brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(List(Some(Ok),
         Some(Queued),
@@ -368,29 +371,40 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
   }
 
-  describe("State notifications") {
-
-    it("should send an Authenticated event if connecting succeeds") {
+  describe("notifications") {
+    it("should send a Connected event if connecting succeeds") {
       val probe = TestProbe()
       val brando = system.actorOf(Brando("localhost", 6379, listeners = Set(probe.ref)))
 
-      probe.expectMsg(Connected)
+      probe.expectMsg(Connecting("localhost", 6379))
+      probe.expectMsg(Connected("localhost", 6379))
     }
 
-    it("should send an ConnectionFailed event if connecting fails after the configured number of retries") {
+    it("should send an ConnectionFailed event if connecting fails") {
       val probe = TestProbe()
       val brando = system.actorOf(Brando("localhost", 13579, listeners = Set(probe.ref)))
 
-      //3 retries * 2 seconds = 6 seconds
-      probe.expectNoMsg(5900.milliseconds)
-      probe.expectMsg(ConnectionFailed)
+      probe.expectMsg(Connecting("localhost", 13579))
+      probe.expectMsg(ConnectionFailed("localhost", 13579))
     }
 
     it("should send an AuthenticationFailed event if connecting succeeds but authentication fails") {
       val probe = TestProbe()
       val brando = system.actorOf(Brando("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
 
-      probe.expectMsg(AuthenticationFailed)
+      probe.expectMsg(Connecting("localhost", 6379))
+      probe.expectMsg(Brando.AuthenticationFailed("localhost", 6379))
+    }
+
+    it("should send a ConnectionFailed if redis is not responsive during connection") {
+      val serverSocket = new ServerSocket(0)
+      val port = serverSocket.getLocalPort()
+
+      val probe = TestProbe()
+      val brando = system.actorOf(Brando("localhost", port, listeners = Set(probe.ref)))
+
+      probe.expectMsg(Connecting("localhost", port))
+      probe.expectMsg(ConnectionFailed("localhost", port))
     }
 
     it("should send a notification to later added listener") {
@@ -399,36 +413,59 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       val brando = system.actorOf(Brando("localhost", 13579, listeners = Set(probe2.ref)))
       brando ! probe.ref
 
-      //3 retries * 2 seconds = 6 seconds
-      probe.expectNoMsg(5900.milliseconds)
-      probe2.expectMsg(ConnectionFailed)
-      probe.expectMsg(ConnectionFailed)
+      probe2.expectMsg(Connecting("localhost", 13579))
+      probe.expectMsg(Connecting("localhost", 13579))
+      probe2.expectMsg(ConnectionFailed("localhost", 13579))
+      probe.expectMsg(ConnectionFailed("localhost", 13579))
     }
   }
 
-  describe("Connection") {
-    it("should keep retrying to connect if brando.connection_attempts is not defined") {
-      val socket = TestProbe()
-      val brando = TestProbe()
-      val address = new java.net.InetSocketAddress("test.com", 16379)
-      val connection = TestActorRef(new Connection(brando.ref, address, 1000000, None, 1.seconds))
+  describe("connection") {
+    import Connection._
+    it("should try to reconnect if connectionRetryDelay and connectionRetryAttempts are defined") {
+      val listener = TestProbe()
+      val brando = TestActorRef(new Brando(
+        "localhost", 6379, 0, None, Set(listener.ref), 2.seconds, Some(1.seconds), Some(1), None))
 
-      for (i ← 1 to 10) {
-        connection ! Tcp.CommandFailed(Tcp.Connect(address))
-        assert(connection.underlyingActor.connectionAttempts === i)
-      }
-      brando.expectNoMsg
+      listener.expectMsg(Connecting("localhost", 6379))
+      assert(brando.underlyingActor.retries === 0)
+      listener.expectMsg(Connected("localhost", 6379))
+      assert(brando.underlyingActor.retries === 0)
+
+      brando ! Disconnected("localhost", 6379)
+
+      listener.expectMsg(Disconnected("localhost", 6379))
+      listener.expectMsg(Connecting("localhost", 6379))
     }
 
-    it("should stop retrying to connect and timeout once brando.connection_attempts is reached") {
-      val socket = TestProbe()
-      val brando = TestProbe()
-      val address = new java.net.InetSocketAddress("test.com", 16379)
-      val connection = TestActorRef(new Connection(brando.ref, address, 10, Some(1), 1.seconds))
+    it("should not try to reconnect if connectionRetryDelay and connectionRetryAttempts are not defined") {
+      val listener = TestProbe()
+      val brando = TestActorRef(new Brando(
+        "localhost", 6379, 0, None, Set(listener.ref), 2.seconds, None, None, None))
 
-      connection ! Tcp.CommandFailed(Tcp.Connect(address))
-      assert(connection.underlyingActor.connectionAttempts === 1)
-      brando.expectMsg(ConnectionFailed)
+      listener.expectMsg(Connecting("localhost", 6379))
+      listener.expectMsg(Connected("localhost", 6379))
+
+      brando ! Disconnected("localhost", 6379)
+
+      listener.expectMsg(Disconnected("localhost", 6379))
+      listener.expectNoMsg
+    }
+
+    it("should not try to reconnect once the max retry attempts is reached") {
+      val listener = TestProbe()
+      val brando = TestActorRef(new Brando(
+        "localhost", 16379, 0, None, Set(listener.ref), 2.seconds, Some(1.seconds), Some(1), None))
+
+      listener.expectMsg(Connecting("localhost", 16379))
+      assert(brando.underlyingActor.retries === 0)
+      listener.expectMsg(ConnectionFailed("localhost", 16379))
+
+      listener.expectMsg(Connecting("localhost", 16379))
+      assert(brando.underlyingActor.retries === 1)
+      listener.expectMsg(ConnectionFailed("localhost", 16379))
+
+      listener.expectNoMsg
     }
   }
 }
