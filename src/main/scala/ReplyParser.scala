@@ -69,7 +69,7 @@ private[brando] trait ReplyParser {
     case _ ⇒ Failure(buffer)
   }
 
-  def readStatusReply(buffer: ByteString) = splitLine(buffer) match {
+  def readSimpleStringReply(buffer: ByteString) = splitLine(buffer) match {
     case Some((status, rest)) ⇒
       Success(StatusReply.fromString(status), rest)
     case _ ⇒ Failure(buffer)
@@ -80,7 +80,7 @@ private[brando] trait ReplyParser {
     case x                 ⇒ Failure(buffer)
   }
 
-  def readBulkReply(buffer: ByteString): Result = splitLine(buffer) match {
+  def readBulkStringReply(buffer: ByteString): Result = splitLine(buffer) match {
     case Some((length, rest)) ⇒
       val dataLength = length.toInt
 
@@ -94,28 +94,26 @@ private[brando] trait ReplyParser {
     case _ ⇒ Failure(buffer)
   }
 
-  def readMultiBulkReply(buffer: ByteString): Result = splitLine(buffer) match {
-
+  def readArrayReply(buffer: ByteString): Result = splitLine(buffer) match {
     case Some((count, rest)) ⇒
       val itemCount = count.toInt
 
-      @tailrec def readComponents(remaining: Int, result: Result): Result = remaining match {
+      @tailrec def readElements(remaining: Int, result: Result): Result = remaining match {
         case 0                        ⇒ result
         case _ if result.next.isEmpty ⇒ Failure(buffer)
-        case i ⇒
-          parse(result.next) match {
-            case failure: Failure ⇒ Failure(buffer)
-
-            case Success(newReply, next) ⇒
-              val replyList =
-                result.reply.map(_.asInstanceOf[Vector[Option[Any]]])
-              val newReplyList = replyList map (_ :+ newReply)
-
-              readComponents(i - 1, Success(newReplyList, next))
+        case _ ⇒
+          (parse(result.next), result.reply) match {
+            case (failure: Failure, _) ⇒
+              Failure(buffer)
+            case (Success(element, next), Some(elements: List[_])) ⇒
+              if (remaining == 1) //Add last element to the array reply and reorder
+                readElements(0, Success(Some((element +: elements).reverse), next))
+              else
+                readElements(remaining - 1, Success(Some(element +: elements), next))
           }
       }
 
-      readComponents(itemCount, Success(Some(Vector.empty[Option[Any]]), rest))
+      readElements(itemCount, Success(Some(List.empty[Option[Any]]), rest))
 
     case _ ⇒ Failure(buffer)
   }
@@ -126,11 +124,11 @@ private[brando] trait ReplyParser {
   }
 
   def parse(reply: ByteString) = reply(0) match {
-    case '+' ⇒ readStatusReply(reply)
-    case ':' ⇒ readIntegerReply(reply)
-    case '$' ⇒ readBulkReply(reply)
-    case '*' ⇒ readMultiBulkReply(reply)
+    case '+' ⇒ readSimpleStringReply(reply)
     case '-' ⇒ readErrorReply(reply)
+    case ':' ⇒ readIntegerReply(reply)
+    case '$' ⇒ readBulkStringReply(reply)
+    case '*' ⇒ readArrayReply(reply)
   }
 
   @tailrec final def parseReply(bytes: ByteString)(withReply: Any ⇒ Unit) {
