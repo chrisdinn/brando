@@ -108,14 +108,14 @@ private[brando] trait ReplyParser {
 
             case Success(newReply, next) ⇒
               val replyList =
-                result.reply.map(_.asInstanceOf[List[Option[Any]]])
+                result.reply.map(_.asInstanceOf[Vector[Option[Any]]])
               val newReplyList = replyList map (_ :+ newReply)
 
               readComponents(i - 1, Success(newReplyList, next))
           }
       }
 
-      readComponents(itemCount, Success(Some(List.empty[Option[Any]]), rest))
+      readComponents(itemCount, Success(Some(Vector.empty[Option[Any]]), rest))
 
     case _ ⇒ Failure(buffer)
   }
