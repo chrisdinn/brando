@@ -11,7 +11,7 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "2.1.0"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "2.1.1"
 
 ### Getting started
 
@@ -159,7 +159,7 @@ The `ShardManager` will send a `ShardStateChange(shard, state)` message when a s
 
 ## Documentation
 
-Read the API documentation here: [http://chrisdinn.github.io/api/brando-1.0.0/](http://chrisdinn.github.io/api/brando-1.0.0/)
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-2.1.1/](http://chrisdinn.github.io/api/brando-2.1.1/)
 
 ## Mailing list
 
