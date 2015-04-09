@@ -95,7 +95,6 @@ private[brando] trait ReplyParser {
   }
 
   def readMultiBulkReply(buffer: ByteString): Result = splitLine(buffer) match {
-
     case Some((count, rest)) ⇒
       val itemCount = count.toInt
 
@@ -103,15 +102,13 @@ private[brando] trait ReplyParser {
         case 0                        ⇒ result
         case _ if result.next.isEmpty ⇒ Failure(buffer)
         case i ⇒
-          parse(result.next) match {
-            case failure: Failure ⇒ Failure(buffer)
-
-            case Success(newReply, next) ⇒
-              val replyList =
-                result.reply.map(_.asInstanceOf[Vector[Option[Any]]])
-              val newReplyList = replyList map (_ :+ newReply)
-
-              readComponents(i - 1, Success(newReplyList, next))
+          (parse(result.next), result.reply) match {
+            case (failure: Failure, _) ⇒
+              Failure(buffer)
+            case (Success(newReply, nextReply), Some(replyList: Vector[_])) if (i == 1) ⇒
+              readComponents(i - 1, Success(Some((replyList :+ newReply).toList), nextReply))
+            case (Success(newReply, nextReply), Some(replyList: Vector[_])) ⇒
+              readComponents(i - 1, Success(Some(replyList :+ newReply), nextReply))
           }
       }
 
