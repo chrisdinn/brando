@@ -12,7 +12,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
     remainingBuffer = ByteString.empty
   }
 
-  describe("Status reply") {
+  describe("Simple String reply") {
     it("should decode Ok") {
       val result = parse(ByteString("+OK\r\n"))
 
@@ -46,7 +46,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
     }
   }
 
-  describe("Bulk reply") {
+  describe("Bulk String reply") {
     it("should decode as ByteString option") {
       val result = parse(ByteString("$6\r\nfoobar\r\n"))
 
@@ -60,8 +60,8 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
     }
   }
 
-  describe("Multi Bulk reply") {
-    it("should decode list of bulk reply values") {
+  describe("Array reply") {
+    it("should decode list of bulk string reply values") {
       val result = parse(ByteString("*4\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$4\r\nfoob\r\n$6\r\nfoobar\r\n"))
 
       val expected = Some(List(Some(ByteString("foo")), Some(ByteString("bar")),
@@ -70,7 +70,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(result === Success(expected))
     }
 
-    it("should decode list of with nil values") {
+    it("should decode list with nil values") {
       val result = parse(ByteString("*3\r\n$-1\r\n$3\r\nbar\r\n$6\r\nfoobar\r\n"))
 
       val expected = Some(List(None, Some(ByteString("bar")),
@@ -79,7 +79,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(result === Success(expected))
     }
 
-    it("should decode list of with integer values") {
+    it("should decode list with integer values") {
       val result = parse(ByteString("*3\r\n$3\r\nbar\r\n:37282\r\n$6\r\nfoobar\r\n"))
 
       val expected = Some(List(Some(ByteString("bar")), Some(37282),
@@ -88,7 +88,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(result === Success(expected))
     }
 
-    it("should decode list of with nested multi bulk reply") {
+    it("should decode list with nested array reply") {
       val result = parse(ByteString("*3\r\n$3\r\nbar\r\n*4\r\n$3\r\nfoo\r\n$3\r\nbar\r\n$4\r\nfoob\r\n$6\r\nfoobar\r\n$6\r\nfoobaz\r\n"))
 
       val expected = Some(List(Some(ByteString("bar")),
@@ -110,7 +110,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
   describe("parsing incomplete replies") {
 
     var parsed = false
-    it("should handle a multi-bulk reply split into two parts") {
+    it("should handle an array reply split into two parts") {
       parseReply(ByteString("*")) { _ ⇒ fail("nothing to parse yet") }
 
       parseReply(ByteString("1\r\n$3\r\nfoo\r\n")) { result ⇒
@@ -121,7 +121,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       if (!parsed) fail("Did not parse anything")
     }
 
-    it("should handle a multi-bulk reply split before an entry") {
+    it("should handle an array reply split before an entry") {
       parseReply(ByteString("*1\r\n")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -133,7 +133,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       if (!parsed) fail("Did not parse anything")
     }
 
-    it("should handle a multi-bulk reply split in an entry") {
+    it("should handle an array reply split in an entry") {
       parseReply(ByteString("*1\r\n$3\r\n")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -145,7 +145,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       if (!parsed) fail("Did not parse anything")
     }
 
-    it("should handle a multi-bulk reply split between entries") {
+    it("should handle an array reply split between entries") {
       parseReply(ByteString("*2\r\n$3\r\nfoo\r\n")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -158,7 +158,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(remainingBuffer === ByteString.empty)
     }
 
-    it("should handle a status reply split into two parts") {
+    it("should handle a string reply split into two parts") {
       parseReply(ByteString("+")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -171,7 +171,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(remainingBuffer === ByteString.empty)
     }
 
-    it("should handle a status reply split after the \\r") {
+    it("should handle a string reply split after the \\r") {
       parseReply(ByteString("+OK\r")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -184,7 +184,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(remainingBuffer === ByteString.empty)
     }
 
-    it("should handle an int reply split into two parts") {
+    it("should handle an integer reply split into two parts") {
       parseReply(ByteString(":")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -197,7 +197,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(remainingBuffer === ByteString.empty)
     }
 
-    it("should handle a bulk reply split into two parts") {
+    it("should handle a bulk string reply split into two parts") {
       parseReply(ByteString("$")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -210,7 +210,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(remainingBuffer === ByteString.empty)
     }
 
-    it("should handle a bulk reply split after the number") {
+    it("should handle a bulk string reply split after the number") {
       parseReply(ByteString("$3")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
@@ -223,7 +223,7 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(remainingBuffer === ByteString.empty)
     }
 
-    it("should handle a bulk reply split after the first line") {
+    it("should handle a bulk string reply split after the first line") {
       parseReply(ByteString("$3\r\n")) { _ ⇒ fail("nothing to parse yet") }
 
       var parsed = false
