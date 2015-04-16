@@ -12,7 +12,7 @@ object ConnectionSupervisor {
   private[brando] case object Reconnect
 }
 
-private[brando] abstract class ConnectionSupervisor(
+private[brando] abstract class RedisConnectionSupervisor(
     database: Int,
     auth: Option[String],
     var listeners: Set[ActorRef],
@@ -91,7 +91,7 @@ private[brando] abstract class ConnectionSupervisor(
       self ! _
     } onFailure {
       case e: Exception ⇒
-        notifyStateChange(Brando.AuthenticationFailed(x.host, x.port))
+        notifyStateChange(Redis.AuthenticationFailed(x.host, x.port))
     }
   }
 }

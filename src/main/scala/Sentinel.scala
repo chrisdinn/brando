@@ -10,33 +10,32 @@ import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 import java.util.concurrent.TimeUnit
 
-object SentinelClient {
-  def apply(): Props = apply(Seq(Sentinel("localhost", 26379)))
+object Sentinel {
   def apply(
-    instances: Seq[Sentinel],
+    sentinels: Seq[Server] = Seq(Server("localhost", 26379)),
     listeners: Set[ActorRef] = Set(),
     connectionTimeout: Option[FiniteDuration] = None,
     connectionHeartbeatDelay: Option[FiniteDuration] = None): Props = {
 
     val config = ConfigFactory.load()
-    Props(classOf[SentinelClient], instances, listeners,
+    Props(classOf[Sentinel], sentinels, listeners,
       connectionTimeout.getOrElse(
         config.getDuration("brando.connection.timeout", TimeUnit.MILLISECONDS).millis),
       connectionHeartbeatDelay)
   }
 
-  case class Sentinel(host: String, port: Int)
-  private[brando] case class Connect(instances: Seq[Sentinel])
-  case class ConnectionFailed(sentinels: Seq[Sentinel]) extends Connection.StateChange
+  case class Server(host: String, port: Int)
+  private[brando] case class Connect(sentinels: Seq[Server])
+  case class ConnectionFailed(sentinels: Seq[Server]) extends Connection.StateChange
 }
 
-class SentinelClient(
-    var sentinels: Seq[SentinelClient.Sentinel],
+class Sentinel(
+    var sentinels: Seq[Sentinel.Server],
     var listeners: Set[ActorRef],
     connectionTimeout: FiniteDuration,
     connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor with Stash {
 
-  import SentinelClient._
+  import Sentinel._
   import context.dispatcher
 
   implicit val timeout = Timeout(connectionTimeout)
@@ -65,7 +64,7 @@ class SentinelClient(
   }
 
   def disconnected: Receive = handleListeners orElse {
-    case Connect(Sentinel(host, port) :: tail) ⇒
+    case Connect(Server(host, port) :: tail) ⇒
       notifyStateChange(Connection.Connecting(host, port))
       retries += 1
       connection = context.actorOf(Props(classOf[Connection],
@@ -75,7 +74,7 @@ class SentinelClient(
       context.become(connected)
       unstashAll()
       retries = 0
-      val Sentinel(host, port) = sentinels.head
+      val Server(host, port) = sentinels.head
       notifyStateChange(Connection.Connected(host, port))
 
     case x: Connection.ConnectionFailed ⇒

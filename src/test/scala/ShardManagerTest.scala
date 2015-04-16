@@ -51,12 +51,17 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
   describe("sending requests") {
     describe("using sentinel") {
       it("should forward each request to the appropriate client transparently") {
-        val shards = Seq(
-          SentinelShard("mymaster", 0))
+        val redisProbe = TestProbe()
+        val sentinel = system.actorOf(Sentinel())
+        val shardManager = system.actorOf(ShardManager(
+          shards = Seq(SentinelShard("mymaster", 0)),
+          sentinelClient = Some(sentinel),
+          listeners = Set(redisProbe.ref)))
 
-        val sentinel = system.actorOf(SentinelClient())
-        val shardManager = TestActorRef[ShardManager](ShardManager(
-          shards, Set(), Some(sentinel)))
+        redisProbe.expectMsg(
+          Connecting("127.0.0.1", 6379))
+        redisProbe.expectMsg(
+          Connected("127.0.0.1", 6379))
 
         shardManager ! ("key", Request("SET", "shard_manager_test", "some value"))
 
@@ -199,7 +204,7 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       probe.expectMsg(Connecting("localhost", 6379))
       probe.expectMsg(Connecting("localhost", 6379))
       probe.expectMsg(Connected("localhost", 6379))
-      probe.expectMsg(Brando.AuthenticationFailed("localhost", 6379))
+      probe.expectMsg(Redis.AuthenticationFailed("localhost", 6379))
     }
   }
 }

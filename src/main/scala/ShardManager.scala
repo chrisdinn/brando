@@ -13,28 +13,28 @@ import com.typesafe.config.ConfigFactory
 import java.util.concurrent.TimeUnit
 
 object ShardManager {
-  def defaultHashFunction(input: Array[Byte]): Long = {
-    val crc32 = new CRC32
-    crc32.update(input)
-    crc32.getValue
-  }
-
   def apply(
     shards: Seq[Shard],
     listeners: Set[ActorRef] = Set(),
-    sentinel: Option[ActorRef] = None,
+    sentinelClient: Option[ActorRef] = None,
     hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
     connectionTimeout: Option[FiniteDuration] = None,
     connectionRetryDelay: Option[FiniteDuration] = None,
     connectionHeartbeatDelay: Option[FiniteDuration] = None): Props = {
 
     val config = ConfigFactory.load()
-    Props(classOf[ShardManager], shards, hashFunction, listeners, sentinel,
+    Props(classOf[ShardManager], shards, hashFunction, listeners, sentinelClient,
       connectionTimeout.getOrElse(
         config.getDuration("brando.connection.timeout", TimeUnit.MILLISECONDS).millis),
       connectionRetryDelay.getOrElse(
         config.getDuration("brando.connection.retry.delay", TimeUnit.MILLISECONDS).millis),
       connectionHeartbeatDelay)
+  }
+
+  def defaultHashFunction(input: Array[Byte]): Long = {
+    val crc32 = new CRC32
+    crc32.update(input)
+    crc32.getValue
   }
 
   private[brando] trait Shard { val id: String }
@@ -51,7 +51,7 @@ class ShardManager(
     shards: Seq[ShardManager.Shard],
     hashFunction: (Array[Byte] ⇒ Long),
     var listeners: Set[ActorRef] = Set(),
-    sentinel: Option[ActorRef] = None,
+    sentinelClient: Option[ActorRef] = None,
     connectionTimeout: FiniteDuration,
     connectionRetryDelay: FiniteDuration,
     connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
@@ -91,19 +91,19 @@ class ShardManager(
 
     case SetShard(shard) ⇒
       pool.get(shard.id) map (context.stop(_))
-      (shard, sentinel) match {
+      (shard, sentinelClient) match {
         case (RedisShard(id, host, port, database, auth), _) ⇒
-          val client =
-            context.actorOf(Brando(host, port, database, auth, listeners,
+          val brando =
+            context.actorOf(Redis(host, port, database, auth, listeners,
               Some(connectionTimeout), Some(connectionRetryDelay), None,
               connectionHeartbeatDelay))
-          add(shard, client)
-        case (SentinelShard(id, database, auth), Some(sentinel)) ⇒
-          val client =
-            context.actorOf(BrandoSentinel(id, sentinel, database, auth,
+          add(shard, brando)
+        case (SentinelShard(id, database, auth), Some(sClient)) ⇒
+          val brando =
+            context.actorOf(RedisSentinel(id, sClient, database, auth,
               listeners, Some(connectionTimeout), Some(connectionRetryDelay),
               connectionHeartbeatDelay))
-          add(shard, client)
+          add(shard, brando)
         case _ ⇒
       }
 
@@ -125,9 +125,9 @@ class ShardManager(
     pool(id)
   }
 
-  def add(shard: Shard, client: ActorRef) {
-    shardLookup(client) = shard
-    pool(shard.id) = client
+  def add(shard: Shard, brando: ActorRef) {
+    shardLookup(brando) = shard
+    pool(shard.id) = brando
     poolKeys = pool.keys.toIndexedSeq
   }
 }

@@ -11,14 +11,14 @@ import scala.concurrent.duration._
 import java.util.UUID
 import java.net.ServerSocket
 
-class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
+class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     with ImplicitSender {
 
   import Connection._
 
   describe("ping") {
     it("should respond with Pong") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("PING")
 
@@ -28,7 +28,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("flushdb") {
     it("should respond with OK") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("FLUSHDB")
 
@@ -38,7 +38,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("set") {
     it("should respond with OK") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -51,7 +51,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("get") {
     it("should respond with value option for existing key") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -66,7 +66,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     it("should respond with None for non-existent key") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("GET", "mykey")
 
@@ -76,7 +76,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("incr") {
     it("should increment and return value for existing key") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SET", "incr-test", "10")
 
@@ -91,7 +91,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     it("should return 1 for non-existent key") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("INCR", "incr-test")
 
@@ -104,7 +104,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("sadd") {
     it("should return number of members added to set") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SADD", "sadd-test", "one")
 
@@ -125,7 +125,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("smembers") {
     it("should return all members in a set") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SADD", "smembers-test", "one", "two", "three", "four")
 
@@ -146,7 +146,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("pipelining") {
     it("should respond to a Seq of multiple requests all at once") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
       val ping = Request("PING")
 
       brando ! ping
@@ -160,7 +160,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     it("should support pipelines of setex commands") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
       val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
 
       brando ! setex
@@ -173,7 +173,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     it("should receive responses in the right order") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
       val ping = Request("PING")
       val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
 
@@ -203,7 +203,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
       val largeText = new String(bytes, "UTF-8")
 
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SET", "crime+and+punishment", largeText)
 
@@ -220,13 +220,13 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("error reply") {
     it("should receive a failure with the redis error message") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
 
       brando ! Request("SET", "key")
 
       expectMsgPF(5.seconds) {
         case Status.Failure(e) ⇒
-          assert(e.isInstanceOf[BrandoException])
+          assert(e.isInstanceOf[RedisException])
           assert(e.getMessage === "ERR wrong number of arguments for 'set' command")
       }
 
@@ -234,7 +234,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
       expectMsgPF(5.seconds) {
         case Status.Failure(e) ⇒
-          assert(e.isInstanceOf[BrandoException])
+          assert(e.isInstanceOf[RedisException])
           assert(e.getMessage === "ERR value is not an integer or out of range")
       }
     }
@@ -242,7 +242,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("select") {
     it("should execute commands on the selected database") {
-      val brando = system.actorOf(Brando("localhost", 6379, 5))
+      val brando = system.actorOf(Redis("localhost", 6379, 5))
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -270,7 +270,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
   describe("multi/exec requests") {
     it("should support multi requests as an atomic transaction") {
-      val brando = system.actorOf(Brando("localhost", 6379, 5))
+      val brando = system.actorOf(Redis("localhost", 6379, 5))
       brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(List(Some(Ok),
         Some(Queued),
@@ -279,7 +279,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     it("should support multi requests with multiple results") {
-      val brando = system.actorOf(Brando("localhost", 6379, 5))
+      val brando = system.actorOf(Redis("localhost", 6379, 5))
       brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(List(Some(Ok),
         Some(Queued),
@@ -294,7 +294,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
       it("should be able to subscribe to a pubsub channel") {
         val channel = UUID.randomUUID().toString
-        val subscriber = system.actorOf(Brando())
+        val subscriber = system.actorOf(Redis())
 
         subscriber ! Request("SUBSCRIBE", channel)
 
@@ -306,8 +306,8 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
       it("should receive published messages from a pubsub channel") {
         val channel = UUID.randomUUID().toString
-        val subscriber = system.actorOf(Brando())
-        val publisher = system.actorOf(Brando())
+        val subscriber = system.actorOf(Redis())
+        val publisher = system.actorOf(Redis())
 
         subscriber ! Request("SUBSCRIBE", channel)
 
@@ -324,8 +324,8 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
       it("should be able to unsubscribe from a pubsub channel") {
         val channel = UUID.randomUUID().toString
-        val subscriber = system.actorOf(Brando())
-        val publisher = system.actorOf(Brando())
+        val subscriber = system.actorOf(Redis())
+        val publisher = system.actorOf(Redis())
 
         subscriber ! Request("SUBSCRIBE", channel)
 
@@ -349,20 +349,26 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     }
 
     describe("should be able to block on blpop") {
-      val brando = system.actorOf(Brando())
+      val brando = system.actorOf(Redis())
       try {
         val channel = UUID.randomUUID().toString
-        val popBrando = system.actorOf(Brando())
-        popBrando ! Request("BLPOP", "blpop:list", "0")
+        val popRedis = system.actorOf(Redis())
 
-        expectNoMsg
+        val probeRedis = TestProbe()
+        val probePopRedis = TestProbe()
 
-        brando ! Request("LPUSH", "blpop:list", "blpop-value")
-        expectMsgType[Option[Long]]
+        popRedis.tell(Request("BLPOP", "blpop:list", "0"), probePopRedis.ref)
 
-        expectMsg(Some(List(Some(
-          ByteString("blpop:list")),
-          Some(ByteString("blpop-value")))))
+        probePopRedis.expectNoMsg
+
+        brando.tell(Request("LPUSH", "blpop:list", "blpop-value"), probeRedis.ref)
+
+        probePopRedis.expectMsg(
+          Some(List(Some(
+            ByteString("blpop:list")),
+            Some(ByteString("blpop-value")))))
+
+        probeRedis.expectMsg(Some(1))
 
       } finally {
         implicit val timeout = Timeout(1.seconds)
@@ -374,7 +380,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
   describe("notifications") {
     it("should send a Connected event if connecting succeeds") {
       val probe = TestProbe()
-      val brando = system.actorOf(Brando("localhost", 6379, listeners = Set(probe.ref)))
+      val brando = system.actorOf(Redis("localhost", 6379, listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", 6379))
       probe.expectMsg(Connected("localhost", 6379))
@@ -382,7 +388,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
     it("should send an ConnectionFailed event if connecting fails") {
       val probe = TestProbe()
-      val brando = system.actorOf(Brando("localhost", 13579, listeners = Set(probe.ref)))
+      val brando = system.actorOf(Redis("localhost", 13579, listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", 13579))
       probe.expectMsg(ConnectionFailed("localhost", 13579))
@@ -390,10 +396,10 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
     it("should send an AuthenticationFailed event if connecting succeeds but authentication fails") {
       val probe = TestProbe()
-      val brando = system.actorOf(Brando("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
+      val brando = system.actorOf(Redis("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", 6379))
-      probe.expectMsg(Brando.AuthenticationFailed("localhost", 6379))
+      probe.expectMsg(Redis.AuthenticationFailed("localhost", 6379))
     }
 
     it("should send a ConnectionFailed if redis is not responsive during connection") {
@@ -401,7 +407,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
       val port = serverSocket.getLocalPort()
 
       val probe = TestProbe()
-      val brando = system.actorOf(Brando("localhost", port, listeners = Set(probe.ref)))
+      val brando = system.actorOf(Redis("localhost", port, listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", port))
       probe.expectMsg(ConnectionFailed("localhost", port))
@@ -410,7 +416,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     it("should send a notification to later added listener") {
       val probe = TestProbe()
       val probe2 = TestProbe()
-      val brando = system.actorOf(Brando("localhost", 13579, listeners = Set(probe2.ref)))
+      val brando = system.actorOf(Redis("localhost", 13579, listeners = Set(probe2.ref)))
       brando ! probe.ref
 
       probe2.expectMsg(Connecting("localhost", 13579))
@@ -424,7 +430,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
     import Connection._
     it("should try to reconnect if connectionRetryDelay and connectionRetryAttempts are defined") {
       val listener = TestProbe()
-      val brando = TestActorRef(new Brando(
+      val brando = TestActorRef(new Redis(
         "localhost", 6379, 0, None, Set(listener.ref), 2.seconds, Some(1.seconds), Some(1), None))
 
       listener.expectMsg(Connecting("localhost", 6379))
@@ -440,7 +446,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
     it("should not try to reconnect if connectionRetryDelay and connectionRetryAttempts are not defined") {
       val listener = TestProbe()
-      val brando = TestActorRef(new Brando(
+      val brando = TestActorRef(new Redis(
         "localhost", 6379, 0, None, Set(listener.ref), 2.seconds, None, None, None))
 
       listener.expectMsg(Connecting("localhost", 6379))
@@ -454,7 +460,7 @@ class BrandoTest extends TestKit(ActorSystem("BrandoTest")) with FunSpecLike
 
     it("should not try to reconnect once the max retry attempts is reached") {
       val listener = TestProbe()
-      val brando = TestActorRef(new Brando(
+      val brando = TestActorRef(new Redis(
         "localhost", 16379, 0, None, Set(listener.ref), 2.seconds, Some(1.seconds), Some(1), None))
 
       listener.expectMsg(Connecting("localhost", 16379))

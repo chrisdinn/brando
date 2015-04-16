@@ -9,89 +9,104 @@ import scala.concurrent.duration._
 
 import org.scalatest._
 
-class BrandoSentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpecLike
+class RedisClientSentinelTest extends TestKit(ActorSystem("RedisClientSentinelTest")) with FunSpecLike
     with ImplicitSender {
 
-  import BrandoSentinel._
-  import SentinelClient._
+  import RedisSentinel._
+  import Sentinel._
   import Connection._
 
-  describe("BrandoSentinel") {
+  describe("RedisClientSentinel") {
     describe("when connecting") {
       it("should use sentinel to resolve the ip and port") {
-        val brandoProbe = TestProbe()
         val sentinelProbe = TestProbe()
-        val brando = system.actorOf(BrandoSentinel("mymaster", sentinelProbe.ref, 0, None, Set(brandoProbe.ref)))
+        val brando = system.actorOf(
+          RedisSentinel("mymaster", sentinelProbe.ref, 0, None))
 
         sentinelProbe.expectMsg(Request("SENTINEL", "MASTER", "mymaster"))
       }
 
       it("should connect to sentinel and redis") {
-        val brandoProbe = TestProbe()
+        val redisProbe = TestProbe()
         val sentinelProbe = TestProbe()
-        val sentinel = system.actorOf(SentinelClient(Seq(
-          Sentinel("localhost", 26379)), Set(sentinelProbe.ref)))
-        val brando = system.actorOf(BrandoSentinel("mymaster", sentinel, 0, None, Set(brandoProbe.ref)))
+
+        val sentinel = system.actorOf(Sentinel(
+          sentinels = Seq(Server("localhost", 26379)),
+          listeners = Set(sentinelProbe.ref)))
+        val brando = system.actorOf(RedisSentinel(
+          master = "mymaster",
+          sentinelClient = sentinel,
+          listeners = Set(redisProbe.ref)))
 
         sentinelProbe.expectMsg(
           Connecting("localhost", 26379))
         sentinelProbe.expectMsg(
           Connected("localhost", 26379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connecting("127.0.0.1", 6379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connected("127.0.0.1", 6379))
       }
     }
 
     describe("when disconnected") {
       it("should recreate a connection using sentinel") {
-        val brandoProbe = TestProbe()
+        val redisProbe = TestProbe()
         val sentinelProbe = TestProbe()
-        val sentinel = system.actorOf(SentinelClient(Seq(
-          Sentinel("localhost", 26379)), Set(sentinelProbe.ref)))
-        val brando = system.actorOf(BrandoSentinel("mymaster", sentinel, 0, None, Set(brandoProbe.ref)))
+
+        val sentinel = system.actorOf(Sentinel(
+          sentinels = Seq(Server("localhost", 26379)),
+          listeners = Set(sentinelProbe.ref)))
+        val brando = system.actorOf(RedisSentinel(
+          master = "mymaster",
+          sentinelClient = sentinel,
+          listeners = Set(redisProbe.ref)))
 
         sentinelProbe.expectMsg(
           Connecting("localhost", 26379))
         sentinelProbe.expectMsg(
           Connected("localhost", 26379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connecting("127.0.0.1", 6379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connected("127.0.0.1", 6379))
 
         brando ! Disconnected("127.0.0.1", 6379)
 
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Disconnected("127.0.0.1", 6379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connecting("127.0.0.1", 6379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connected("127.0.0.1", 6379))
       }
 
       it("should stash requests") {
-        val brandoProbe = TestProbe()
+        val redisProbe = TestProbe()
         val sentinelProbe = TestProbe()
-        val sentinel = system.actorOf(SentinelClient(Seq(
-          Sentinel("localhost", 26379)), Set(sentinelProbe.ref)))
-        val brando = system.actorOf(BrandoSentinel("mymaster", sentinel, 0, None, Set(brandoProbe.ref)))
 
-        brandoProbe.expectMsg(
+        val sentinel = system.actorOf(Sentinel(
+          sentinels = Seq(Server("localhost", 26379)),
+          listeners = Set(sentinelProbe.ref)))
+        val brando = system.actorOf(RedisSentinel(
+          master = "mymaster",
+          sentinelClient = sentinel,
+          listeners = Set(redisProbe.ref)))
+
+        redisProbe.expectMsg(
           Connecting("127.0.0.1", 6379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connected("127.0.0.1", 6379))
 
         brando ! Disconnected("127.0.0.1", 6379)
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Disconnected("127.0.0.1", 6379))
 
         brando ! Request("PING")
 
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connecting("127.0.0.1", 6379))
-        brandoProbe.expectMsg(
+        redisProbe.expectMsg(
           Connected("127.0.0.1", 6379))
 
         expectMsg(Some(Pong))

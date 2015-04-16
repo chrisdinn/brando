@@ -10,10 +10,10 @@ import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 import java.util.concurrent.TimeUnit
 
-object BrandoSentinel {
+object RedisSentinel {
   def apply(
-    name: String,
-    sentinel: ActorRef,
+    master: String,
+    sentinelClient: ActorRef,
     database: Int = 0,
     auth: Option[String] = None,
     listeners: Set[ActorRef] = Set(),
@@ -22,9 +22,9 @@ object BrandoSentinel {
     connectionHeartbeatDelay: Option[FiniteDuration] = None): Props = {
 
     val config = ConfigFactory.load()
-    Props(classOf[BrandoSentinel],
-      name,
-      sentinel,
+    Props(classOf[RedisSentinel],
+      master,
+      sentinelClient,
       database,
       auth,
       listeners,
@@ -38,18 +38,18 @@ object BrandoSentinel {
   private[brando] case object SentinelConnect
 }
 
-class BrandoSentinel(
-  name: String,
-  sentinel: ActorRef,
+class RedisSentinel(
+  master: String,
+  sentinelClient: ActorRef,
   database: Int,
   auth: Option[String],
   listeners: Set[ActorRef],
   connectionTimeout: FiniteDuration,
   connectionRetryDelay: FiniteDuration,
-  connectionHeartbeatDelay: Option[FiniteDuration]) extends ConnectionSupervisor(database, auth,
+  connectionHeartbeatDelay: Option[FiniteDuration]) extends RedisConnectionSupervisor(database, auth,
   listeners, connectionTimeout, connectionHeartbeatDelay) {
 
-  import BrandoSentinel._
+  import RedisSentinel._
   import ConnectionSupervisor.{ Connect, Reconnect }
   import context.dispatcher
 
@@ -66,7 +66,7 @@ class BrandoSentinel(
       context.system.scheduler.scheduleOnce(connectionRetryDelay, self, SentinelConnect)
 
     case SentinelConnect ⇒
-      (sentinel ? Request("SENTINEL", "MASTER", name)) map {
+      (sentinelClient ? Request("SENTINEL", "MASTER", master)) map {
         case Response.AsStrings(res) ⇒
           val (ip, port) = extractIpPort(res)
           self ! Connect(ip, port)

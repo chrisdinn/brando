@@ -7,11 +7,10 @@ import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 import java.util.concurrent.TimeUnit
 
-object Brando {
-  def apply(): Props = apply("localhost", 6379)
+object Redis {
   def apply(
-    host: String,
-    port: Int,
+    host: String = "localhost",
+    port: Int = 6379,
     database: Int = 0,
     auth: Option[String] = None,
     listeners: Set[ActorRef] = Set(),
@@ -21,7 +20,7 @@ object Brando {
     connectionHeartbeatDelay: Option[FiniteDuration] = None): Props = {
 
     val config = ConfigFactory.load()
-    Props(classOf[Brando],
+    Props(classOf[Redis],
       host,
       port,
       database,
@@ -38,7 +37,7 @@ object Brando {
   case class AuthenticationFailed(host: String, port: Int) extends Connection.StateChange
 }
 
-class Brando(
+class Redis(
   host: String,
   port: Int,
   database: Int,
@@ -47,7 +46,7 @@ class Brando(
   connectionTimeout: FiniteDuration,
   connectionRetryDelay: Option[FiniteDuration],
   connectionRetryAttempts: Option[Int],
-  connectionHeartbeatDelay: Option[FiniteDuration]) extends ConnectionSupervisor(
+  connectionHeartbeatDelay: Option[FiniteDuration]) extends RedisConnectionSupervisor(
   database, auth, listeners, connectionTimeout, connectionHeartbeatDelay) {
 
   import ConnectionSupervisor.{ Connect, Reconnect }
@@ -76,7 +75,6 @@ class Brando(
           retries += 1
           context.system.scheduler.scheduleOnce(delay, connection, Connection.Connect)
         case (Some(delay), None) ⇒
-          retries += 1
           context.system.scheduler.scheduleOnce(delay, connection, Connection.Connect)
         case _ ⇒
       }
