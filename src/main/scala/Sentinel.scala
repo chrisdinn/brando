@@ -33,7 +33,7 @@ class Sentinel(
     var sentinels: Seq[Sentinel.Server],
     var listeners: Set[ActorRef],
     connectionTimeout: FiniteDuration,
-    connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor with Stash {
+    connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
 
   import Sentinel._
   import context.dispatcher
@@ -72,7 +72,6 @@ class Sentinel(
 
     case x: Connection.Connected ⇒
       context.become(connected)
-      unstashAll()
       retries = 0
       val Server(host, port) = sentinels.head
       notifyStateChange(Connection.Connected(host, port))
@@ -88,7 +87,7 @@ class Sentinel(
       }
 
     case request: Request ⇒
-      stash()
+      sender ! Status.Failure(new RedisException("Disconnected from the sentinel cluster"))
 
     case _ ⇒
   }

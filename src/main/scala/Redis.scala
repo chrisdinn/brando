@@ -63,11 +63,13 @@ class Redis(
     disconnectedWithRetry orElse super.disconnected
 
   def disconnectedWithRetry: Receive = {
+    case _@ (_: Request | _: Batch) ⇒
+      sender ! Status.Failure(new RedisDisconnectedException(s"Disconnected from $host:$port"))
+
     case ("auth_ok", x: Connection.Connected) ⇒
       retries = 0
       notifyStateChange(x)
       context.become(connected)
-      unstashAll()
 
     case Reconnect ⇒
       (connectionRetryDelay, connectionRetryAttempts) match {

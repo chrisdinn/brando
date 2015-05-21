@@ -62,6 +62,9 @@ class RedisSentinel(
     disconnectedWithSentinel orElse super.disconnected
 
   def disconnectedWithSentinel: Receive = {
+    case _@ (_: Request | _: Batch) ⇒
+      sender ! Status.Failure(new RedisDisconnectedException(s"Disconnected from $master"))
+
     case Reconnect ⇒
       context.system.scheduler.scheduleOnce(connectionRetryDelay, self, SentinelConnect)
 

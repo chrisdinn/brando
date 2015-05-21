@@ -4,7 +4,10 @@ import akka.util.ByteString
 
 case class PubSubMessage(channel: String, message: String)
 
-class RedisException(message: String) extends Exception(message) {
+case class RedisException(message: String) extends Exception(message) {
+  override lazy val toString = "%s: %s\n".format(getClass.getName, message)
+}
+case class RedisDisconnectedException(message: String) extends Exception(message) {
   override lazy val toString = "%s: %s\n".format(getClass.getName, message)
 }
 

@@ -17,7 +17,7 @@ private[brando] abstract class RedisConnectionSupervisor(
     auth: Option[String],
     var listeners: Set[ActorRef],
     connectionTimeout: FiniteDuration,
-    connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor with Stash {
+    connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
 
   import ConnectionSupervisor.{ Connect, Reconnect }
   import context.dispatcher
@@ -29,11 +29,8 @@ private[brando] abstract class RedisConnectionSupervisor(
   def receive = disconnected
 
   def connected: Receive = handleListeners orElse {
-    case request: Request ⇒
-      connection forward request
-
-    case batch: Batch ⇒
-      connection forward batch
+    case m @ (_: Request | _: Batch) ⇒
+      connection forward m
 
     case x: Connection.Disconnected ⇒
       notifyStateChange(x)
@@ -42,12 +39,6 @@ private[brando] abstract class RedisConnectionSupervisor(
   }
 
   def disconnected: Receive = handleListeners orElse {
-    case request: Request ⇒
-      stash()
-
-    case batch: Batch ⇒
-      stash()
-
     case Connect(host, port) ⇒
       connection ! PoisonPill
       connection = context.actorOf(Props(classOf[Connection],
@@ -62,7 +53,6 @@ private[brando] abstract class RedisConnectionSupervisor(
     case ("auth_ok", x: Connection.Connected) ⇒
       notifyStateChange(x)
       context.become(connected)
-      unstashAll()
 
     case x: Connection.ConnectionFailed ⇒
       notifyStateChange(x)

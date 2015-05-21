@@ -99,32 +99,28 @@ class SentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpecLike
     }
 
     describe("Request") {
-      it("should stash requests when disconnected") {
-        val probe = TestProbe()
+      it("should return a failure when disconnected") {
         val sentinel = system.actorOf(Sentinel(Seq(
-          Server("localhost", 26379)), Set(probe.ref)))
-
-        probe.expectMsg(Connecting("localhost", 26379))
-        probe.expectMsg(Connected("localhost", 26379))
-
-        sentinel ! Disconnected("localhost", 26379)
-        probe.expectMsg(Disconnected("localhost", 26379))
+          Server("localhost", 26379))))
 
         sentinel ! Request("PING")
 
-        probe.expectMsg(Connecting("localhost", 26379))
-        probe.expectMsg(Connected("localhost", 26379))
+        expectMsg(Status.Failure(new RedisException("Disconnected from the sentinel cluster")))
 
-        expectMsg(Some(Pong))
       }
     }
 
     describe("Subscriptions") {
       it("should receive pub/sub notifications") {
         val sentinel = system.actorOf(Sentinel(Seq(
-          Server("localhost", 26379))))
+          Server("localhost", 26379)), Set(self)))
         val sentinel2 = system.actorOf(Sentinel(Seq(
-          Server("localhost", 26379))))
+          Server("localhost", 26379)), Set(self)))
+
+        expectMsg(Connecting("localhost", 26379))
+        expectMsg(Connecting("localhost", 26379))
+        expectMsg(Connected("localhost", 26379))
+        expectMsg(Connected("localhost", 26379))
 
         sentinel ! Request("subscribe", "+failover-end")
 

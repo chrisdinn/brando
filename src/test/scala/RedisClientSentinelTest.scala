@@ -81,35 +81,16 @@ class RedisClientSentinelTest extends TestKit(ActorSystem("RedisClientSentinelTe
           Connected("127.0.0.1", 6379))
       }
 
-      it("should stash requests") {
-        val redisProbe = TestProbe()
-        val sentinelProbe = TestProbe()
-
+      it("should return a failure when disconnected") {
         val sentinel = system.actorOf(Sentinel(
-          sentinels = Seq(Server("localhost", 26379)),
-          listeners = Set(sentinelProbe.ref)))
+          sentinels = Seq(Server("localhost", 26379))))
         val brando = system.actorOf(RedisSentinel(
           master = "mymaster",
-          sentinelClient = sentinel,
-          listeners = Set(redisProbe.ref)))
-
-        redisProbe.expectMsg(
-          Connecting("127.0.0.1", 6379))
-        redisProbe.expectMsg(
-          Connected("127.0.0.1", 6379))
-
-        brando ! Disconnected("127.0.0.1", 6379)
-        redisProbe.expectMsg(
-          Disconnected("127.0.0.1", 6379))
+          sentinelClient = sentinel))
 
         brando ! Request("PING")
 
-        redisProbe.expectMsg(
-          Connecting("127.0.0.1", 6379))
-        redisProbe.expectMsg(
-          Connected("127.0.0.1", 6379))
-
-        expectMsg(Some(Pong))
+        expectMsg(Status.Failure(new RedisDisconnectedException("Disconnected from mymaster")))
       }
     }
   }

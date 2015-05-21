@@ -18,7 +18,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("ping") {
     it("should respond with Pong") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("PING")
 
@@ -28,7 +30,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("flushdb") {
     it("should respond with OK") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("FLUSHDB")
 
@@ -38,7 +42,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("set") {
     it("should respond with OK") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -51,7 +57,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("get") {
     it("should respond with value option for existing key") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -66,7 +74,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     }
 
     it("should respond with None for non-existent key") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("GET", "mykey")
 
@@ -76,7 +86,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("incr") {
     it("should increment and return value for existing key") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SET", "incr-test", "10")
 
@@ -91,7 +103,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     }
 
     it("should return 1 for non-existent key") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("INCR", "incr-test")
 
@@ -104,7 +118,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("sadd") {
     it("should return number of members added to set") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SADD", "sadd-test", "one")
 
@@ -125,7 +141,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("smembers") {
     it("should return all members in a set") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SADD", "smembers-test", "one", "two", "three", "four")
 
@@ -146,7 +164,10 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("pipelining") {
     it("should respond to a Seq of multiple requests all at once") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
       val ping = Request("PING")
 
       brando ! ping
@@ -160,7 +181,10 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     }
 
     it("should support pipelines of setex commands") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
       val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
 
       brando ! setex
@@ -173,7 +197,10 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     }
 
     it("should receive responses in the right order") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
       val ping = Request("PING")
       val setex = Request("SETEX", "pipeline-setex-path", "10", "Some data")
 
@@ -203,7 +230,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
       val largeText = new String(bytes, "UTF-8")
 
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SET", "crime+and+punishment", largeText)
 
@@ -220,7 +249,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("error reply") {
     it("should receive a failure with the redis error message") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SET", "key")
 
@@ -242,7 +273,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("select") {
     it("should execute commands on the selected database") {
-      val brando = system.actorOf(Redis("localhost", 6379, 5))
+      val brando = system.actorOf(Redis("localhost", 6379, 5, listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
 
       brando ! Request("SET", "mykey", "somevalue")
 
@@ -270,7 +303,10 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
   describe("multi/exec requests") {
     it("should support multi requests as an atomic transaction") {
-      val brando = system.actorOf(Redis("localhost", 6379, 5))
+      val brando = system.actorOf(Redis("localhost", 6379, 5, listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
       brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(List(Some(Ok),
         Some(Queued),
@@ -279,7 +315,10 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     }
 
     it("should support multi requests with multiple results") {
-      val brando = system.actorOf(Redis("localhost", 6379, 5))
+      val brando = system.actorOf(Redis("localhost", 6379, 5, listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
       brando ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("GET", "mykey"), Request("EXEC"))
       expectMsg(List(Some(Ok),
         Some(Queued),
@@ -294,7 +333,9 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
       it("should be able to subscribe to a pubsub channel") {
         val channel = UUID.randomUUID().toString
-        val subscriber = system.actorOf(Redis())
+        val subscriber = system.actorOf(Redis(listeners = Set(self)))
+        expectMsg(Connecting("localhost", 6379))
+        expectMsg(Connected("localhost", 6379))
 
         subscriber ! Request("SUBSCRIBE", channel)
 
@@ -306,8 +347,13 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
       it("should receive published messages from a pubsub channel") {
         val channel = UUID.randomUUID().toString
-        val subscriber = system.actorOf(Redis())
-        val publisher = system.actorOf(Redis())
+        val subscriber = system.actorOf(Redis(listeners = Set(self)))
+        expectMsg(Connecting("localhost", 6379))
+        expectMsg(Connected("localhost", 6379))
+
+        val publisher = system.actorOf(Redis(listeners = Set(self)))
+        expectMsg(Connecting("localhost", 6379))
+        expectMsg(Connected("localhost", 6379))
 
         subscriber ! Request("SUBSCRIBE", channel)
 
@@ -324,8 +370,13 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
 
       it("should be able to unsubscribe from a pubsub channel") {
         val channel = UUID.randomUUID().toString
-        val subscriber = system.actorOf(Redis())
-        val publisher = system.actorOf(Redis())
+        val subscriber = system.actorOf(Redis(listeners = Set(self)))
+        expectMsg(Connecting("localhost", 6379))
+        expectMsg(Connected("localhost", 6379))
+
+        val publisher = system.actorOf(Redis(listeners = Set(self)))
+        expectMsg(Connecting("localhost", 6379))
+        expectMsg(Connected("localhost", 6379))
 
         subscriber ! Request("SUBSCRIBE", channel)
 
@@ -349,10 +400,15 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
     }
 
     describe("should be able to block on blpop") {
-      val brando = system.actorOf(Redis())
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
       try {
         val channel = UUID.randomUUID().toString
-        val popRedis = system.actorOf(Redis())
+        val popRedis = system.actorOf(Redis(listeners = Set(self)))
+        expectMsg(Connecting("localhost", 6379))
+        expectMsg(Connected("localhost", 6379))
 
         val probeRedis = TestProbe()
         val probePopRedis = TestProbe()
