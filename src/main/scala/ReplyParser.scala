@@ -65,7 +65,7 @@ private[brando] trait ReplyParser {
 
   def readErrorReply(buffer: ByteString) = splitLine(buffer) match {
     case Some((error, rest)) ⇒
-      Success(Some(Status.Failure(new BrandoException(error))), rest)
+      Success(Some(Status.Failure(new RedisException(error))), rest)
     case _ ⇒ Failure(buffer)
   }
 

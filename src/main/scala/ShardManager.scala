@@ -1,51 +1,72 @@
 package brando
 
-import akka.actor.{ Actor, ActorRef, Props, Terminated }
-import akka.util.ByteString
+import akka.actor._
+import akka.util._
 import collection.mutable
 import java.util.zip.CRC32
-import concurrent.Future
-import concurrent.duration.FiniteDuration
+
 import scala.util.Failure
+import scala.concurrent._
+import scala.concurrent.duration._
 
-case class Shard(id: String, host: String, port: Int, database: Option[Int] = None, auth: Option[String] = None)
-
-case class ShardStateChange(shard: Shard, state: BrandoStateChange)
+import com.typesafe.config.ConfigFactory
+import java.util.concurrent.TimeUnit
 
 object ShardManager {
+  def apply(
+    shards: Seq[Shard],
+    listeners: Set[ActorRef] = Set(),
+    sentinelClient: Option[ActorRef] = None,
+    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
+    connectionTimeout: Option[FiniteDuration] = None,
+    connectionRetryDelay: Option[FiniteDuration] = None,
+    connectionHeartbeatDelay: Option[FiniteDuration] = None): Props = {
+
+    val config = ConfigFactory.load()
+    Props(classOf[ShardManager], shards, hashFunction, listeners, sentinelClient,
+      connectionTimeout.getOrElse(
+        config.getDuration("brando.connection.timeout", TimeUnit.MILLISECONDS).millis),
+      connectionRetryDelay.getOrElse(
+        config.getDuration("brando.connection.retry.delay", TimeUnit.MILLISECONDS).millis),
+      connectionHeartbeatDelay)
+  }
+
   def defaultHashFunction(input: Array[Byte]): Long = {
     val crc32 = new CRC32
     crc32.update(input)
     crc32.getValue
   }
 
-  def apply(shards: Seq[Shard],
-    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
-    listeners: Set[ActorRef] = Set()): Props = {
-    Props(classOf[ShardManager], shards, hashFunction, listeners)
-  }
+  private[brando] trait Shard { val id: String }
+  case class RedisShard(id: String, host: String,
+    port: Int, database: Int = 0,
+    auth: Option[String] = None) extends Shard
+  case class SentinelShard(id: String, database: Int = 0,
+    auth: Option[String] = None) extends Shard
 
-  def withHealthMonitor(shards: Seq[Shard],
-    healthChkRate: FiniteDuration,
-    hashFunction: (Array[Byte] ⇒ Long) = defaultHashFunction,
-    listeners: Set[ActorRef] = Set()): Props = {
-    Props(new ShardManager(shards, hashFunction, listeners) with HealthMonitor { val healthCheckRate = healthChkRate })
-  }
+  private[brando] case class SetShard(shard: Shard)
 }
 
 class ShardManager(
-    shards: Seq[Shard],
+    shards: Seq[ShardManager.Shard],
     hashFunction: (Array[Byte] ⇒ Long),
-    private[brando] var listeners: Set[ActorRef] = Set()) extends Actor {
+    var listeners: Set[ActorRef] = Set(),
+    sentinelClient: Option[ActorRef] = None,
+    connectionTimeout: FiniteDuration,
+    connectionRetryDelay: FiniteDuration,
+    connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
 
+  import ShardManager._
   import context.dispatcher
 
   val pool = mutable.Map.empty[String, ActorRef]
-  var poolKeys: Seq[String] = Seq()
   val shardLookup = mutable.Map.empty[ActorRef, Shard]
+  var poolKeys: Seq[String] = Seq()
 
-  shards.map(create(_))
-  listeners.map(context.watch(_))
+  override def preStart: Unit = {
+    listeners.map(context.watch(_))
+    shards.map(self ! SetShard(_))
+  }
 
   def receive = {
     case (key: ByteString, request: Request) ⇒
@@ -68,27 +89,28 @@ class ShardManager(
         shard forward Request(broadcast.command, broadcast.params: _*)
       }
 
-    case shard: Shard ⇒
-      pool.get(shard.id) match {
-        case Some(client) ⇒
-          create(shard)
-          context.stop(client)
-
+    case SetShard(shard) ⇒
+      pool.get(shard.id) map (context.stop(_))
+      (shard, sentinelClient) match {
+        case (RedisShard(id, host, port, database, auth), _) ⇒
+          val brando =
+            context.actorOf(Redis(host, port, database, auth, listeners,
+              Some(connectionTimeout), Some(connectionRetryDelay), None,
+              connectionHeartbeatDelay))
+          add(shard, brando)
+        case (SentinelShard(id, database, auth), Some(sClient)) ⇒
+          val brando =
+            context.actorOf(RedisSentinel(id, sClient, database, auth,
+              listeners, Some(connectionTimeout), Some(connectionRetryDelay),
+              connectionHeartbeatDelay))
+          add(shard, brando)
         case _ ⇒
-          println("Update received for unknown shard ID " + shard.id + "\r\n")
-      }
-
-    case stateChange: BrandoStateChange ⇒
-      shardLookup.get(sender) match {
-        case Some(shard) ⇒
-          listeners foreach { l ⇒ l ! ShardStateChange(shard, stateChange) }
-        case None ⇒ println("Update received for unknown shard actorRef " + sender + "\r\n")
       }
 
     case Terminated(l) ⇒
       listeners = listeners - l
 
-    case x ⇒ println("ShardManager received unexpected " + x + "\r\n")
+    case _ ⇒
   }
 
   def forward(key: ByteString, req: Request) = {
@@ -103,11 +125,9 @@ class ShardManager(
     pool(id)
   }
 
-  def create(shard: Shard) {
-    val client = context.actorOf(
-      Brando(shard.host, shard.port, shard.database, shard.auth, Set(self)))
-    shardLookup(client) = shard
-    pool(shard.id) = client
+  def add(shard: Shard, brando: ActorRef) {
+    shardLookup(brando) = shard
+    pool(shard.id) = brando
     poolKeys = pool.keys.toIndexedSeq
   }
 }

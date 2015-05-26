@@ -2,8 +2,14 @@ language: scala
 scala:
   - "2.10.4"
   - "2.11.0"
-services:
-  - redis-server
 cache:
   directories:
   - $HOME/.ivy2
+before_script:
+  - sudo redis-server `pwd`/test-config/sentinel.conf --sentinel &
+  - sudo redis-server `pwd`/test-config/redis.conf  --loglevel verbose
+  - sudo mkdir /var/lib/redis-slave
+  - sudo redis-server `pwd`/test-config/redis-slave.conf --loglevel verbose  
+  - cat /var/log/redis/redis-slave-server.log
+  - cat /var/log/redis/redis-server.log
+  - sleep 5

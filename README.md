@@ -11,23 +11,23 @@ In your build.sbt
 
     resolvers += "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "2.1.2"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "3.0.0-SNAPSHOT"
 
 ### Getting started
 
 Brando is a lightweight wrapper around the [Redis protocol](http://redis.io/topics/protocol).
 
-Create a Brando actor with your server host and port. 
+Create a Redis actor with your server host and port. 
 
       import brando._
 
-      val redis = system.actorOf(Brando("localhost", 6379))
+      val redis = system.actorOf(Redis("localhost", 6379))
 
 You should specify a database and password if you intend to use them. 
 
-      val redis = system.actorOf(Brando("localhost", 6379, database = Some(5), auth = Some("password")))
+      val redis = system.actorOf(Redis("localhost", 6379, database = 5, auth = "password"))
 
-This is important; if your Brando actor restarts you want be sure it reconnects successfully and to the same database.
+This is important; if your Redis actor restarts you want be sure it reconnects successfully and to the same database.
 
 Next, send it a command and get your response as a reply.
 
@@ -47,7 +47,7 @@ Error replies are returned as `akka.actor.Status.Failure` objects containing an 
 
       redis ! Request("EXPIRE", "1", "key")
 	  
-	  // Response: Failure(brando.BrandoException: ERR value is not an integer or out of range)
+	  // Response: Failure(brando.RedisException: ERR value is not an integer or out of range)
 
 Integer replies are returned as `Option[Long]`. 
 
@@ -75,7 +75,7 @@ NULL replies are returned as `None` and may appear either on their own or nested
 
 If you're not sure what to expect in response to a request, please refer to the Redis command documentation at [http://redis.io/commands](http://redis.io/commands) where the reply type for each is clearly stated.
 
-To ensure that a list of requests are executed back to back, the brando actor can receive the following message : 
+To ensure that a list of requests are executed back to back, the Redis actor can receive the following message : 
 
 	redis ! Batch(Request("MULTI"), Request("SET", "mykey", "somevalue"), Request("GET", "mykey"), Request("EXEC"))
 	
@@ -106,28 +106,65 @@ Use the provided response extractors to map your Redis reply to a more appropria
       
 ### Monitoring Connection State Changes
 
-If a set of listeners is provided to the Brando actor when it is created , it will inform the those listeners about state changes to the underlying Redis connection. For example (from inside an actor):
+If a set of listeners is provided to the Redis actor when it is created , it will inform the those listeners about state changes to the underlying Redis connection. For example (from inside an actor):
 
-      val redis = context.actorOf(Brando("localhost", 6379, listeners = Set(self)))
+      val redis = context.actorOf(Redis("localhost", 6379, listeners = Set(self)))
 
 Currently, the possible messages sent to each listener include the following:
 
+ * `Connecting`: When creating a TCP connection.
  * `Connected`: When a TCP connection has been created, and Authentication (if applicable) has succeeded.
- * `Disconnected`: The connection has been lost. Brando transparently handles disconnects and will automatically reconnect, so typically no user action at all is needed here. During the time that Brando is disconnected, Redis commands sent to Brando will be queued, and will be processed when a connection is established.
+ * `Disconnected`: The connection has been lost. Redis transparently handles disconnects and will automatically reconnect, so typically no user action at all is needed here. During the time that Redis is disconnected, Redis commands sent will be queued be processed once the connection is reestablished.
  * `AuthenticationFailed`: The TCP connected was made, but Redis auth failed.
- * `ConnectionFailed`:  A connection could not be (re-) established after three attempts. Brando will not attempt to recover from this state; the user should take action.
+ * `ConnectionFailed`:  A connection could not be established after the number of attempts defined during creation `connectionRetryAttempts`. Brando will not attempt to recover from this state; the user should take action.
 
-All these messages inherit from the `BrandoStateChange` trait.
+All these messages inherit from the `Connection.StateChange` trait.
+
+
+### Sentinel
+
+#### Sentinel Client
+
+Sentinel provides support for `monitoring`, `notification` and `automatic failover` using [sentinel](http://redis.io/topics/sentinel). It is implemented based on the following [guidelines](http://redis.io/topics/sentinel-clients) and requires redis 2.8.12 or later.
+
+A sentinel client can be created like this. Here, we are using two servers and we provide a listener to receive  `Connection.StateChange` events.
+
+	val sentinel = system.actorOf(Sentinel(Seq(
+          Server("localhost", 26380),
+          Server("localhost", 26379)), Set(probe.ref)))
+
+You can listen for events using the following:
+
+	sentinel ! Request("SENTINEL","SUBSCRIBE", "failover-end")
+
+You can also send commands such as
+
+	sentinel ! Request("SENTINEL", "MASTERS")
+
+
+#### Redis with Sentinel
+
+Redis can be used with Sentinel to provide automatic failover and discovery. To do so you need to create a `Sentinel` and a `RedisSentinel` actor. In this example we are connecting to the master `mymaster` 
+
+		val sentinel = system.actorOf(Sentinel(Seq(
+          Server("localhost", 26380),
+          Server("localhost", 26379))))
+
+        val redis = system.actorOf(RedisSentinel("mymaster", sentinel))
+
+	    redis ! Request("PING")
+
+For reliability we encourage to pass `connectionHeartbeatDelay` when using RedisSentinel, this will generate a heartbeat to Redis and will improve failures detections in the case of network partitions.
 
 ### Sharding
 
 Brando provides support for sharding, as outlined [in the Redis documentation](http://redis.io/topics/partitioning) and in [this blog post from antirez](http://oldblog.antirez.com/post/redis-presharding.html).
 
-To use it, simply create an instance of `ShardManager`, passing it a list of Redis shards you'd like it to connect to. From there, we create a pool of `Brando` instances - one for each shard.
+To use it, simply create an instance of `ShardManager`, passing it a list of Redis shards you'd like it to connect to. From there, we create a pool of `Redis` instances - one for each shard.
 
-	val shards = Seq(Shard("redis1", "10.0.0.1", 6379),
-					 Shard("redis2", "10.0.0.2", 6379),
-					 Shard("redis3", "10.0.0.3", 6379))
+	val shards = Seq(RedisShard("redis1", "10.0.0.1", 6379),
+					 RedisShard("redis2", "10.0.0.2", 6379),
+					 RedisShard("redis3", "10.0.0.3", 6379))
 
 	val shardManager = context.actorOf(ShardManager(shards))
 
@@ -147,19 +184,46 @@ Note that the `ShardManager` explicitly requires a key for all operations except
 
 Individual shards can have their configuration updated on the fly. To do this, send a `Shard` message to `ShardManager`.
 
-	shardManager ! Shard("redis1", "10.0.0.4", 6379)
+	shardManager ! RedisShard("redis1", "10.0.0.4", 6379)
 
-This is intended to support failover via [Redis Sentinel](http://redis.io/topics/sentinel). Note that the id of the shard __MUST__ match one of the original shards configured when the `ShardManager` instance was created. Adding new shards is not supported.
 
-State changes such as disconnects and connection failures can be monitored by providing a set of listeners to the `ShardManager`:
+val shardManager = context.actorOf(ShardManager(shards, listeners = Set(self)))
 
-	val shardManager = context.actorOf(ShardManager(shards, listeners = Set(self)))
+The `ShardManager` will forward all `Connection.StateChange` messages when a shard changes state.
 
-The `ShardManager` will send a `ShardStateChange(shard, state)` message when a shard changes state; here `shard` is a shard object indicating which shard has changed state, and `state` is a `BrandoStateChange` object, documented above, indicating which new state the shard has entered.
+
+#### Sharding with sentinel
+
+It's possible to use sharding with Sentinel, to do so you need to use `SentinelShard` instead of `RedisShard`
+
+        val shards = Seq(
+          SentinelShard("mymaster1"),
+          SentinelShard("mymaster2"))
+
+        val sentinel = system.actorOf(Sentinel()) //defaults host and port are localhost:26379
+
+        val shardManager = context.actorOf(ShardManager(shards,sentinel))
+
+## Run the tests
+
+* Start sentinel
+    
+        sudo redis-sentinel redis-config/sentinel.conf --sentinel
+
+* Start a Redis master and slave 
+
+        sudo redis-server test-config/redis.conf --loglevel verbose
+  		sudo mkdir /var/lib/redis-slave
+        sudo redis-server test-config/redis-slave.conf --loglevel verbose
+
+* Run the tests 
+
+        sbt test
+
 
 ## Documentation
 
-Read the API documentation here: [http://chrisdinn.github.io/api/brando-2.1.2/](http://chrisdinn.github.io/api/brando-2.1.2/)
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-3.0.0-SNAPSHOT/](http://chrisdinn.github.io/api/brando-3.0.0-SNAPSHOT/)
 
 ## Mailing list
 
