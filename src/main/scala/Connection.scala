@@ -36,6 +36,8 @@ private[brando] class Connection(
 
   var socket: ActorRef = _
 
+  var lastDataReceived = now
+
   val requesterQueue = mutable.Queue.empty[ActorRef]
   var subscribers: Map[ByteString, Seq[ActorRef]] = Map.empty
 
@@ -72,6 +74,7 @@ private[brando] class Connection(
       requesterQueue.enqueue(sender)
 
     case Tcp.Received(data) ⇒
+      lastDataReceived = now
       parseReply(data) { reply ⇒
         reply match {
           case Some(List(
@@ -111,27 +114,29 @@ private[brando] class Connection(
     case x: Tcp.Connected ⇒
       socket = sender
       socket ! Tcp.Register(self, useResumeWriting = false)
-      ping {
+      (self ? Request("PING"))(connectionTimeout) map {
         case _ ⇒
           listener ! Connected(host, port)
           heartbeatDelay map (d ⇒
-            context.system.scheduler.scheduleOnce(d, self, Heartbeat(d)))
+            context.system.scheduler.schedule(0.seconds, 1.seconds, self, Heartbeat(d)))
       } recover {
         case _ ⇒
           listener ! ConnectionFailed(host, port)
       }
 
-    case x @ Heartbeat(delay) ⇒
-      ping {
+    case Heartbeat(delay) ⇒
+      val idle = now - lastDataReceived
+      ((idle > delay.toMillis * 2), (idle > (delay.toMillis))) match {
+        case (true, true) ⇒
+          socket ! Tcp.Close
+        case (false, true) ⇒
+          self ! Request("PING")
         case _ ⇒
-          context.system.scheduler.scheduleOnce(delay, self, x)
-      } recover { case _ ⇒ socket ! Tcp.Close }
+      }
 
     case _ ⇒
   }
 
-  def ping(function: PartialFunction[Any, Any]): Future[Any] = {
-    (self ? Request("PING"))(connectionTimeout) map (function)
-  }
+  def now = System.currentTimeMillis
 }
 
