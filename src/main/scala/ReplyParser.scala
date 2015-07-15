@@ -95,6 +95,9 @@ private[brando] trait ReplyParser {
   }
 
   def readArrayReply(buffer: ByteString): Result = splitLine(buffer) match {
+    case Some(("-1", _)) ⇒
+      Success(None)
+
     case Some((count, rest)) ⇒
       val itemCount = count.toInt
 
