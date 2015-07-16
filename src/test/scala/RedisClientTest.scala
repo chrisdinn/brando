@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 import java.util.UUID
 import java.net.ServerSocket
 
-class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
+class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSpecLike
     with ImplicitSender {
 
   import Connection._
@@ -398,8 +398,10 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
         expectNoMsg
       }
     }
+  }
 
-    describe("should be able to block on blpop") {
+  describe("blop") {
+    it("should block then reply") {
       val brando = system.actorOf(Redis(listeners = Set(self)))
       expectMsg(Connecting("localhost", 6379))
       expectMsg(Connected("localhost", 6379))
@@ -430,6 +432,18 @@ class RedisClientTest extends TestKit(ActorSystem("RedisTest")) with FunSpecLike
         implicit val timeout = Timeout(1.seconds)
         Await.ready((brando ? Request("del", "blpop:list")), 1.seconds)
       }
+    }
+
+    it("should reply with Nil when timeout") {
+
+      val popRedis = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+      val probePopRedis = TestProbe()
+
+      popRedis.tell(Request("BLPOP", "blpop:inexistant-list", "1"), probePopRedis.ref)
+
+      probePopRedis.expectMsg(5.seconds, None)
     }
   }
 

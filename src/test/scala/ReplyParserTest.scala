@@ -99,6 +99,9 @@ class ReplyParserTest extends FunSpec with BeforeAndAfterEach {
       assert(result === Success(expected))
     }
 
+    it("should decode null list") {
+      assert(parse(ByteString("*-1\r\n")) === Success(None))
+    }
   }
 
   describe("parsing empty replies") {
