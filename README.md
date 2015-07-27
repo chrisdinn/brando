@@ -9,7 +9,7 @@ A lightweight Redis client for use with [Akka](http://akka.io).
 
 In your build.sbt
 
-    resolvers += "http://chrisdinn.github.io/releases/"
+    resolvers += "chrisdinn" at "http://chrisdinn.github.io/releases/"
 
     libraryDependencies += "com.digital-achiever" %% "brando" % "3.0.2"
 
