@@ -544,4 +544,21 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
       listener.expectNoMsg
     }
   }
+
+  describe("eval") {
+    it("should respond with result of operation") {
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      expectMsg(Connecting("localhost", 6379))
+      expectMsg(Connected("localhost", 6379))
+
+      brando ! Request("eval",
+        "if ARGV[1] == \"hello\" then return 1 end",
+        "0",
+        "hello")
+
+      expectMsg(Some(1))
+    }
+
+  }
+
 }
