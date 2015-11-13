@@ -489,10 +489,22 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
       val brando = system.actorOf(Redis("localhost", 13579, listeners = Set(probe2.ref)))
       brando ! probe.ref
 
+      probe.expectMsg(Disconnected("unknown", 0))
       probe2.expectMsg(Connecting("localhost", 13579))
       probe.expectMsg(Connecting("localhost", 13579))
       probe2.expectMsg(ConnectionFailed("localhost", 13579))
       probe.expectMsg(ConnectionFailed("localhost", 13579))
+    }
+
+    it("should send a notification with the current status to later added listener") {
+      val probe = TestProbe()
+      val probe2 = TestProbe()
+      val brando = system.actorOf(Redis("localhost", 6379, listeners = Set(probe2.ref)))
+
+      probe2.expectMsg(Connecting("localhost", 6379))
+      probe2.expectMsg(Connected("localhost", 6379))
+      brando ! probe.ref
+      probe.expectMsg(Connected("localhost", 6379))
     }
   }
 
