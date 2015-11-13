@@ -240,3 +240,13 @@ Fork the project, add tests if possible and send a pull request.
 ## Contributors
 
 Chris Dinn, Jason Goodwin, Tyson Hamilton, Gaetan Hervouet, Damien Levin, Matt MacAulay, Arron Norwell
+
+## Changelog
+
+### v3.x.x
+
+Brando no longer implements `akka.actor.Stash`. In consequence, all incoming requests throw
+a `RedisDisconnectedException` if the `Connection` is not established. This version delegates the
+responsibility to the sender, it is no longer handled by the Brando itself. In older versions, when
+the connection was not established, the requests were stashed. When established, all stashed
+requests were unstashed and processed.
