@@ -18,7 +18,7 @@ import com.typesafe.config.ConfigFactory
  * 2. create this actor with the Brando as parameter
  * 3. use this actor to querying redis
  */
-class StashingRedis(redis: ActorRef, val capacity: Long) extends Actor with LeakyStash {
+class StashingRedis(redis: ActorRef, protected val stashCapacity: Long) extends Actor with LeakyStash {
 
   override def receive: Receive = setDisconnected()
 
