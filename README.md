@@ -139,6 +139,7 @@ This was the built-in behavior of Brando 2.x.x
       // query the proxy
       proxy ? Request("PING")
 
+**Note:** `StashingRedis` cannot be used with a sharded connection.
 
 
 ### Sentinel
