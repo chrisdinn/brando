@@ -11,7 +11,7 @@ In your build.sbt
 
     resolvers += "chrisdinn" at "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "3.0.2"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "3.0.3-SNAPSHOT"
 
 ### Getting started
 
@@ -244,7 +244,7 @@ It's possible to use sharding with Sentinel, to do so you need to use `SentinelS
 
 ## Documentation
 
-Read the API documentation here: [http://chrisdinn.github.io/api/brando-3.0.2/](http://chrisdinn.github.io/api/brando-3.0.2/)
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-3.0.3-SNAPSHOT/](http://chrisdinn.github.io/api/brando-3.0.3-SNAPSHOT/)
 
 ## Mailing list
 
