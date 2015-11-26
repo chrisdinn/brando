@@ -1,7 +1,6 @@
 package brando
 
 import akka.actor._
-import com.typesafe.config.ConfigFactory
 
 /**
  * This actor implements Akka stashing to stash requests to Redis when the connection
@@ -18,7 +17,7 @@ import com.typesafe.config.ConfigFactory
  * 2. create this actor with the Brando as parameter
  * 3. use this actor to querying redis
  */
-class StashingRedis(redis: ActorRef, protected val stashCapacity: Long) extends Actor with LeakyStash {
+class StashingRedis(redis: ActorRef) extends Actor with Stash {
 
   override def receive: Receive = setDisconnected()
 
@@ -60,12 +59,7 @@ class StashingRedis(redis: ActorRef, protected val stashCapacity: Long) extends 
 
 object StashingRedis {
 
-  def apply(redis: ActorRef, capacity: Option[Long] = None) = {
-    val config = ConfigFactory.load()
-    Props(
-      classOf[StashingRedis],
-      redis,
-      capacity.getOrElse(config.getLong("brando.stashing.capacity")))
-  }
+  def apply(redis: ActorRef) =
+    Props(classOf[StashingRedis], redis)
 
 }

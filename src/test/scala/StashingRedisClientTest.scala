@@ -29,7 +29,7 @@ class StashingRedisClientTest extends TestKit(ActorSystem("StashingRedisClientTe
 
     it("drop old messages when capacity is full") {
       val brando = system.actorOf(Redis(listeners = Set(self)))
-      val stashing = system.actorOf(StashingRedis(brando, capacity = Some(2)))
+      val stashing = system.actorOf(StashingRedis(brando).withMailbox("bounded-stash-mailbox"))
       stashing ! Request("PING")
       stashing ! Request("PING")
       stashing ! Request("PING")
@@ -37,8 +37,9 @@ class StashingRedisClientTest extends TestKit(ActorSystem("StashingRedisClientTe
       stashing ! Request("PING")
       expectMsg(Connecting("localhost", 6379))
       expectMsg(Connected("localhost", 6379))
-      expectMsg(None)
       expectMsg(Some(Pong))
+      expectMsg(Some(Pong))
+      expectNoMsg()
     }
   }
 }
