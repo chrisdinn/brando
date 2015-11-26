@@ -27,26 +27,4 @@ trait LeakyStash extends Stash { outer: Actor ⇒
     // enqueue the message
     theStash :+= currMsg
   }
-
-  private[akka] override def unstashAll(filterPredicate: Any ⇒ Boolean): Unit = {
-    try {
-      val i = theStash.reverseIterator.filter(envelope ⇒ filterPredicate(envelope.message))
-      while (i.hasNext) enqueueFirst(i.next())
-    } finally {
-      theStash = Vector.empty[Envelope]
-    }
-  }
-
-  /**
-   * Enqueues `envelope` at the first position in the mailbox. If the message contained in
-   * the envelope is a `Terminated` message, it will be ensured that it can be re-received
-   * by the actor.
-   */
-  private def enqueueFirst(envelope: Envelope): Unit = {
-    mailbox.enqueueFirst(self, envelope)
-    envelope.message match {
-      case Terminated(ref) ⇒ actorCell.terminatedQueuedFor(ref)
-      case _               ⇒
-    }
-  }
 }
