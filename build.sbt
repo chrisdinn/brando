@@ -2,7 +2,7 @@ name := "brando"
 
 organization := "com.digital-achiever"
 
-version := "3.0.2"
+version := "3.0.3-SNAPSHOT"
 
 scalaVersion := "2.11.4"
 

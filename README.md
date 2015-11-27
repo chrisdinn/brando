@@ -11,7 +11,7 @@ In your build.sbt
 
     resolvers += "chrisdinn" at "http://chrisdinn.github.io/releases/"
 
-    libraryDependencies += "com.digital-achiever" %% "brando" % "3.0.2"
+    libraryDependencies += "com.digital-achiever" %% "brando" % "3.0.3-SNAPSHOT"
 
 ### Getting started
 
@@ -120,6 +120,27 @@ Currently, the possible messages sent to each listener include the following:
 
 All these messages inherit from the `Connection.StateChange` trait.
 
+### Requests stashing when connection is not established
+
+Current Brando implementation throws an exception when the connection is not established and 
+it receives a request. However, sometimes you do not need the answer right now and you can wait
+a bit before the connection gets established. The `StashingRedis` actor provides this functionality,
+it is designed as a proxy to be used. When it receives requests while the connection is not established,
+it stashes them. Once the connection gets established, it unstashes them and passed them to the actual
+`Redis` actor. When the connection is established, all incoming requests are passed right through.
+
+This was the built-in behavior of Brando 2.x.x
+
+
+      // create the Redis actor
+      val brando = system.actorOf(Redis(listeners = Set(self)))
+      // create the stashing proxy
+      val proxy = system.actorOf(StashingRedis(brando))
+      // query the proxy
+      proxy ? Request("PING")
+
+**Note:** `StashingRedis` cannot be used with a sharded connection.
+
 
 ### Sentinel
 
@@ -223,7 +244,7 @@ It's possible to use sharding with Sentinel, to do so you need to use `SentinelS
 
 ## Documentation
 
-Read the API documentation here: [http://chrisdinn.github.io/api/brando-3.0.2/](http://chrisdinn.github.io/api/brando-3.0.2/)
+Read the API documentation here: [http://chrisdinn.github.io/api/brando-3.0.3-SNAPSHOT/](http://chrisdinn.github.io/api/brando-3.0.3-SNAPSHOT/)
 
 ## Mailing list
 
@@ -240,3 +261,14 @@ Fork the project, add tests if possible and send a pull request.
 ## Contributors
 
 Chris Dinn, Jason Goodwin, Tyson Hamilton, Gaetan Hervouet, Damien Levin, Matt MacAulay, Arron Norwell
+
+## Changelog
+
+### v3.x.x
+
+Brando no longer implements `akka.actor.Stash`. In consequence, all incoming requests throw
+a `RedisDisconnectedException` if the `Connection` is not established. This version delegates the
+responsibility to the sender, it is no longer handled by the Brando itself. In older versions, when
+the connection was not established, the requests were stashed. When established, all stashed
+requests were unstashed and processed. For smoother migration, there is `StashingRedis` providing
+the same behavior. For more details see *Requests stashing when connection is not established*

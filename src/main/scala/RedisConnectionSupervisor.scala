@@ -26,6 +26,8 @@ private[brando] abstract class RedisConnectionSupervisor(
 
   var connection = context.system.deadLetters
 
+  protected var status: Connection.StateChange = Connection.Disconnected("unknown", 0)
+
   def receive = disconnected
 
   def connected: Receive = handleListeners orElse {
@@ -62,12 +64,14 @@ private[brando] abstract class RedisConnectionSupervisor(
   def handleListeners: Receive = {
     case s: ActorRef ⇒
       listeners = listeners + s
+      s ! status // notify the new listener about current status
 
     case Terminated(l) ⇒
       listeners = listeners - l
   }
 
   def notifyStateChange(newState: Connection.StateChange) {
+    status = newState
     listeners foreach { _ ! newState }
   }
 
