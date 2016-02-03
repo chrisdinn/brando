@@ -408,7 +408,6 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
       expectMsg(Connected("localhost", 6379))
 
       try {
-        val channel = UUID.randomUUID().toString
         val popRedis = system.actorOf(Redis(listeners = Set(self)))
         expectMsg(Connecting("localhost", 6379))
         expectMsg(Connected("localhost", 6379))
@@ -451,7 +450,7 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
   describe("notifications") {
     it("should send a Connected event if connecting succeeds") {
       val probe = TestProbe()
-      val brando = system.actorOf(Redis("localhost", 6379, listeners = Set(probe.ref)))
+      system.actorOf(Redis("localhost", 6379, listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", 6379))
       probe.expectMsg(Connected("localhost", 6379))
@@ -459,7 +458,7 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
 
     it("should send an ConnectionFailed event if connecting fails") {
       val probe = TestProbe()
-      val brando = system.actorOf(Redis("localhost", 13579, listeners = Set(probe.ref)))
+      system.actorOf(Redis("localhost", 13579, listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", 13579))
       probe.expectMsg(ConnectionFailed("localhost", 13579))
@@ -467,7 +466,7 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
 
     it("should send an AuthenticationFailed event if connecting succeeds but authentication fails") {
       val probe = TestProbe()
-      val brando = system.actorOf(Redis("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
+      system.actorOf(Redis("localhost", 6379, auth = Some("not-the-auth"), listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", 6379))
       probe.expectMsg(Redis.AuthenticationFailed("localhost", 6379))
@@ -478,7 +477,7 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
       val port = serverSocket.getLocalPort
 
       val probe = TestProbe()
-      val brando = system.actorOf(Redis("localhost", port, listeners = Set(probe.ref)))
+      system.actorOf(Redis("localhost", port, listeners = Set(probe.ref)))
 
       probe.expectMsg(Connecting("localhost", port))
       probe.expectMsg(ConnectionFailed("localhost", port))
