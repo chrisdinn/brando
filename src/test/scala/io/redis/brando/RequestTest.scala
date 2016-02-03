@@ -1,7 +1,7 @@
-package brando
+package io.redis.brando
 
-import org.scalatest.FunSpec
 import akka.util.ByteString
+import org.scalatest.FunSpec
 
 class RequestTest extends FunSpec {
   describe("toByteString") {

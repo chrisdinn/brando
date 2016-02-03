@@ -1,8 +1,9 @@
-package brando
+package io.redis.brando
 
-import annotation.tailrec
 import akka.actor.Status
 import akka.util.ByteString
+
+import scala.annotation.tailrec
 
 sealed abstract class StatusReply(val status: String) {
   val bytes = ByteString(status)
@@ -135,7 +136,7 @@ private[brando] trait ReplyParser {
   }
 
   @tailrec final def parseReply(bytes: ByteString)(withReply: Any ⇒ Unit) {
-    if (bytes.size > 0) {
+    if (bytes.nonEmpty) {
       parse(remainingBuffer ++ bytes) match {
         case Failure(leftoverBytes) ⇒
           remainingBuffer = leftoverBytes
@@ -144,7 +145,7 @@ private[brando] trait ReplyParser {
           remainingBuffer = ByteString.empty
           withReply(reply)
 
-          if (leftoverBytes.size > 0) {
+          if (leftoverBytes.nonEmpty) {
             parseReply(leftoverBytes)(withReply)
           }
       }

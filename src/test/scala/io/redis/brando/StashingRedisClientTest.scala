@@ -1,4 +1,4 @@
-package brando
+package io.redis.brando
 
 import akka.actor._
 import akka.testkit._

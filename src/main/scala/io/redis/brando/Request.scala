@@ -1,4 +1,4 @@
-package brando
+package io.redis.brando
 
 import akka.util.ByteString
 
@@ -10,7 +10,7 @@ object Request {
 //Helps creating a request like HMSET key k1 v1 k2 v2...
 object HashRequest {
   def apply(cmd: String, key: String, map: Map[String, String]) = {
-    val args = Seq(key) ++ map.map(e ⇒ Seq(e._1, e._2)).flatten
+    val args = Seq(key) ++ map.flatMap(e ⇒ Seq(e._1, e._2))
     Request(cmd, args: _*)
   }
 }
@@ -20,7 +20,7 @@ case class Request(command: ByteString, params: ByteString*) {
 
   def args = command :: params.toList
 
-  def toByteString = args.map(argLine(_)).foldLeft(header)(_ ++ _)
+  def toByteString = args.map(argLine).foldLeft(header)(_ ++ _)
 
   private def header = ByteString("*" + args.length) ++ CRLF
 

@@ -1,11 +1,11 @@
-package brando
+package io.redis.brando
+
+import java.util.concurrent.TimeUnit
 
 import akka.actor._
+import com.typesafe.config.ConfigFactory
 
 import scala.concurrent.duration._
-
-import com.typesafe.config.ConfigFactory
-import java.util.concurrent.TimeUnit
 
 object Redis {
   def apply(
@@ -49,13 +49,13 @@ class Redis(
   connectionHeartbeatDelay: Option[FiniteDuration]) extends RedisConnectionSupervisor(
   database, auth, listeners, connectionTimeout, connectionHeartbeatDelay) {
 
-  import ConnectionSupervisor.{ Connect, Reconnect }
+  import ConnectionSupervisor.{Connect, Reconnect}
   import context.dispatcher
 
   var retries = 0
 
   override def preStart: Unit = {
-    listeners.map(context.watch(_))
+    listeners.foreach(context.watch)
     self ! Connect(host, port)
   }
 
@@ -73,7 +73,7 @@ class Redis(
 
     case Reconnect ⇒
       (connectionRetryDelay, connectionRetryAttempts) match {
-        case (Some(delay), Some(maxAttempts)) if (maxAttempts > retries) ⇒
+        case (Some(delay), Some(maxAttempts)) if maxAttempts > retries ⇒
           retries += 1
           context.system.scheduler.scheduleOnce(delay, connection, Connection.Connect)
         case (Some(delay), None) ⇒

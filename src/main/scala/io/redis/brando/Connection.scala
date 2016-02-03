@@ -1,16 +1,15 @@
-package brando
+package io.redis.brando
 
-import akka.actor._
+import java.net.InetSocketAddress
+
 import akka.actor.ActorDSL._
-import akka.pattern._
+import akka.actor._
 import akka.io._
+import akka.pattern._
 import akka.util._
 
 import scala.collection.mutable
-import scala.concurrent._
 import scala.concurrent.duration._
-
-import java.net.InetSocketAddress
 
 object Connection {
   trait StateChange
@@ -42,13 +41,13 @@ private[brando] class Connection(
   var subscribers: Map[ByteString, Seq[ActorRef]] = Map.empty
 
   def getSubscribers(channel: ByteString): Seq[ActorRef] =
-    subscribers.get(channel).getOrElse(Seq.empty[ActorRef])
+    subscribers.getOrElse(channel, Seq.empty[ActorRef])
 
   override def preStart(): Unit = self ! Connect
 
   def receive = {
-    case subRequest: Request if (subRequest.command.utf8String.toLowerCase == "subscribe") ⇒
-      subRequest.params map { x ⇒
+    case subRequest: Request if subRequest.command.utf8String.toLowerCase == "subscribe" ⇒
+      subRequest.params foreach { x ⇒
         subscribers = subscribers + ((x, getSubscribers(x).+:(sender)))
       }
       socket ! Tcp.Write(subRequest.toByteString, CommandAck(sender))
@@ -75,26 +74,24 @@ private[brando] class Connection(
 
     case Tcp.Received(data) ⇒
       lastDataReceived = now
-      parseReply(data) { reply ⇒
-        reply match {
-          case Some(List(
-            Some(x: ByteString),
-            Some(channel: ByteString),
-            Some(message: ByteString))) if (x.utf8String == "message") ⇒
+      parseReply(data) {
+        case Some(List(
+        Some(x: ByteString),
+        Some(channel: ByteString),
+        Some(message: ByteString))) if x.utf8String == "message" ⇒
 
-            val pubSubMessage = PubSubMessage(channel.utf8String, message.utf8String)
-            getSubscribers(channel).map { x ⇒
-              x ! pubSubMessage
-            }
+          val pubSubMessage = PubSubMessage(channel.utf8String, message.utf8String)
+          getSubscribers(channel).foreach { x ⇒
+            x ! pubSubMessage
+          }
 
-          case _ ⇒
-            requesterQueue.dequeue ! (reply match {
-              case Some(failure: Status.Failure) ⇒
-                failure
-              case success ⇒
-                success
-            })
-        }
+        case reply ⇒
+          requesterQueue.dequeue ! (reply match {
+            case Some(failure: Status.Failure) ⇒
+              failure
+            case success ⇒
+              success
+          })
       }
 
     case Tcp.CommandFailed(writeMessage: Tcp.Write) ⇒
@@ -126,7 +123,7 @@ private[brando] class Connection(
 
     case Heartbeat(delay) ⇒
       val idle = now - lastDataReceived
-      ((idle > delay.toMillis * 2), (idle > (delay.toMillis))) match {
+      (idle > delay.toMillis * 2, idle > delay.toMillis) match {
         case (true, true) ⇒
           socket ! Tcp.Close
         case (false, true) ⇒

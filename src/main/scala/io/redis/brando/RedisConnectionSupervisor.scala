@@ -1,11 +1,11 @@
-package brando
+package io.redis.brando
 
 import akka.actor._
 import akka.pattern._
 import akka.util._
 
-import scala.concurrent.duration._
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 object ConnectionSupervisor {
   private[brando] case class Connect(host: String, port: Int)
@@ -19,7 +19,7 @@ private[brando] abstract class RedisConnectionSupervisor(
     connectionTimeout: FiniteDuration,
     connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
 
-  import ConnectionSupervisor.{ Connect, Reconnect }
+  import ConnectionSupervisor.{Connect, Reconnect}
   import context.dispatcher
 
   implicit val timeout = Timeout(connectionTimeout)

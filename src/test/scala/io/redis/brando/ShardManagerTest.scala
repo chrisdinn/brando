@@ -1,18 +1,17 @@
-package brando
-
-import org.scalatest.FunSpecLike
-import akka.testkit._
+package io.redis.brando
 
 import akka.actor._
+import akka.testkit._
 import akka.util.ByteString
-import scala.concurrent.duration._
+import org.scalatest.FunSpecLike
+
 import scala.util.Failure
 
 class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
     with FunSpecLike with ImplicitSender {
 
-  import ShardManager._
   import Connection._
+  import ShardManager._
 
   describe("creating shards") {
     it("should create a pool of clients mapped to ids") {

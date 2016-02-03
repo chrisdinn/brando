@@ -1,20 +1,15 @@
-package brando
+package io.redis.brando
 
 import akka.actor._
-import akka.util._
-import akka.pattern._
 import akka.testkit._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-
+import akka.util._
 import org.scalatest._
 
 class SentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpecLike
     with ImplicitSender {
 
-  import Sentinel._
   import Connection._
+  import Sentinel._
 
   describe("Sentinel") {
     describe("connection to sentinel instances") {

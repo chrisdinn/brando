@@ -1,4 +1,4 @@
-package brando
+package io.redis.brando
 
 import akka.util.ByteString
 
@@ -16,7 +16,7 @@ object Response {
   def collectItems[T](value: Any, mapper: PartialFunction[Any, T]): Option[Seq[T]] = {
     value match {
       case Some(v: List[_]) ⇒ v.foldLeft(Option(Seq[T]())) {
-        case (Some(acc), e @ (Some(_: ByteString) | None)) if (mapper.isDefinedAt(e)) ⇒
+        case (Some(acc), e @ (Some(_: ByteString) | None)) if mapper.isDefinedAt(e) ⇒
           Some(acc :+ mapper(e))
         case (Some(acc), e @ (Some(_: ByteString) | None)) ⇒ Some(acc)
         case _ ⇒ None
@@ -46,9 +46,9 @@ object Response {
   object AsStringsHash {
     def unapply(value: Any) = {
       value match {
-        case AsStrings(result) if (result.size % 2 == 0) ⇒
+        case AsStrings(result) if result.size % 2 == 0 ⇒
           val map = result.grouped(2).map {
-            subseq ⇒ subseq(0) -> subseq(1)
+            subseq ⇒ subseq.head -> subseq(1)
           }.toMap
           Some(map)
         case _ ⇒ None

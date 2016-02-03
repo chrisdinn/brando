@@ -1,4 +1,4 @@
-package brando
+package io.redis.brando
 
 import akka.util.ByteString
 import org.scalatest.FunSpec
