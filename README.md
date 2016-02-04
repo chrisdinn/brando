@@ -229,7 +229,7 @@ It's possible to use sharding with Sentinel, to do so you need to use `SentinelS
 
 * Start sentinel
     
-        sudo redis-sentinel redis-config/sentinel.conf --sentinel
+        sudo redis-sentinel test-config/sentinel.conf --sentinel
 
 * Start a Redis master and slave 
 

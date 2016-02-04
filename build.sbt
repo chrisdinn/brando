@@ -1,6 +1,6 @@
 name := "brando"
 
-organization := "com.digital-achiever"
+organization := "io.redis.brando"
 
 version := "3.1.0"
 

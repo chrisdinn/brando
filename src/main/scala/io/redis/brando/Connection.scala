@@ -76,9 +76,9 @@ private[brando] class Connection(
       lastDataReceived = now
       parseReply(data) {
         case Some(List(
-        Some(x: ByteString),
-        Some(channel: ByteString),
-        Some(message: ByteString))) if x.utf8String == "message" ⇒
+          Some(x: ByteString),
+          Some(channel: ByteString),
+          Some(message: ByteString))) if x.utf8String == "message" ⇒
 
           val pubSubMessage = PubSubMessage(channel.utf8String, message.utf8String)
           getSubscribers(channel).foreach { x ⇒
