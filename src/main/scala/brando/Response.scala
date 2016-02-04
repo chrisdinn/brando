@@ -1,4 +1,4 @@
-package io.redis.brando
+package brando
 
 import akka.util.ByteString
 

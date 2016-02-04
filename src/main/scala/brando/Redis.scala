@@ -1,4 +1,4 @@
-package io.redis.brando
+package brando
 
 import java.util.concurrent.TimeUnit
 
@@ -49,8 +49,7 @@ class Redis(
   connectionHeartbeatDelay: Option[FiniteDuration]) extends RedisConnectionSupervisor(
   database, auth, listeners, connectionTimeout, connectionHeartbeatDelay) {
 
-  import ConnectionSupervisor.{ Connect, Reconnect }
-  import ConnectionSupervisor.{ Connect, Reconnect }
+  import ConnectionSupervisor.{Connect, Reconnect}
   import context.dispatcher
 
   var retries = 0
