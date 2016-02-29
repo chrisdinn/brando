@@ -221,7 +221,7 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
 
   describe("large data sets") {
     it("should read and write large files") {
-      import java.io.{File, FileInputStream}
+      import java.io.{ File, FileInputStream }
 
       val file = new File("src/test/resources/crime_and_punishment.txt")
       val in = new FileInputStream(file)

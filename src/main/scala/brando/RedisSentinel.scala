@@ -48,7 +48,7 @@ class RedisSentinel(
   connectionHeartbeatDelay: Option[FiniteDuration]) extends RedisConnectionSupervisor(database, auth,
   listeners, connectionTimeout, connectionHeartbeatDelay) {
 
-  import ConnectionSupervisor.{Connect, Reconnect}
+  import ConnectionSupervisor.{ Connect, Reconnect }
   import RedisSentinel._
   import context.dispatcher
 
