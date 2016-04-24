@@ -114,14 +114,13 @@ private[brando] class Connection(
     case x: Tcp.Connected ⇒
       socket = sender
       socket ! Tcp.Register(self, useResumeWriting = false)
-      (self ? Request("PING"))(connectionTimeout) map {
+      (self ? Request("PING"))(connectionTimeout) onComplete {
+        case scala.util.Failure(_: AskTimeoutException) ⇒
+          listener ! ConnectionFailed(host, port)
         case _ ⇒
           listener ! Connected(host, port)
           heartbeatDelay map (d ⇒
             context.system.scheduler.schedule(0.seconds, 1.seconds, self, Heartbeat(d)))
-      } recover {
-        case _ ⇒
-          listener ! ConnectionFailed(host, port)
       }
 
     case Heartbeat(delay) ⇒

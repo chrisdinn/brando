@@ -363,9 +363,8 @@ class RedisClientTest extends TestKit(ActorSystem("RedisClientTest")) with FunSp
           Some(1))))
 
         publisher ! Request("PUBLISH", channel, "test")
-        expectMsg(Some(1)) //publisher gets back number of subscribers when publishing
-
-        expectMsg(PubSubMessage(channel, "test"))
+        //publisher gets back number of subscribers when publishing
+        assert(receiveN(2).toSet === Set(Some(1), PubSubMessage(channel, "test")))
       }
 
       it("should be able to unsubscribe from a pubsub channel") {

@@ -98,19 +98,14 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       sentinelProbe.expectMsg(
         Connected("localhost", 26379))
 
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
+      val redisNotifications = redisProbe.receiveN(6)
+      assert(redisNotifications.toSet === Set(
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379)))
 
       shardManager ! ("key", Request("SET", "shard_manager_test", "some value"))
 
@@ -131,19 +126,14 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       val shardManager = TestActorRef[ShardManager](ShardManager(
         shards, listeners = Set(redisProbe.ref)))
 
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
+      val redisNotifications = redisProbe.receiveN(6)
+      assert(redisNotifications.toSet === Set(
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379)))
 
       shardManager ! Request("SET", "shard_manager_test", "some value")
 
@@ -164,19 +154,14 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       val shardManager = TestActorRef[ShardManager](ShardManager(
         shards, listeners = Set(redisProbe.ref)))
 
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
+      val redisNotifications = redisProbe.receiveN(6)
+      assert(redisNotifications.toSet === Set(
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379)))
 
       shardManager ! Request("SET")
 
@@ -193,19 +178,14 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       val shardManager = TestActorRef[ShardManager](ShardManager(
         shards, listeners = Set(redisProbe.ref)))
 
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connecting("127.0.0.1", 6379))
-
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
-      redisProbe.expectMsg(
-        Connected("127.0.0.1", 6379))
+      val redisNotifications = redisProbe.receiveN(6)
+      assert(redisNotifications.toSet === Set(
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connecting("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379),
+        Connected("127.0.0.1", 6379)))
 
       val listName = scala.util.Random.nextString(5)
 
@@ -276,10 +256,12 @@ class ShardManagerTest extends TestKit(ActorSystem("ShardManagerTest"))
       val shardManager = TestActorRef[ShardManager](ShardManager(
         shards, Set(probe.ref)))
 
-      probe.expectMsg(Connecting("localhost", 6379))
-      probe.expectMsg(Connecting("localhost", 6379))
-      probe.expectMsg(Connected("localhost", 6379))
-      probe.expectMsg(Redis.AuthenticationFailed("localhost", 6379))
+      val redisNotifications = probe.receiveN(4)
+      assert(redisNotifications.toSet === Set(
+        Connecting("localhost", 6379),
+        Connecting("localhost", 6379),
+        Connected("localhost", 6379),
+        Redis.AuthenticationFailed("localhost", 6379)))
     }
   }
 }
