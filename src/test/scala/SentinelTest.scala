@@ -24,9 +24,11 @@ class SentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpecLike
           Server("wrong-host", 26379),
           Server("localhost", 26379)), Set(probe.ref)))
 
-        probe.expectMsg(Connecting("wrong-host", 26379))
-        probe.expectMsg(Connecting("localhost", 26379))
-        probe.expectMsg(Connected("localhost", 26379))
+        val redisNotifications = probe.receiveN(3)
+        assert(redisNotifications.toSet === Set(
+          Connecting("wrong-host", 26379),
+          Connecting("localhost", 26379),
+          Connected("localhost", 26379)))
       }
 
       it("should send a notification to the listeners when connecting") {
@@ -75,9 +77,11 @@ class SentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpecLike
           Server("wrong-host", 26379),
           Server("localhost", 26379)), Set(probe.ref)))
 
-        probe.expectMsg(Connecting("wrong-host", 26379))
-        probe.expectMsg(Connecting("localhost", 26379))
-        probe.expectMsg(Connected("localhost", 26379))
+        val redisNotifications = probe.receiveN(3)
+        assert(redisNotifications.toSet === Set(
+          Connecting("wrong-host", 26379),
+          Connecting("localhost", 26379),
+          Connected("localhost", 26379)))
 
         sentinel ! Disconnected("localhost", 26379)
 
@@ -112,15 +116,18 @@ class SentinelTest extends TestKit(ActorSystem("SentinelTest")) with FunSpecLike
 
     describe("Subscriptions") {
       it("should receive pub/sub notifications") {
+        val probe = TestProbe()
         val sentinel = system.actorOf(Sentinel(Seq(
-          Server("localhost", 26379)), Set(self)))
+          Server("localhost", 26379)), Set(probe.ref)))
         val sentinel2 = system.actorOf(Sentinel(Seq(
-          Server("localhost", 26379)), Set(self)))
+          Server("localhost", 26379)), Set(probe.ref)))
 
-        expectMsg(Connecting("localhost", 26379))
-        expectMsg(Connecting("localhost", 26379))
-        expectMsg(Connected("localhost", 26379))
-        expectMsg(Connected("localhost", 26379))
+        val redisNotifications = probe.receiveN(3)
+        assert(redisNotifications.toSet === Set(
+          Connecting("localhost", 26379),
+          Connecting("localhost", 26379),
+          Connected("localhost", 26379),
+          Connected("localhost", 26379)))
 
         sentinel ! Request("subscribe", "+failover-end")
 
