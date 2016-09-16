@@ -2,14 +2,14 @@ name := "brando"
 
 organization := "com.digital-achiever"
 
-version := "3.1.1"
+version := "3.1.2"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.4.2",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.10",
   "org.scalatest" %% "scalatest" % "2.2.5" % "test",
   "com.typesafe.akka" %% "akka-testkit" % "2.4.2" % "test"
 )
