@@ -66,7 +66,7 @@ private[brando] class Connection(
             context.system.log.error(s"Terminating batch actor due to timeout.  Responses recieved: $responses on actor ${self.path}")
             self ! PoisonPill
           case response if (responses.size + 1) < batch.requests.size ⇒
-            context.system.log.info(s"Batch response received: $response")
+            context.system.log.info(s"Batch response received: $response on actor ${self.path}")
             responses = responses :+ response
           case response ⇒
             requester ! (responses :+ response)
