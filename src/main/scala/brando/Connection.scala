@@ -58,12 +58,19 @@ private[brando] class Connection(
     case batch: Batch ⇒
       val requester = sender
       val batcher = actor(new Act {
+        context.system.scheduler.scheduleOnce(15.seconds, self, "terminate") // Todo: Parameterise this
+        context.system.log.info(s"Starting batch actor: ${self.path}")
         var responses = List[Any]()
         become {
+          case "terminate" ⇒
+            context.system.log.error(s"Terminating batch actor due to timeout.  Responses recieved: $responses on actor ${self.path}")
+            self ! PoisonPill
           case response if (responses.size + 1) < batch.requests.size ⇒
+            context.system.log.info(s"Batch response received: $response")
             responses = responses :+ response
           case response ⇒
             requester ! (responses :+ response)
+            context.system.log.info(s"Terminating normally. Final batch response received: $response, Total response is $responses on actor ${self.path}")
             self ! PoisonPill
         }
       })
