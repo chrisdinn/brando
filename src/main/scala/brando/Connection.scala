@@ -57,25 +57,28 @@ private[brando] class Connection(
 
     case batch: Batch ⇒
       val requester = sender
-      val batcher = actor(new Act {
-        context.system.scheduler.scheduleOnce(15.seconds, self, "terminate") // Todo: Parameterise this
-        context.system.log.info(s"Starting batch actor: ${self.path}")
-        var responses = List[Any]()
-        become {
-          case "terminate" ⇒
-            context.system.log.error(s"Terminating batch actor due to timeout.  Responses recieved: $responses on actor ${self.path}")
-            self ! PoisonPill
-          case response if (responses.size + 1) < batch.requests.size ⇒
-            context.system.log.info(s"Batch response received: $response on actor ${self.path}")
-            responses = responses :+ response
-          case response ⇒
-            requester ! (responses :+ response)
-            context.system.log.info(s"Terminating normally. Final batch response received: $response, Total response is $responses on actor ${self.path}")
-            self ! PoisonPill
-        }
-      })
-      batch.requests.foreach(self.tell(_, batcher))
-
+      if (batch.requests.nonEmpty) {
+        val batcher = actor(new Act {
+          val timer = context.system.scheduler.scheduleOnce(15.seconds, self, "terminate") // Todo: Parameterise this
+          context.system.log.debug(s"Starting batch actor: ${self.path}")
+          var responses = List[Any]()
+          become {
+            case "terminate" ⇒
+              context.system.log.error(s"Terminating batch actor due to timeout.  Responses recieved: $responses on actor ${self.path}")
+              self ! PoisonPill
+            case response if (responses.size + 1) < batch.requests.size ⇒
+              responses = responses :+ response
+            case response ⇒
+              requester ! (responses :+ response)
+              context.system.log.debug(s"Batch request terminating normally on actor ${self.path}")
+              timer.cancel()
+              self ! PoisonPill
+          }
+        })
+        batch.requests.foreach(self.tell(_, batcher))
+      } else {
+        context.system.log.debug(s"Empty batch request received")
+      }
     case CommandAck(sender) ⇒
       requesterQueue.enqueue(sender)
 
