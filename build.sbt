@@ -4,14 +4,16 @@ organization := "com.digital-achiever"
 
 version := "3.1.4"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
+
+crossScalaVersions := Seq("2.11.8", "2.12.1")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.4.10",
-  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.4.10" % "test"
+  "com.typesafe.akka" %% "akka-actor" % "2.4.14",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "com.typesafe.akka" %% "akka-testkit" % "2.4.14" % "test"
 )
 
 parallelExecution in Test := false
