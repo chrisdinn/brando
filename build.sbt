@@ -2,16 +2,16 @@ name := "brando"
 
 organization := "com.digital-achiever"
 
-version := "3.1.9"
+version := "3.1.10"
 
 scalaVersion := "2.12.4"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.5.6",
+  "com.typesafe.akka" %% "akka-actor" % "2.5.8",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.5.6" % "test"
+  "com.typesafe.akka" %% "akka-testkit" % "2.5.8" % "test"
 )
 
 parallelExecution in Test := false
