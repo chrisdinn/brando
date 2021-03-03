@@ -2,7 +2,6 @@ package brando
 
 import java.net.InetSocketAddress
 
-import akka.actor.ActorDSL._
 import akka.actor._
 import akka.io._
 import akka.pattern._
@@ -58,23 +57,7 @@ private[brando] class Connection(
     case batch: Batch ⇒
       val requester = sender
       if (batch.requests.nonEmpty) {
-        val batcher = actor(new Act {
-          val timer = context.system.scheduler.scheduleOnce(15.seconds, self, "terminate") // Todo: Parameterise this
-          context.system.log.debug(s"Starting batch actor: ${self.path}")
-          var responses = List[Any]()
-          become {
-            case "terminate" ⇒
-              context.system.log.error(s"Terminating batch actor due to timeout.  Responses recieved: $responses on actor ${self.path}")
-              self ! PoisonPill
-            case response if (responses.size + 1) < batch.requests.size ⇒
-              responses = responses :+ response
-            case response ⇒
-              requester ! (responses :+ response)
-              context.system.log.debug(s"Batch request terminating normally on actor ${self.path}")
-              timer.cancel()
-              self ! PoisonPill
-          }
-        })
+        val batcher = context.actorOf(BatchInsertActor.props(requester, batch))
         batch.requests.foreach(self.tell(_, batcher))
       } else {
         context.system.log.debug(s"Empty batch request received")
