@@ -1,28 +1,27 @@
 name := "brando"
-
 organization := "com.digital-achiever"
-
-version := "3.0.3"
-
-scalaVersion := "2.11.4"
-
-crossScalaVersions := Seq("2.10.4", "2.11.4")
-
+version := "3.1.14"
+scalaVersion := "2.12.6"
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
+// Sbt seems to have some issues with publishing packages with credentials and below line is an workaround
+// for this bug: https://github.com/sbt/sbt/issues/3570
+updateOptions := updateOptions.value.withGigahorse(false)
+
+publishTo := Some("Horn SBT" at "https://sbt.horn.co/repository/internal")
+credentials += Credentials(
+  "Repository Archiva Managed internal Repository",
+  "sbt.horn.co",
+  sys.env("HORN_SBT_USERNAME"),
+  sys.env("HORN_SBT_PASSWORD")
+)
+
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.3.9",
-  "org.scalatest" %% "scalatest" % "2.1.3" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.9" % "test"
+  "com.typesafe.akka" %% "akka-actor" % "2.6.13",
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "com.typesafe.akka" %% "akka-testkit" % "2.6.13" % "test"
 )
 
 parallelExecution in Test := false
 
 resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
-
-publishTo <<= version { (v: String) =>
-  if (v.trim.endsWith("-SNAPSHOT"))
-    Some(Resolver.file("Snapshots", file("../chrisdinn.github.com/snapshots/")))
-  else
-    Some(Resolver.file("Releases", file("../chrisdinn.github.com/releases/")))
-}

@@ -1,16 +1,16 @@
 package brando
 
-import akka.actor._
-import akka.util._
-import collection.mutable
+import java.util.concurrent.TimeUnit
 import java.util.zip.CRC32
 
-import scala.util.Failure
+import akka.actor._
+import akka.util._
+import com.typesafe.config.ConfigFactory
+
+import scala.collection.mutable
 import scala.concurrent._
 import scala.concurrent.duration._
-
-import com.typesafe.config.ConfigFactory
-import java.util.concurrent.TimeUnit
+import scala.util.Failure
 
 object ShardManager {
   def apply(
@@ -64,8 +64,8 @@ class ShardManager(
   var poolKeys: Seq[String] = Seq()
 
   override def preStart: Unit = {
-    listeners.map(context.watch(_))
-    shards.map(self ! SetShard(_))
+    listeners.map(context.watch)
+    shards.foreach(self ! SetShard(_))
   }
 
   def receive = {
@@ -90,7 +90,7 @@ class ShardManager(
       }
 
     case SetShard(shard) ⇒
-      pool.get(shard.id) map (context.stop(_))
+      pool.get(shard.id) foreach context.stop
       (shard, sentinelClient) match {
         case (RedisShard(id, host, port, database, auth), _) ⇒
           val brando =

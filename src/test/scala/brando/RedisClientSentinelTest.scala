@@ -1,20 +1,14 @@
 package brando
 
 import akka.actor._
-import akka.pattern._
 import akka.testkit._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-
 import org.scalatest._
 
 class RedisClientSentinelTest extends TestKit(ActorSystem("RedisClientSentinelTest")) with FunSpecLike
     with ImplicitSender {
 
-  import RedisSentinel._
-  import Sentinel._
   import Connection._
+  import Sentinel._
 
   describe("RedisClientSentinel") {
     describe("when connecting") {

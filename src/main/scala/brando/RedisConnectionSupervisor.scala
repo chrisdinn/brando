@@ -4,8 +4,8 @@ import akka.actor._
 import akka.pattern._
 import akka.util._
 
-import scala.concurrent.duration._
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 object ConnectionSupervisor {
   private[brando] case class Connect(host: String, port: Int)

@@ -1,14 +1,13 @@
 package brando
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor._
 import akka.pattern._
-import akka.util._
+import com.typesafe.config.ConfigFactory
 
 import scala.concurrent._
 import scala.concurrent.duration._
-
-import com.typesafe.config.ConfigFactory
-import java.util.concurrent.TimeUnit
 
 object RedisSentinel {
   def apply(
@@ -49,12 +48,12 @@ class RedisSentinel(
   connectionHeartbeatDelay: Option[FiniteDuration]) extends RedisConnectionSupervisor(database, auth,
   listeners, connectionTimeout, connectionHeartbeatDelay) {
 
-  import RedisSentinel._
   import ConnectionSupervisor.{ Connect, Reconnect }
+  import RedisSentinel._
   import context.dispatcher
 
   override def preStart: Unit = {
-    listeners.map(context.watch(_))
+    listeners.map(context.watch)
     self ! SentinelConnect
   }
 

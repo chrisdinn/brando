@@ -1,14 +1,12 @@
 package brando
 
-import akka.actor._
-import akka.pattern._
-import akka.util._
-
-import scala.concurrent._
-import scala.concurrent.duration._
-
-import com.typesafe.config.ConfigFactory
 import java.util.concurrent.TimeUnit
+
+import akka.actor._
+import akka.util._
+import com.typesafe.config.ConfigFactory
+
+import scala.concurrent.duration._
 
 object Sentinel {
   def apply(
@@ -36,7 +34,6 @@ class Sentinel(
     connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
 
   import Sentinel._
-  import context.dispatcher
 
   implicit val timeout = Timeout(connectionTimeout)
 
@@ -44,7 +41,7 @@ class Sentinel(
   var retries = 0
 
   override def preStart: Unit = {
-    listeners.map(context.watch(_))
+    listeners.map(context.watch)
     self ! Connect(sentinels)
   }
 
@@ -78,7 +75,7 @@ class Sentinel(
 
     case x: Connection.ConnectionFailed ⇒
       context.become(disconnected)
-      (retries < sentinels.size) match {
+      retries < sentinels.size match {
         case true ⇒
           sentinels = sentinels.tail :+ sentinels.head
           self ! Connect(sentinels)
