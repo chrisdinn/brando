@@ -6,6 +6,7 @@ import akka.util._
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.util.Failure
 
 object ConnectionSupervisor {
   private[brando] case class Connect(host: String, port: Int)
@@ -17,9 +18,10 @@ private[brando] abstract class RedisConnectionSupervisor(
     auth: Option[String],
     var listeners: Set[ActorRef],
     connectionTimeout: FiniteDuration,
-    connectionHeartbeatDelay: Option[FiniteDuration]) extends Actor {
+    connectionHeartbeatDelay: Option[FiniteDuration]
+) extends Actor {
 
-  import ConnectionSupervisor.{ Connect, Reconnect }
+  import ConnectionSupervisor.{Connect, Reconnect}
   import context.dispatcher
 
   implicit val timeout = Timeout(connectionTimeout)
@@ -43,8 +45,8 @@ private[brando] abstract class RedisConnectionSupervisor(
   def disconnected: Receive = handleListeners orElse {
     case Connect(host, port) ⇒
       connection ! PoisonPill
-      connection = context.actorOf(Props(classOf[Connection],
-        self, host, port, connectionTimeout, connectionHeartbeatDelay))
+      connection =
+        context.actorOf(Props(classOf[Connection], self, host, port, connectionTimeout, connectionHeartbeatDelay))
 
     case x: Connection.Connecting ⇒
       notifyStateChange(x)
@@ -77,15 +79,20 @@ private[brando] abstract class RedisConnectionSupervisor(
 
   def authenticate(x: Connection.Connected) {
     (for {
-      auth ← if (auth.isDefined)
-        connection ? Request(ByteString("AUTH"), ByteString(auth.get)) else Future.successful(Unit)
-      database ← if (database != 0)
-        connection ? Request(ByteString("SELECT"), ByteString(database.toString)) else Future.successful(Unit)
+      auth ←
+        if (auth.isDefined)
+          connection ? Request(ByteString("AUTH"), ByteString(auth.get))
+        else Future.successful(())
+      database ←
+        if (database != 0)
+          connection ? Request(ByteString("SELECT"), ByteString(database.toString))
+        else Future.successful(())
     } yield ("auth_ok", x)) map {
       self ! _
-    } onFailure {
-      case e: Exception ⇒
+    } onComplete {
+      case Failure(e: Exception) ⇒
         notifyStateChange(Redis.AuthenticationFailed(x.host, x.port))
+      case _ => // everything is fine.
     }
   }
 }

@@ -1,7 +1,7 @@
 name := "brando"
 organization := "com.digital-achiever"
-version := "3.1.14"
-scalaVersion := "2.12.6"
+version := "3.2.0"
+scalaVersion := "2.13.8"
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 // Sbt seems to have some issues with publishing packages with credentials and below line is an workaround
@@ -16,12 +16,12 @@ credentials += Credentials(
   sys.env("HORN_SBT_PASSWORD")
 )
 
+val akkaV = "2.6.19"
+
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.6.13",
-  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.6.13" % "test"
+  "com.typesafe.akka" %% "akka-actor"   % akkaV,
+  "org.scalatest"     %% "scalatest"    % "3.0.9" % "test",
+  "com.typesafe.akka" %% "akka-testkit" % akkaV   % "test"
 )
 
 parallelExecution in Test := false
-
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
